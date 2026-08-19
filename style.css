@@ -1020,15 +1020,16 @@ header.top a:hover { color: var(--gold-soft); border-color: var(--gold); }
 }
 .fp-resize-handle {
   position: absolute;
-  right: -7px;
-  bottom: -7px;
   width: 16px;
   height: 16px;
   border-radius: 50%;
   background: var(--gold);
   border: 2px solid var(--bg-elevated);
   cursor: nwse-resize;
+  z-index: 3;
 }
+.fp-resize-handle.br { right: -7px; bottom: -7px; }
+.fp-resize-handle.tl { left: -7px; top: -7px; }
 .fp-table {
   position: absolute;
   width: 46px;
@@ -1055,6 +1056,89 @@ header.top a:hover { color: var(--gold-soft); border-color: var(--gold); }
   background: radial-gradient(circle at 32% 28%, #a34848, var(--wine) 72%);
   color: white;
 }
+
+/* ==================== Update log ==================== */
+.updates-btn {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 7px 14px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--gold);
+  background: transparent;
+  color: var(--gold-soft);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.updates-btn:hover { background: var(--gold); color: var(--bg); }
+
+.landing-topbar {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  margin-bottom: 14px;
+}
+
+.updates-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+.update-item {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg-elevated);
+  overflow: hidden;
+}
+.update-item-head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 14px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-body);
+}
+.update-item-title {
+  font-weight: 700;
+  color: var(--ink);
+  font-size: 0.9rem;
+}
+.update-item-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.update-item-date {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.update-item-arrow {
+  color: var(--gold);
+  font-size: 0.7rem;
+  transition: transform 0.15s ease;
+}
+.update-item.open .update-item-arrow { transform: rotate(180deg); }
+.update-item-info {
+  display: none;
+  padding: 0 14px 14px;
+  margin-top: -4px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+.update-item.open .update-item-info { display: block; }
 
 .fp-legend {
   font-size: 0.82rem;
