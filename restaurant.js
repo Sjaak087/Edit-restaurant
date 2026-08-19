@@ -256,8 +256,7 @@ const HEADER_COLORS = [
 ];
 
 function applyHeaderColor(color) {
-  const headerEl = document.querySelector('header.top');
-  if (headerEl) headerEl.style.background = color || '';
+  document.documentElement.style.setProperty('--bg', color || '#171310');
   const preview = document.getElementById('info-header-color');
   if (preview) preview.style.background = color || 'var(--bg)';
 }
