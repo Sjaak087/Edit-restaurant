@@ -14,7 +14,10 @@
 <div class="wrap app-wrap">
   <header class="top">
     <h1 id="restaurant-title">Restaurant</h1>
-    <a href="index.html">← Restaurants</a>
+    <div class="header-actions">
+      <button type="button" class="updates-btn" id="btn-updates">🆕 Update log</button>
+      <a href="index.html">← Restaurants</a>
+    </div>
   </header>
 
   <nav class="tab-nav">
@@ -90,7 +93,7 @@
         <button type="button" class="fp-tool-btn" id="tool-add-table">➕ Tafel</button>
         <button type="button" class="fp-tool-btn danger" id="tool-delete">🗑 Verwijderen</button>
       </div>
-      <div class="fp-hint" id="fp-hint">Sleep tafels en gebieden om ze te verplaatsen. Sleep de hoek van een gebied om het te vergroten.</div>
+      <div class="fp-hint" id="fp-hint">Sleep tafels en gebieden om ze te verplaatsen. Sleep een hoek van een gebied (linksboven of rechtsonder) om het aan die kant te vergroten of verkleinen.</div>
       <div class="floorplan-viewport">
         <div class="floorplan-canvas" id="edit-canvas"></div>
       </div>
@@ -211,6 +214,17 @@
   </div>
 </div>
 
+<!-- Modal: update log -->
+<div class="modal-overlay" id="modal-updates">
+  <div class="modal-box wide">
+    <div class="modal-title">📋 Update log</div>
+    <div class="updates-list" id="updates-list"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" data-close>Sluiten</button>
+    </div>
+  </div>
+</div>
+
 <!-- Modal: product toevoegen/bewerken -->
 <div class="modal-overlay" id="modal-product">
   <div class="modal-box wide">
@@ -237,6 +251,7 @@
 <script src="firebase-config.js"></script>
 <script src="emojis.js?v=1787128676"></script>
 <script src="restaurant.js?v=1787128676"></script>
+<script src="updates.js?v=1787128676"></script>
 
 </body>
 </html>
