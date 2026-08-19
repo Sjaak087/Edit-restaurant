@@ -81,6 +81,12 @@ restRef.child('leden/' + myMemberId).once('value').then(snap => {
   return snap.val().tabs;
 }).then(tabs => {
   applyTabPermissions(tabs);
+  if (isOwner) {
+    // Zorg dat de eigenaar zichzelf meteen in de ledenlijst ziet, ook nog vóórdat
+    // het live-abonnement op /leden zijn eerste update heeft binnengekregen.
+    LEDEN_STATE[myMemberId] = LEDEN_STATE[myMemberId] || { rol: 'eigenaar', tabs: tabs, toegevoegdOp: Date.now() };
+    renderLedenList();
+  }
   // Pas ná het aanmaken/ophalen van dit lid-record live gaan luisteren, anders kan het
   // even (foutief) lijken alsof je bent gekickt terwijl het record nog geschreven wordt.
   restRef.child('leden/' + myMemberId).on('value', snap => {
