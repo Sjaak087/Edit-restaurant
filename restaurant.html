@@ -119,6 +119,13 @@
         </span>
       </div>
       <div class="settings-info-row">
+        <span>Kleur bovenbalk</span>
+        <span class="settings-info-value-group">
+          <span class="color-swatch-preview" id="info-header-color"></span>
+          <button type="button" class="mini-btn edit" id="btn-header-color" style="display:none;">Wijzigen</button>
+        </span>
+      </div>
+      <div class="settings-info-row">
         <span>Join-code</span>
         <span class="code-display small" id="info-code">—</span>
       </div>
@@ -210,6 +217,18 @@
     <div class="modal-actions">
       <button type="button" class="btn-secondary" data-close>Annuleren</button>
       <button type="button" class="btn-primary" id="table-number-confirm">Opslaan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: kleur bovenbalk kiezen -->
+<div class="modal-overlay" id="modal-header-color">
+  <div class="modal-box">
+    <div class="modal-title">Kleur van de bovenbalk</div>
+    <p class="modal-text">Kies een kleur voor de balk bovenin (waar de restaurantnaam staat).</p>
+    <div class="color-palette" id="color-palette"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" data-close>Sluiten</button>
     </div>
   </div>
 </div>
