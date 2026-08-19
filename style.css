@@ -1019,6 +1019,12 @@ header.top a:hover { color: var(--gold-soft); border-color: var(--gold); }
 
 /* ==================== Plattegrond ==================== */
 .floorplan-viewport {
+  --bg: #171310;
+  --bg-elevated: #211a14;
+  --card: #29211a;
+  --line: #473b2c;
+  --ink: #f3ead9;
+  --muted: #a99a83;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--card);
