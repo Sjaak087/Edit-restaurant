@@ -223,6 +223,7 @@ if (!isOwner) {
   document.getElementById('producten-readonly-note').style.display = 'block';
 } else {
   document.getElementById('btn-rename-restaurant').style.display = '';
+  document.getElementById('btn-header-color').style.display = '';
 }
 
 document.getElementById('btn-rename-restaurant').addEventListener('click', () => {
@@ -245,6 +246,55 @@ document.getElementById('rename-restaurant-confirm').addEventListener('click', (
     errorEl.textContent = 'Er ging iets mis, probeer opnieuw.';
   });
 });
+// ==================== Kleur bovenbalk ====================
+const HEADER_COLORS = [
+  '#171310', '#211a14', '#3a2f24', '#5c4a34', '#8c3a3a',
+  '#6e2c2c', '#a8482f', '#c9793a', '#c9a24b', '#e0b84a',
+  '#6f8f5c', '#3f6b4f', '#2f6e6e', '#356b8c', '#2c4a75',
+  '#3a3a75', '#5c3a75', '#7a3a63', '#8c4a63', '#b05f7a',
+  '#4a4438', '#5a5a5a', '#787066', '#2a2115', '#f2e8d5'
+];
+
+function applyHeaderColor(color) {
+  const headerEl = document.querySelector('header.top');
+  if (headerEl) headerEl.style.background = color || '';
+  const preview = document.getElementById('info-header-color');
+  if (preview) preview.style.background = color || 'var(--bg)';
+}
+
+const colorPaletteEl = document.getElementById('color-palette');
+if (colorPaletteEl) {
+  colorPaletteEl.innerHTML = HEADER_COLORS.map(c =>
+    `<button type="button" class="color-swatch" data-color="${c}" style="background:${c};"></button>`
+  ).join('');
+  colorPaletteEl.querySelectorAll('.color-swatch').forEach(sw => {
+    sw.addEventListener('click', () => {
+      const color = sw.dataset.color;
+      restRef.child('headerColor').set(color).then(() => {
+        closeModal('modal-header-color');
+      }).catch(err => {
+        console.error(err);
+        alert('Er ging iets mis bij het opslaan van de kleur.');
+      });
+    });
+  });
+}
+
+restRef.child('headerColor').on('value', snap => {
+  const color = snap.val();
+  applyHeaderColor(color);
+  if (colorPaletteEl) {
+    colorPaletteEl.querySelectorAll('.color-swatch').forEach(sw => {
+      sw.classList.toggle('selected', !!color && sw.dataset.color.toLowerCase() === String(color).toLowerCase());
+    });
+  }
+});
+
+const btnHeaderColor = document.getElementById('btn-header-color');
+if (btnHeaderColor) {
+  btnHeaderColor.addEventListener('click', () => openModal('modal-header-color'));
+}
+
 document.querySelectorAll('.subtab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.subtab-btn').forEach(b => b.classList.remove('active'));
