@@ -80,6 +80,7 @@
     <div class="settings-subnav">
       <button type="button" class="subtab-btn active" data-subtab="plattegrond">Plattegrond</button>
       <button type="button" class="subtab-btn" data-subtab="producten">Producten</button>
+      <button type="button" class="subtab-btn" id="subtab-btn-leden" data-subtab="leden">Leden</button>
       <button type="button" class="subtab-btn" data-subtab="algemeen">Algemeen</button>
     </div>
 
@@ -99,6 +100,11 @@
       <p class="modal-text" id="producten-readonly-note" style="display:none;">Alleen de eigenaar kan producten toevoegen, bewerken of verwijderen.</p>
       <button type="button" class="primary-btn" id="btn-add-product">+ Nieuw product</button>
       <div class="settings-product-list" id="settings-product-list"></div>
+    </div>
+
+    <div class="subtab-panel" id="subpanel-leden">
+      <p class="modal-text">Bepaal per lid welke tabbladen zichtbaar zijn. Wijzigingen gaan direct in. Verwijder je iemand, dan wordt de join-code automatisch vernieuwd zodat diegene niet zomaar opnieuw kan joinen.</p>
+      <div class="leden-list" id="leden-list"></div>
     </div>
 
     <div class="subtab-panel" id="subpanel-algemeen">
