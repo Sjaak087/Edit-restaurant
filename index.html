@@ -12,6 +12,9 @@
 <body>
 
 <div class="landing-wrap">
+  <div class="landing-topbar">
+    <button type="button" class="updates-btn" id="btn-updates">🆕 Update log</button>
+  </div>
   <div class="landing-emblem">🍽</div>
   <h1 class="brand-name">Bestelsysteem</h1>
   <p class="brand-sub">Kies je restaurant</p>
@@ -56,6 +59,17 @@
   </div>
 </div>
 
+<!-- Modal: update log -->
+<div class="modal-overlay" id="modal-updates">
+  <div class="modal-box wide">
+    <div class="modal-title">📋 Update log</div>
+    <div class="updates-list" id="updates-list"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" data-close>Sluiten</button>
+    </div>
+  </div>
+</div>
+
 <!-- Modal: code tonen na aanmaken -->
 <div class="modal-overlay" id="modal-code-shown">
   <div class="modal-box">
@@ -72,6 +86,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
 <script src="firebase-config.js"></script>
 <script src="landing.js?v=1787128676"></script>
+<script src="updates.js?v=1787128676"></script>
 
 </body>
 </html>
