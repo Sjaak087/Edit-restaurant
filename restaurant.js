@@ -439,9 +439,16 @@ function renderCanvas(canvasEl, { editable, onTableClick }) {
     if (editable) {
       el.dataset.type = 'area';
       el.dataset.id = id;
-      const handle = document.createElement('div');
-      handle.className = 'fp-resize-handle';
-      el.appendChild(handle);
+      // Twee sleepgrepen: linksboven én rechtsonder, zodat een gebied aan beide
+      // kanten vergroot/verkleind kan worden (niet alleen naar rechtsonder toe).
+      const handleTl = document.createElement('div');
+      handleTl.className = 'fp-resize-handle tl';
+      handleTl.dataset.corner = 'tl';
+      el.appendChild(handleTl);
+      const handleBr = document.createElement('div');
+      handleBr.className = 'fp-resize-handle br';
+      handleBr.dataset.corner = 'br';
+      el.appendChild(handleBr);
     }
     canvasEl.appendChild(el);
   });
@@ -659,26 +666,42 @@ function onResizeStart(e) {
   e.preventDefault();
   e.stopPropagation();
   const handle = e.currentTarget;
+  const corner = handle.dataset.corner; // 'tl' of 'br'
   const areaEl = handle.parentElement;
   const id = areaEl.dataset.id;
   handle.setPointerCapture(e.pointerId);
 
+  // De hoek tegenover de sleepgreep blijft vast op zijn plek tijdens het slepen.
+  const start = AREAS_STATE[id];
+  const fixedRight = start.x + start.w;
+  const fixedBottom = start.y + start.h;
+
+  function computeRect(pos) {
+    if (corner === 'tl') {
+      const x = Math.max(0, Math.min(pos.x, fixedRight - 6));
+      const y = Math.max(0, Math.min(pos.y, fixedBottom - 6));
+      return { x, y, w: fixedRight - x, h: fixedBottom - y };
+    }
+    // 'br': linkerbovenhoek blijft vast, zoals voorheen
+    const w = Math.max(6, pos.x - start.x);
+    const h = Math.max(6, pos.y - start.y);
+    return { x: start.x, y: start.y, w, h };
+  }
+
   const move = (ev) => {
     const pos = getPercentPos(ev.clientX, ev.clientY);
-    const area = AREAS_STATE[id];
-    const w = Math.max(6, pos.x - area.x);
-    const h = Math.max(6, pos.y - area.y);
-    areaEl.style.width = w + '%';
-    areaEl.style.height = h + '%';
+    const r = computeRect(pos);
+    areaEl.style.left = r.x + '%';
+    areaEl.style.top = r.y + '%';
+    areaEl.style.width = r.w + '%';
+    areaEl.style.height = r.h + '%';
   };
   const up = (ev) => {
     handle.removeEventListener('pointermove', move);
     handle.removeEventListener('pointerup', up);
     const pos = getPercentPos(ev.clientX, ev.clientY);
-    const area = AREAS_STATE[id];
-    const w = Math.max(6, pos.x - area.x);
-    const h = Math.max(6, pos.y - area.y);
-    restRef.child('floorplan/areas/' + id).update({ w, h });
+    const r = computeRect(pos);
+    restRef.child('floorplan/areas/' + id).update(r);
   };
   handle.addEventListener('pointermove', move);
   handle.addEventListener('pointerup', up);
