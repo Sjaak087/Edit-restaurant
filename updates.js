@@ -13,13 +13,8 @@ const UPDATES = [
   {
     title: 'Gebied vergroten aan beide kanten',
     date: '19-08-2026',
-    info: 'Een gebied op de plattegrond kon je alleen groter maken door de rechteronderhoek te slepen. Elk gebied heeft nu ook een greep linksboven, zodat je het aan beide kanten kunt vergroten of verkleinen.'
+    info: ''
   },
-  {
-    title: 'Update log toegevoegd',
-    date: '19-08-2026',
-    info: 'Er is een "Update log" knop toegevoegd bovenin de balk. Klik erop om te zien wat er allemaal is veranderd of toegevoegd aan het systeem. Klik op een update in de lijst om de volledige uitleg te lezen.'
-  }
 ];
 
 // ==================== Weergave (niet nodig om aan te passen) ====================
