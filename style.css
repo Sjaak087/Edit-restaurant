@@ -60,11 +60,9 @@ header.top {
   align-items: baseline;
   justify-content: space-between;
   margin-bottom: 34px;
-  padding: 14px 18px 20px;
+  padding-bottom: 20px;
   border-bottom: 1px solid var(--line);
-  border-radius: var(--radius);
   position: relative;
-  transition: background-color 0.2s ease;
 }
 header.top::after {
   content: "";
