@@ -11,9 +11,9 @@
 
 const UPDATES = [
   {
-    title: 'Gebied vergroten aan beide kanten',
+    title: 'Grote Update met veel nieuwe features',
     date: '19-08-2026',
-    info: ''
+    info: 'Ten eerste hebben we toegevoegd dat je je leden kunt beheren en kunt kiezen in welke tabs je leden kunnen komen bijv. bestellen en historie dan kunnen ze alleen in de historie ten tweede hebben we een update log toegevoegd waar je de updates kunt zien die we doen ten derde hebben we toegevoegd dat je leden kunt kicken en dan refresht de code automatisch en ten vierde hebben we gefixt dat je nu aan beide kanten een gebied kunt vergroten en ten vijfde hebben we de stijl een beetje verandert waardoor het er nu stukken cleaner uitziet '
   },
 ];
 
