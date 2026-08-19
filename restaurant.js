@@ -255,10 +255,41 @@ const HEADER_COLORS = [
   '#4a4438', '#5a5a5a', '#787066', '#2a2115', '#f2e8d5'
 ];
 
+function hexToRgb(hex) {
+  const clean = (hex || '').replace('#', '');
+  const full = clean.length === 3 ? clean.split('').map(c => c + c).join('') : clean;
+  const num = parseInt(full, 16);
+  return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
+}
+function mix(hex, target, amt) {
+  const c = hexToRgb(hex);
+  const t = hexToRgb(target);
+  const r = Math.round(c.r + (t.r - c.r) * amt);
+  const g = Math.round(c.g + (t.g - c.g) * amt);
+  const b = Math.round(c.b + (t.b - c.b) * amt);
+  return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('');
+}
+function relativeLuminance(hex) {
+  const { r, g, b } = hexToRgb(hex);
+  const norm = [r, g, b].map(v => {
+    v /= 255;
+    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  });
+  return 0.2126 * norm[0] + 0.7152 * norm[1] + 0.0722 * norm[2];
+}
+
 function applyHeaderColor(color) {
-  document.documentElement.style.setProperty('--bg', color || '#171310');
+  const root = document.documentElement.style;
+  const bg = color || '#171310';
+  const isLight = relativeLuminance(bg) > 0.5;
+  root.setProperty('--bg', bg);
+  root.setProperty('--bg-elevated', mix(bg, isLight ? '#000000' : '#ffffff', 0.08));
+  root.setProperty('--card', mix(bg, isLight ? '#000000' : '#ffffff', 0.16));
+  root.setProperty('--line', mix(bg, isLight ? '#000000' : '#ffffff', 0.32));
+  root.setProperty('--ink', isLight ? '#241c12' : '#f3ead9');
+  root.setProperty('--muted', isLight ? '#5a4c38' : '#a99a83');
   const preview = document.getElementById('info-header-color');
-  if (preview) preview.style.background = color || 'var(--bg)';
+  if (preview) preview.style.background = bg;
 }
 
 const colorPaletteEl = document.getElementById('color-palette');
