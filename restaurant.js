@@ -218,6 +218,7 @@ if (!isOwner) {
   document.getElementById('tool-add-area').style.display = 'none';
   document.getElementById('tool-add-table').style.display = 'none';
   document.getElementById('tool-delete').style.display = 'none';
+  document.getElementById('fp-gridsize-row').style.display = 'none';
   document.getElementById('fp-hint').textContent = 'Alleen de eigenaar kan de plattegrond aanpassen.';
   document.getElementById('btn-add-product').style.display = 'none';
   document.getElementById('producten-readonly-note').style.display = 'block';
@@ -480,6 +481,49 @@ function renderSettingsProducts() {
 // ==================== Plattegrond (live data) ====================
 let AREAS_STATE = {};  // id -> {name, x, y, w, h}
 let TABLES_STATE = {}; // id -> {number, x, y}
+
+// ---- Grootte van de plattegrond (aantal vierkantjes) ----
+const GRID_MIN = 10;
+const GRID_MAX = 40;
+const GRID_STEP = 2;
+const GRID_DEFAULT = 20; // komt overeen met de oorspronkelijke vaste 24px-vierkantjes
+let currentGridSize = GRID_DEFAULT;
+
+function applyGridSize(size) {
+  const n = Math.max(GRID_MIN, Math.min(GRID_MAX, size || GRID_DEFAULT));
+  currentGridSize = n;
+  const cellPct = 100 / n;
+  const scale = Math.max(0.45, Math.min(1.8, GRID_DEFAULT / n));
+  [document.getElementById('order-canvas'), document.getElementById('edit-canvas')].forEach(canvasEl => {
+    if (!canvasEl) return;
+    canvasEl.style.backgroundSize = `${cellPct}% ${cellPct}%`;
+    canvasEl.style.setProperty('--fp-scale', scale);
+  });
+  const valueEl = document.getElementById('grid-size-value');
+  if (valueEl) valueEl.textContent = `${n} × ${n}`;
+  const minusBtn = document.getElementById('grid-size-minus');
+  const plusBtn = document.getElementById('grid-size-plus');
+  if (minusBtn) minusBtn.disabled = n <= GRID_MIN;
+  if (plusBtn) plusBtn.disabled = n >= GRID_MAX;
+}
+applyGridSize(GRID_DEFAULT);
+
+restRef.child('floorplan/gridSize').on('value', snap => {
+  applyGridSize(snap.val() || GRID_DEFAULT);
+});
+
+const gridSizeMinusBtn = document.getElementById('grid-size-minus');
+if (gridSizeMinusBtn) {
+  gridSizeMinusBtn.addEventListener('click', () => {
+    restRef.child('floorplan/gridSize').set(Math.max(GRID_MIN, currentGridSize - GRID_STEP));
+  });
+}
+const gridSizePlusBtn = document.getElementById('grid-size-plus');
+if (gridSizePlusBtn) {
+  gridSizePlusBtn.addEventListener('click', () => {
+    restRef.child('floorplan/gridSize').set(Math.min(GRID_MAX, currentGridSize + GRID_STEP));
+  });
+}
 
 restRef.child('floorplan/areas').on('value', snap => {
   AREAS_STATE = snap.val() || {};
