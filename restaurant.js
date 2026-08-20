@@ -357,13 +357,30 @@ function productList() {
   return Object.entries(PRODUCTS_STATE).map(([key, p]) => ({ key, ...p }));
 }
 
-// Geeft de lijst met aanvink-opmerkingen voor een product terug. Ondersteunt ook
-// nog producten die met de oude "met/zonder ijsklontjes"-schakelaar zijn aangemaakt.
+// Geeft de lijst met aanvink-opmerkingen voor een product terug, als objecten
+// {label, emoji}. Ondersteunt ook nog producten die met de oude opzet zijn
+// aangemaakt (opties als losse strings, of de oude "met/zonder ijsklontjes"-schakelaar).
 function productOptions(p) {
   if (!p) return [];
-  if (Array.isArray(p.opties) && p.opties.length > 0) return p.opties;
-  if (p.ice) return ['Zonder ijsklontjes'];
+  if (Array.isArray(p.opties) && p.opties.length > 0) {
+    return p.opties.map(o => typeof o === 'string' ? { label: o, emoji: null } : { label: o.label, emoji: o.emoji || null });
+  }
+  if (p.ice) return [{ label: 'Zonder ijsklontjes', emoji: '🧊' }];
   return [];
+}
+
+// Verzamelt alle al eerder gebruikte opmerkingen (over alle producten heen),
+// zodat je die bij een ander product kunt hergebruiken zonder opnieuw te typen.
+function allKnownOptions() {
+  const map = new Map();
+  productList().forEach(p => {
+    productOptions(p).forEach(o => {
+      if (o.label && !map.has(o.label.toLowerCase())) {
+        map.set(o.label.toLowerCase(), o);
+      }
+    });
+  });
+  return Array.from(map.values()).sort((a, b) => a.label.localeCompare(b.label, 'nl'));
 }
 
 // ---- Emoji-picker opbouwen ----
@@ -404,7 +421,29 @@ function markEmojiSelected(em) {
 
 // ---- Product toevoegen/bewerken modal ----
 let editingProductKey = null;
-let editingProductOptions = [];
+let editingProductOptions = []; // array van {label, emoji}
+
+// Klein vast setje emoji's om een opmerking mee te markeren.
+const OPTION_EMOJIS = ['🧊', '🧴', '🥛', '🌶️', '🍋', '➕', '🚫', '✨'];
+let selectedOptionEmoji = null;
+
+function buildOptionEmojiPicker() {
+  const picker = document.getElementById('option-emoji-picker');
+  if (!picker) return;
+  picker.innerHTML = '';
+  OPTION_EMOJIS.forEach(em => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'emoji-opt';
+    btn.textContent = em;
+    btn.addEventListener('click', () => {
+      selectedOptionEmoji = (selectedOptionEmoji === em) ? null : em;
+      picker.querySelectorAll('.emoji-opt').forEach(b => b.classList.toggle('selected', b === btn && selectedOptionEmoji === em));
+    });
+    picker.appendChild(btn);
+  });
+}
+buildOptionEmojiPicker();
 
 function renderProductOptionsEditor() {
   const list = document.getElementById('product-options-list');
@@ -413,32 +452,76 @@ function renderProductOptionsEditor() {
     const chip = document.createElement('span');
     chip.className = 'product-option-chip';
     chip.innerHTML = `<span></span><button type="button" title="Verwijderen">✕</button>`;
-    chip.querySelector('span').textContent = opt;
+    chip.querySelector('span').textContent = `${opt.emoji ? opt.emoji + ' ' : ''}${opt.label}`;
     chip.querySelector('button').addEventListener('click', () => {
       editingProductOptions.splice(i, 1);
       renderProductOptionsEditor();
+      renderExistingOptionsPicker();
     });
     list.appendChild(chip);
   });
+}
+
+// Toont de al eerder gebruikte opmerkingen (van andere producten) als klikbare
+// chips, zodat je ze in één klik kunt hergebruiken zonder opnieuw te typen.
+function renderExistingOptionsPicker() {
+  const wrap = document.getElementById('product-option-existing');
+  if (!wrap) return;
+  const known = allKnownOptions().filter(o => !editingProductOptions.some(e => e.label.toLowerCase() === o.label.toLowerCase()));
+  if (known.length === 0) {
+    wrap.innerHTML = '';
+    return;
+  }
+  wrap.innerHTML = '<div class="modal-label" style="margin-top:0;">Al bestaande opmerkingen (klik om toe te voegen)</div>';
+  const row = document.createElement('div');
+  row.className = 'product-options-list';
+  known.forEach(o => {
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'product-option-chip existing';
+    chip.textContent = `${o.emoji ? o.emoji + ' ' : ''}${o.label}`;
+    chip.addEventListener('click', () => {
+      editingProductOptions.push({ label: o.label, emoji: o.emoji || null });
+      renderProductOptionsEditor();
+      renderExistingOptionsPicker();
+    });
+    row.appendChild(chip);
+  });
+  wrap.appendChild(row);
+}
+
+function resetOptionEmojiPicker() {
+  selectedOptionEmoji = null;
+  const picker = document.getElementById('option-emoji-picker');
+  if (picker) picker.querySelectorAll('.emoji-opt').forEach(b => b.classList.remove('selected'));
 }
 
 function addProductOption() {
   const input = document.getElementById('product-option-input');
   const val = input.value.trim();
   if (!val) return;
-  if (editingProductOptions.some(o => o.toLowerCase() === val.toLowerCase())) {
+  if (editingProductOptions.some(o => o.label.toLowerCase() === val.toLowerCase())) {
     input.value = '';
     return;
   }
-  editingProductOptions.push(val);
+  editingProductOptions.push({ label: val, emoji: selectedOptionEmoji });
   input.value = '';
+  resetOptionEmojiPicker();
   renderProductOptionsEditor();
+  renderExistingOptionsPicker();
   input.focus();
 }
 
 document.getElementById('product-option-add-btn').addEventListener('click', addProductOption);
 document.getElementById('product-option-input').addEventListener('keydown', (e) => {
   if (e.key === 'Enter') { e.preventDefault(); addProductOption(); }
+});
+
+document.getElementById('product-option-open-btn').addEventListener('click', () => {
+  const panel = document.getElementById('product-option-picker');
+  const opening = panel.style.display === 'none';
+  panel.style.display = opening ? 'block' : 'none';
+  if (opening) renderExistingOptionsPicker();
 });
 
 document.getElementById('btn-add-product').addEventListener('click', () => {
@@ -448,6 +531,8 @@ document.getElementById('btn-add-product').addEventListener('click', () => {
   document.getElementById('product-price-input').value = '';
   document.getElementById('product-option-input').value = '';
   editingProductOptions = [];
+  resetOptionEmojiPicker();
+  document.getElementById('product-option-picker').style.display = 'none';
   renderProductOptionsEditor();
   document.getElementById('product-error').textContent = '';
   markEmojiSelected(null);
@@ -462,7 +547,9 @@ function openEditProduct(key) {
   document.getElementById('product-name-input').value = p.label || '';
   document.getElementById('product-price-input').value = p.price != null ? p.price : '';
   document.getElementById('product-option-input').value = '';
-  editingProductOptions = productOptions(p).slice();
+  editingProductOptions = productOptions(p).map(o => ({ label: o.label, emoji: o.emoji || null }));
+  resetOptionEmojiPicker();
+  document.getElementById('product-option-picker').style.display = 'none';
   renderProductOptionsEditor();
   document.getElementById('product-error').textContent = '';
   markEmojiSelected(p.emoji || null);
@@ -508,7 +595,7 @@ function renderSettingsProducts() {
         <span class="settings-product-name">${escapeHtml(p.label)}</span>
         <span class="menu-dots"></span>
         <span class="settings-product-price">${formatPrice(p.price)}</span>
-        ${opties.map(o => `<span class="ice-badge">📝 ${escapeHtml(o)}</span>`).join('')}
+        ${opties.map(o => `<span class="ice-badge">${o.emoji || '📝'} ${escapeHtml(o.label)}</span>`).join('')}
       </div>
       ${isOwner ? `<div class="settings-product-actions">
         <button type="button" class="mini-btn edit" data-key="${p.key}">Bewerken</button>
@@ -1019,15 +1106,15 @@ function renderOrderOptionToggles(key) {
       tag.textContent = `#${i + 1}`;
       row.appendChild(tag);
     }
-    opties.forEach(optLabel => {
-      const active = selected.includes(optLabel);
+    opties.forEach(opt => {
+      const active = selected.includes(opt.label);
       const chip = document.createElement('button');
       chip.type = 'button';
       chip.className = 'ice-chip' + (active ? ' met' : '');
-      chip.textContent = `${active ? '✅ ' : ''}${optLabel}`;
+      chip.textContent = `${active ? '✅ ' : (opt.emoji ? opt.emoji + ' ' : '')}${opt.label}`;
       chip.addEventListener('click', () => {
-        const idx = orderItemOptions[key][i].indexOf(optLabel);
-        if (idx === -1) orderItemOptions[key][i].push(optLabel);
+        const idx = orderItemOptions[key][i].indexOf(opt.label);
+        if (idx === -1) orderItemOptions[key][i].push(opt.label);
         else orderItemOptions[key][i].splice(idx, 1);
         renderOrderOptionToggles(key);
       });
