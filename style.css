@@ -492,7 +492,12 @@ header.top a:hover { color: var(--gold-soft); border-color: var(--gold); }
   line-height: 1;
   padding: 2px 4px;
 }
-.product-option-chip button:hover { color: #d99a9a; }
+.product-option-chip .edit-opt:hover { color: var(--gold-soft); }
+.product-option-chip .del-opt:hover { color: #d99a9a; }
+.product-option-chip.editing {
+  border-color: var(--gold-soft);
+  background: rgba(201, 162, 75, 0.22);
+}
 .product-options-add {
   display: flex;
   gap: 8px;
