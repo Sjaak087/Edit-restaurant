@@ -528,15 +528,39 @@ if (gridSizePlusBtn) {
 // Past de opgeslagen grootte van alle gebieden proportioneel aan zodat er, relatief
 // gezien, precies zoveel tafels in een gebied blijven passen als voorheen: als de
 // vierkantjes kleiner worden (meer vierkantjes), krimpen de gebieden mee in dezelfde
-// verhouding als de tafels. De positie (linkerbovenhoek) van een gebied blijft vast.
+// verhouding als de tafels. De linkerbovenhoek van een gebied blijft vast. Tafels die
+// binnen een gebied liggen, verschuiven mee op exact dezelfde relatieve plek in dat
+// gebied, zodat ze nooit over de rand heen schuiven.
 function changeGridSize(nextN) {
   if (nextN === currentGridSize) return;
   const ratio = currentGridSize / nextN;
   const updates = { 'floorplan/gridSize': nextN };
-  Object.entries(AREAS_STATE).forEach(([id, area]) => {
-    updates['floorplan/areas/' + id + '/w'] = Math.max(3, area.w * ratio);
-    updates['floorplan/areas/' + id + '/h'] = Math.max(3, area.h * ratio);
+  const oldAreas = AREAS_STATE;
+  const appliedRatios = {}; // id -> { rw, rh } (de werkelijk toegepaste verhouding, na begrenzing aan de rand van de plattegrond)
+
+  Object.entries(oldAreas).forEach(([id, area]) => {
+    const maxW = Math.max(3, 100 - area.x);
+    const maxH = Math.max(3, 100 - area.y);
+    const newW = Math.max(3, Math.min(area.w * ratio, maxW));
+    const newH = Math.max(3, Math.min(area.h * ratio, maxH));
+    updates['floorplan/areas/' + id + '/w'] = newW;
+    updates['floorplan/areas/' + id + '/h'] = newH;
+    appliedRatios[id] = { rw: newW / area.w, rh: newH / area.h };
   });
+
+  Object.entries(TABLES_STATE).forEach(([tid, table]) => {
+    const entry = Object.entries(oldAreas).find(([, a]) =>
+      table.x >= a.x && table.x <= a.x + a.w && table.y >= a.y && table.y <= a.y + a.h
+    );
+    if (!entry) return;
+    const [areaId, area] = entry;
+    const r = appliedRatios[areaId];
+    const newX = area.x + (table.x - area.x) * r.rw;
+    const newY = area.y + (table.y - area.y) * r.rh;
+    updates['floorplan/tables/' + tid + '/x'] = Math.max(0, Math.min(100, newX));
+    updates['floorplan/tables/' + tid + '/y'] = Math.max(0, Math.min(100, newY));
+  });
+
   restRef.update(updates);
 }
 
