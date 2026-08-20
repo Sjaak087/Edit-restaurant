@@ -10,16 +10,17 @@
 // },
 
 const UPDATES = [
+    {
+    title: 'Kleine update met een paar veranderingen', 
+    date: '20-08-2026', 
+    info: 'test'
+  }, 
   {
     title: 'Grote Update met veel nieuwe features',
     date: '19-08-2026',
     info: 'Ten eerste heb ik toegevoegd dat je je leden kunt beheren en kunt kiezen in welke tabs je leden kunnen komen bijv bestellen en historie dan kunnen ze alleen in de historie ten tweede heb ik een update log toegevoegd waar je de updates kunt zien die we doen ten derde heb ik toegevoegd dat je leden kunt kicken en dan refresht de code automatisch en ten vierde heb ik gefixt dat je nu aan beide kanten een gebied kunt vergroten en ten vijfde heb ik de stijl een beetje verandert waardoor het er nu stukken cleaner uitziet ik heb ook nog een paar andere bugs gefixt de nieuwe update komt uit binnenkort over een paar dagen!'
   },
-  {
-    title: 'Kleine update met een paar veranderingen', 
-    date: '20-08-2026', 
-    info: 'test'
-  }, 
+
 ];
 
 // ==================== Weergave (niet nodig om aan te passen) ====================
