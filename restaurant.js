@@ -359,13 +359,12 @@ function productList() {
 
 // Geeft de lijst met aanvink-opmerkingen voor een product terug, als objecten
 // {label, emoji}. Ondersteunt ook nog producten die met de oude opzet zijn
-// aangemaakt (opties als losse strings, of de oude "met/zonder ijsklontjes"-schakelaar).
+// aangemaakt (opties als losse strings in plaats van objecten).
 function productOptions(p) {
   if (!p) return [];
   if (Array.isArray(p.opties) && p.opties.length > 0) {
     return p.opties.map(o => typeof o === 'string' ? { label: o, emoji: null } : { label: o.label, emoji: o.emoji || null });
   }
-  if (p.ice) return [{ label: 'Zonder ijsklontjes', emoji: '🧊' }];
   return [];
 }
 
@@ -450,11 +449,14 @@ function renderProductOptionsEditor() {
   list.innerHTML = '';
   editingProductOptions.forEach((opt, i) => {
     const chip = document.createElement('span');
-    chip.className = 'product-option-chip';
-    chip.innerHTML = `<span></span><button type="button" title="Verwijderen">✕</button>`;
+    chip.className = 'product-option-chip' + (i === editingOptionIndex ? ' editing' : '');
+    chip.innerHTML = `<span></span><button type="button" class="edit-opt" title="Bewerken">✎</button><button type="button" class="del-opt" title="Verwijderen">✕</button>`;
     chip.querySelector('span').textContent = `${opt.emoji ? opt.emoji + ' ' : ''}${opt.label}`;
-    chip.querySelector('button').addEventListener('click', () => {
+    chip.querySelector('.edit-opt').addEventListener('click', () => startEditOption(i));
+    chip.querySelector('.del-opt').addEventListener('click', () => {
       editingProductOptions.splice(i, 1);
+      if (editingOptionIndex === i) cancelEditOption();
+      else if (editingOptionIndex !== null && i < editingOptionIndex) editingOptionIndex--;
       renderProductOptionsEditor();
       renderExistingOptionsPicker();
     });
@@ -496,10 +498,54 @@ function resetOptionEmojiPicker() {
   if (picker) picker.querySelectorAll('.emoji-opt').forEach(b => b.classList.remove('selected'));
 }
 
+function selectOptionEmoji(em) {
+  selectedOptionEmoji = em;
+  const picker = document.getElementById('option-emoji-picker');
+  if (picker) picker.querySelectorAll('.emoji-opt').forEach(b => b.classList.toggle('selected', b.textContent === em));
+}
+
+// Zet de opmerking-editor in "bewerken"-stand voor opmerking i: vult het
+// invoerveld en de emoji vooraf in, en verandert de knop naar "Opslaan wijziging".
+let editingOptionIndex = null;
+
+function startEditOption(i) {
+  const opt = editingProductOptions[i];
+  if (!opt) return;
+  editingOptionIndex = i;
+  document.getElementById('product-option-input').value = opt.label;
+  selectOptionEmoji(opt.emoji || null);
+  document.getElementById('product-option-picker').style.display = 'block';
+  document.getElementById('product-option-add-btn').textContent = '✓ Opslaan wijziging';
+  document.getElementById('product-option-cancel-edit-btn').style.display = 'inline-block';
+  renderProductOptionsEditor();
+  document.getElementById('product-option-input').focus();
+}
+
+function cancelEditOption() {
+  editingOptionIndex = null;
+  document.getElementById('product-option-input').value = '';
+  resetOptionEmojiPicker();
+  document.getElementById('product-option-add-btn').textContent = '+ Toevoegen';
+  document.getElementById('product-option-cancel-edit-btn').style.display = 'none';
+  renderProductOptionsEditor();
+}
+
+document.getElementById('product-option-cancel-edit-btn').addEventListener('click', cancelEditOption);
+
 function addProductOption() {
   const input = document.getElementById('product-option-input');
   const val = input.value.trim();
   if (!val) return;
+
+  if (editingOptionIndex !== null) {
+    const dup = editingProductOptions.some((o, idx) => idx !== editingOptionIndex && o.label.toLowerCase() === val.toLowerCase());
+    if (dup) { input.value = ''; return; }
+    editingProductOptions[editingOptionIndex] = { label: val, emoji: selectedOptionEmoji };
+    cancelEditOption();
+    renderExistingOptionsPicker();
+    return;
+  }
+
   if (editingProductOptions.some(o => o.label.toLowerCase() === val.toLowerCase())) {
     input.value = '';
     return;
@@ -531,6 +577,9 @@ document.getElementById('btn-add-product').addEventListener('click', () => {
   document.getElementById('product-price-input').value = '';
   document.getElementById('product-option-input').value = '';
   editingProductOptions = [];
+  editingOptionIndex = null;
+  document.getElementById('product-option-add-btn').textContent = '+ Toevoegen';
+  document.getElementById('product-option-cancel-edit-btn').style.display = 'none';
   resetOptionEmojiPicker();
   document.getElementById('product-option-picker').style.display = 'none';
   renderProductOptionsEditor();
@@ -548,6 +597,9 @@ function openEditProduct(key) {
   document.getElementById('product-price-input').value = p.price != null ? p.price : '';
   document.getElementById('product-option-input').value = '';
   editingProductOptions = productOptions(p).map(o => ({ label: o.label, emoji: o.emoji || null }));
+  editingOptionIndex = null;
+  document.getElementById('product-option-add-btn').textContent = '+ Toevoegen';
+  document.getElementById('product-option-cancel-edit-btn').style.display = 'none';
   resetOptionEmojiPicker();
   document.getElementById('product-option-picker').style.display = 'none';
   renderProductOptionsEditor();
