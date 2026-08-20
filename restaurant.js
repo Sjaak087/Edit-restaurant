@@ -484,7 +484,7 @@ let TABLES_STATE = {}; // id -> {number, x, y}
 
 // ---- Grootte van de plattegrond (aantal vierkantjes) ----
 const GRID_MIN = 10;
-const GRID_MAX = 40;
+const GRID_MAX = 50;
 const GRID_STEP = 1;
 const GRID_DEFAULT = 20; // komt overeen met de oorspronkelijke vaste 24px-vierkantjes
 let currentGridSize = GRID_DEFAULT;
