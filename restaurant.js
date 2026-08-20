@@ -507,11 +507,13 @@ function selectOptionEmoji(em) {
 // Zet de opmerking-editor in "bewerken"-stand voor opmerking i: vult het
 // invoerveld en de emoji vooraf in, en verandert de knop naar "Opslaan wijziging".
 let editingOptionIndex = null;
+let editingOptionOriginal = null; // { label, emoji } zoals de opmerking was vóór het bewerken
 
 function startEditOption(i) {
   const opt = editingProductOptions[i];
   if (!opt) return;
   editingOptionIndex = i;
+  editingOptionOriginal = { label: opt.label, emoji: opt.emoji || null };
   document.getElementById('product-option-input').value = opt.label;
   selectOptionEmoji(opt.emoji || null);
   document.getElementById('product-option-picker').style.display = 'block';
@@ -523,6 +525,7 @@ function startEditOption(i) {
 
 function cancelEditOption() {
   editingOptionIndex = null;
+  editingOptionOriginal = null;
   document.getElementById('product-option-input').value = '';
   resetOptionEmojiPicker();
   document.getElementById('product-option-add-btn').textContent = '+ Toevoegen';
@@ -532,6 +535,23 @@ function cancelEditOption() {
 
 document.getElementById('product-option-cancel-edit-btn').addEventListener('click', cancelEditOption);
 
+// Past een bewerkte opmerking direct toe op alle andere producten die dezelfde
+// opmerking (op naam, hoofdletterongevoelig) hebben, en schrijft dat meteen naar
+// Firebase — zodat de wijziging overal synchroon is, ook zonder die producten
+// zelf te openen en op te slaan.
+function syncOptionRenameAcrossProducts(oldLabel, newOpt, excludeKey) {
+  const oldLower = oldLabel.toLowerCase();
+  Object.entries(PRODUCTS_STATE).forEach(([key, p]) => {
+    if (key === excludeKey) return;
+    const opts = productOptions(p);
+    const idx = opts.findIndex(o => o.label.toLowerCase() === oldLower);
+    if (idx === -1) return;
+    const updated = opts.slice();
+    updated[idx] = { label: newOpt.label, emoji: newOpt.emoji || null };
+    restRef.child('products/' + key + '/opties').set(updated.map(o => ({ label: o.label, emoji: o.emoji || null })));
+  });
+}
+
 function addProductOption() {
   const input = document.getElementById('product-option-input');
   const val = input.value.trim();
@@ -540,7 +560,12 @@ function addProductOption() {
   if (editingOptionIndex !== null) {
     const dup = editingProductOptions.some((o, idx) => idx !== editingOptionIndex && o.label.toLowerCase() === val.toLowerCase());
     if (dup) { input.value = ''; return; }
-    editingProductOptions[editingOptionIndex] = { label: val, emoji: selectedOptionEmoji };
+    const newOpt = { label: val, emoji: selectedOptionEmoji };
+    const original = editingOptionOriginal;
+    editingProductOptions[editingOptionIndex] = newOpt;
+    if (original && (original.label.toLowerCase() !== newOpt.label.toLowerCase() || (original.emoji || null) !== (newOpt.emoji || null))) {
+      syncOptionRenameAcrossProducts(original.label, newOpt, editingProductKey);
+    }
     cancelEditOption();
     renderExistingOptionsPicker();
     return;
@@ -1299,13 +1324,24 @@ function productLabel(key) {
   return p ? p.label : key;
 }
 
+// Zoekt de huidige emoji van een opmerking bij een product op (op naam,
+// hoofdletterongevoelig), zodat de keuken altijd de actuele emoji ziet i.p.v.
+// een vast opmerking-icoontje.
+function optionEmoji(productKey, label) {
+  const p = PRODUCTS_STATE[productKey];
+  const opt = productOptions(p).find(o => o.label.toLowerCase() === label.toLowerCase());
+  return (opt && opt.emoji) ? opt.emoji : '📝';
+}
+
 function itemsToLinesHtml(order) {
   return Object.entries(order.items).map(([key, aantal]) => {
     const label = productLabel(key);
     const keuzes = order.itemOpties && order.itemOpties[key];
     if (keuzes && keuzes.length > 0) {
       return keuzes.map(selected => {
-        const suffix = selected && selected.length > 0 ? ` — 📝 ${selected.map(escapeHtml).join(', ')}` : '';
+        const suffix = selected && selected.length > 0
+          ? ` — ${selected.map(o => `${optionEmoji(key, o)} ${escapeHtml(o)}`).join(', ')}`
+          : '';
         return `<div class="item-line">1x ${escapeHtml(label)}${suffix}</div>`;
       }).join('');
     }
