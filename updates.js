@@ -10,7 +10,7 @@
 // },
 
 const UPDATES = [
-    {
+ {
     title: 'Kleine update met een paar veranderingen', 
     date: '20-08-2026', 
     info: 'test!'
