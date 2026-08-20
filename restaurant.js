@@ -515,14 +515,29 @@ restRef.child('floorplan/gridSize').on('value', snap => {
 const gridSizeMinusBtn = document.getElementById('grid-size-minus');
 if (gridSizeMinusBtn) {
   gridSizeMinusBtn.addEventListener('click', () => {
-    restRef.child('floorplan/gridSize').set(Math.max(GRID_MIN, currentGridSize - GRID_STEP));
+    changeGridSize(Math.max(GRID_MIN, currentGridSize - GRID_STEP));
   });
 }
 const gridSizePlusBtn = document.getElementById('grid-size-plus');
 if (gridSizePlusBtn) {
   gridSizePlusBtn.addEventListener('click', () => {
-    restRef.child('floorplan/gridSize').set(Math.min(GRID_MAX, currentGridSize + GRID_STEP));
+    changeGridSize(Math.min(GRID_MAX, currentGridSize + GRID_STEP));
   });
+}
+
+// Past de opgeslagen grootte van alle gebieden proportioneel aan zodat er, relatief
+// gezien, precies zoveel tafels in een gebied blijven passen als voorheen: als de
+// vierkantjes kleiner worden (meer vierkantjes), krimpen de gebieden mee in dezelfde
+// verhouding als de tafels. De positie (linkerbovenhoek) van een gebied blijft vast.
+function changeGridSize(nextN) {
+  if (nextN === currentGridSize) return;
+  const ratio = currentGridSize / nextN;
+  const updates = { 'floorplan/gridSize': nextN };
+  Object.entries(AREAS_STATE).forEach(([id, area]) => {
+    updates['floorplan/areas/' + id + '/w'] = Math.max(3, area.w * ratio);
+    updates['floorplan/areas/' + id + '/h'] = Math.max(3, area.h * ratio);
+  });
+  restRef.update(updates);
 }
 
 restRef.child('floorplan/areas').on('value', snap => {
