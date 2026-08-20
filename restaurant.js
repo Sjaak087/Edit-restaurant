@@ -345,7 +345,7 @@ document.querySelectorAll('[data-close]').forEach(btn => {
 });
 
 // ==================== Producten (live) ====================
-let PRODUCTS_STATE = {}; // key -> {label, emoji, price, ice}
+let PRODUCTS_STATE = {}; // key -> {label, emoji, price, opties?: string[], ice?: legacy}
 
 restRef.child('products').on('value', snap => {
   PRODUCTS_STATE = snap.val() || {};
@@ -355,6 +355,15 @@ restRef.child('products').on('value', snap => {
 
 function productList() {
   return Object.entries(PRODUCTS_STATE).map(([key, p]) => ({ key, ...p }));
+}
+
+// Geeft de lijst met aanvink-opmerkingen voor een product terug. Ondersteunt ook
+// nog producten die met de oude "met/zonder ijsklontjes"-schakelaar zijn aangemaakt.
+function productOptions(p) {
+  if (!p) return [];
+  if (Array.isArray(p.opties) && p.opties.length > 0) return p.opties;
+  if (p.ice) return ['Zonder ijsklontjes'];
+  return [];
 }
 
 // ---- Emoji-picker opbouwen ----
@@ -395,13 +404,51 @@ function markEmojiSelected(em) {
 
 // ---- Product toevoegen/bewerken modal ----
 let editingProductKey = null;
+let editingProductOptions = [];
+
+function renderProductOptionsEditor() {
+  const list = document.getElementById('product-options-list');
+  list.innerHTML = '';
+  editingProductOptions.forEach((opt, i) => {
+    const chip = document.createElement('span');
+    chip.className = 'product-option-chip';
+    chip.innerHTML = `<span></span><button type="button" title="Verwijderen">✕</button>`;
+    chip.querySelector('span').textContent = opt;
+    chip.querySelector('button').addEventListener('click', () => {
+      editingProductOptions.splice(i, 1);
+      renderProductOptionsEditor();
+    });
+    list.appendChild(chip);
+  });
+}
+
+function addProductOption() {
+  const input = document.getElementById('product-option-input');
+  const val = input.value.trim();
+  if (!val) return;
+  if (editingProductOptions.some(o => o.toLowerCase() === val.toLowerCase())) {
+    input.value = '';
+    return;
+  }
+  editingProductOptions.push(val);
+  input.value = '';
+  renderProductOptionsEditor();
+  input.focus();
+}
+
+document.getElementById('product-option-add-btn').addEventListener('click', addProductOption);
+document.getElementById('product-option-input').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') { e.preventDefault(); addProductOption(); }
+});
 
 document.getElementById('btn-add-product').addEventListener('click', () => {
   editingProductKey = null;
   document.getElementById('product-modal-title').textContent = 'Nieuw product';
   document.getElementById('product-name-input').value = '';
   document.getElementById('product-price-input').value = '';
-  document.getElementById('product-ice-input').checked = false;
+  document.getElementById('product-option-input').value = '';
+  editingProductOptions = [];
+  renderProductOptionsEditor();
   document.getElementById('product-error').textContent = '';
   markEmojiSelected(null);
   openModal('modal-product');
@@ -414,7 +461,9 @@ function openEditProduct(key) {
   document.getElementById('product-modal-title').textContent = 'Product bewerken';
   document.getElementById('product-name-input').value = p.label || '';
   document.getElementById('product-price-input').value = p.price != null ? p.price : '';
-  document.getElementById('product-ice-input').checked = !!p.ice;
+  document.getElementById('product-option-input').value = '';
+  editingProductOptions = productOptions(p).slice();
+  renderProductOptionsEditor();
   document.getElementById('product-error').textContent = '';
   markEmojiSelected(p.emoji || null);
   openModal('modal-product');
@@ -423,7 +472,6 @@ function openEditProduct(key) {
 document.getElementById('product-confirm').addEventListener('click', () => {
   const naam = document.getElementById('product-name-input').value.trim();
   const prijsRaw = document.getElementById('product-price-input').value;
-  const ice = document.getElementById('product-ice-input').checked;
   const errorEl = document.getElementById('product-error');
 
   if (!naam) { errorEl.textContent = 'Vul een naam in.'; return; }
@@ -431,7 +479,7 @@ document.getElementById('product-confirm').addEventListener('click', () => {
   const prijs = prijsRaw === '' ? 0 : Number(prijsRaw);
   if (isNaN(prijs) || prijs < 0) { errorEl.textContent = 'Vul een geldige prijs in.'; return; }
 
-  const data = { label: naam, emoji: selectedEmoji, price: prijs, ice: ice };
+  const data = { label: naam, emoji: selectedEmoji, price: prijs, opties: editingProductOptions.slice() };
 
   const key = editingProductKey || restRef.child('products').push().key;
   restRef.child('products/' + key).set(data).then(() => {
@@ -453,13 +501,14 @@ function renderSettingsProducts() {
   items.forEach(p => {
     const row = document.createElement('div');
     row.className = 'settings-product-row';
+    const opties = productOptions(p);
     row.innerHTML = `
       <div class="settings-product-main">
         <span class="settings-product-emoji">${p.emoji}</span>
         <span class="settings-product-name">${escapeHtml(p.label)}</span>
         <span class="menu-dots"></span>
         <span class="settings-product-price">${formatPrice(p.price)}</span>
-        ${p.ice ? '<span class="ice-badge">🧊 ijs-optie</span>' : ''}
+        ${opties.map(o => `<span class="ice-badge">📝 ${escapeHtml(o)}</span>`).join('')}
       </div>
       ${isOwner ? `<div class="settings-product-actions">
         <button type="button" class="mini-btn edit" data-key="${p.key}">Bewerken</button>
@@ -484,7 +533,7 @@ let TABLES_STATE = {}; // id -> {number, x, y}
 
 // ---- Grootte van de plattegrond (aantal vierkantjes) ----
 const GRID_MIN = 10;
-const GRID_MAX = 50;
+const GRID_MAX = 40;
 const GRID_STEP = 1;
 const GRID_DEFAULT = 20; // komt overeen met de oorspronkelijke vaste 24px-vierkantjes
 let currentGridSize = GRID_DEFAULT;
@@ -873,7 +922,7 @@ function onResizeStart(e) {
 // ==================== Bestellen: tafel -> producten kiezen ====================
 let currentOrderTable = null;
 let orderCounts = {};      // key -> aantal
-let orderIceChoices = {};  // key -> array van 'met'/'zonder'
+let orderItemOptions = {}; // key -> array (per besteld stuk) van gekozen opmerkingen
 let stockStatus = {};      // key -> uitverkocht?
 
 restRef.child('stock').on('value', snap => {
@@ -884,8 +933,8 @@ restRef.child('stock').on('value', snap => {
 function openOrderModalForTable(table) {
   currentOrderTable = table;
   orderCounts = {};
-  orderIceChoices = {};
-  productList().forEach(p => { orderCounts[p.key] = 0; orderIceChoices[p.key] = []; });
+  orderItemOptions = {};
+  productList().forEach(p => { orderCounts[p.key] = 0; orderItemOptions[p.key] = []; });
   document.getElementById('order-modal-title').textContent = `Tafel ${table.number}`;
   document.getElementById('order-note').value = '';
   document.getElementById('order-error').textContent = '';
@@ -908,7 +957,7 @@ function renderOrderProducts() {
   }
   container.innerHTML = '';
   items.forEach(p => {
-    if (orderCounts[p.key] === undefined) { orderCounts[p.key] = 0; orderIceChoices[p.key] = []; }
+    if (orderCounts[p.key] === undefined) { orderCounts[p.key] = 0; orderItemOptions[p.key] = []; }
     const isOut = !!stockStatus[p.key];
     const card = document.createElement('div');
     card.className = 'product-card' + (isOut ? ' out-of-stock' : '');
@@ -923,7 +972,7 @@ function renderOrderProducts() {
         </div>
         ${isOut ? '<span class="uitverkocht-tag">Uitverkocht</span>' : ''}
       </div>
-      <div class="ice-toggles" id="order-ice-${p.key}"></div>
+      <div class="ice-toggles" id="order-opts-${p.key}"></div>
     `;
     container.appendChild(card);
   });
@@ -933,7 +982,7 @@ function renderOrderProducts() {
       const key = btn.dataset.key;
       orderCounts[key]++;
       document.getElementById(`order-${key}-count`).textContent = orderCounts[key];
-      renderOrderIceToggles(key);
+      renderOrderOptionToggles(key);
     });
   });
   container.querySelectorAll('.min-btn').forEach(btn => {
@@ -941,36 +990,50 @@ function renderOrderProducts() {
       const key = btn.dataset.key;
       if (orderCounts[key] > 0) orderCounts[key]--;
       document.getElementById(`order-${key}-count`).textContent = orderCounts[key];
-      renderOrderIceToggles(key);
+      renderOrderOptionToggles(key);
     });
   });
 
-  items.forEach(p => renderOrderIceToggles(p.key));
+  items.forEach(p => renderOrderOptionToggles(p.key));
 }
 
-function renderOrderIceToggles(key) {
+function renderOrderOptionToggles(key) {
   const p = PRODUCTS_STATE[key];
-  const container = document.getElementById(`order-ice-${key}`);
+  const container = document.getElementById(`order-opts-${key}`);
   if (!container) return;
   container.innerHTML = '';
-  if (!p || !p.ice) return;
+  const opties = productOptions(p);
+  if (!p || opties.length === 0) return;
 
   const n = orderCounts[key] || 0;
-  if (!orderIceChoices[key]) orderIceChoices[key] = [];
-  while (orderIceChoices[key].length < n) orderIceChoices[key].push('zonder');
-  while (orderIceChoices[key].length > n) orderIceChoices[key].pop();
+  if (!orderItemOptions[key]) orderItemOptions[key] = [];
+  while (orderItemOptions[key].length < n) orderItemOptions[key].push([]);
+  while (orderItemOptions[key].length > n) orderItemOptions[key].pop();
 
-  orderIceChoices[key].forEach((choice, i) => {
-    const nummer = n > 1 ? `#${i + 1} ` : '';
-    const chip = document.createElement('button');
-    chip.type = 'button';
-    chip.className = 'ice-chip' + (choice === 'met' ? ' met' : '');
-    chip.textContent = `${nummer}${choice === 'met' ? '🧊 Met ijs' : '🚫 Zonder ijs'}`;
-    chip.addEventListener('click', () => {
-      orderIceChoices[key][i] = orderIceChoices[key][i] === 'met' ? 'zonder' : 'met';
-      renderOrderIceToggles(key);
+  orderItemOptions[key].forEach((selected, i) => {
+    const row = document.createElement('div');
+    row.className = 'option-unit-row';
+    if (n > 1) {
+      const tag = document.createElement('span');
+      tag.className = 'option-unit-tag';
+      tag.textContent = `#${i + 1}`;
+      row.appendChild(tag);
+    }
+    opties.forEach(optLabel => {
+      const active = selected.includes(optLabel);
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'ice-chip' + (active ? ' met' : '');
+      chip.textContent = `${active ? '✅ ' : ''}${optLabel}`;
+      chip.addEventListener('click', () => {
+        const idx = orderItemOptions[key][i].indexOf(optLabel);
+        if (idx === -1) orderItemOptions[key][i].push(optLabel);
+        else orderItemOptions[key][i].splice(idx, 1);
+        renderOrderOptionToggles(key);
+      });
+      row.appendChild(chip);
     });
-    container.appendChild(chip);
+    container.appendChild(row);
   });
 }
 
@@ -985,10 +1048,11 @@ document.getElementById('order-confirm').addEventListener('click', () => {
     return;
   }
 
-  const ijsKeuzes = {};
+  const itemOpties = {};
   Object.keys(items).forEach(key => {
-    if (orderIceChoices[key] && orderIceChoices[key].length > 0) {
-      ijsKeuzes[key] = orderIceChoices[key].slice();
+    const unitsMetKeuzes = (orderItemOptions[key] || []).filter(sel => sel.length > 0);
+    if (unitsMetKeuzes.length > 0) {
+      itemOpties[key] = orderItemOptions[key].map(sel => sel.slice());
     }
   });
 
@@ -1000,7 +1064,7 @@ document.getElementById('order-confirm').addEventListener('click', () => {
   };
   const opmerking = document.getElementById('order-note').value.trim();
   if (opmerking) orderData.opmerking = opmerking;
-  if (Object.keys(ijsKeuzes).length > 0) orderData.ijsKeuzes = ijsKeuzes;
+  if (Object.keys(itemOpties).length > 0) orderData.itemOpties = itemOpties;
 
   restRef.child('orders').push().set(orderData).then(() => {
     closeModal('modal-order');
@@ -1099,10 +1163,10 @@ function productLabel(key) {
 function itemsToLinesHtml(order) {
   return Object.entries(order.items).map(([key, aantal]) => {
     const label = productLabel(key);
-    const keuzes = order.ijsKeuzes && order.ijsKeuzes[key];
+    const keuzes = order.itemOpties && order.itemOpties[key];
     if (keuzes && keuzes.length > 0) {
-      return keuzes.map(keuze => {
-        const suffix = keuze === 'met' ? ' — 🧊 met ijs' : '';
+      return keuzes.map(selected => {
+        const suffix = selected && selected.length > 0 ? ` — 📝 ${selected.map(escapeHtml).join(', ')}` : '';
         return `<div class="item-line">1x ${escapeHtml(label)}${suffix}</div>`;
       }).join('');
     }
