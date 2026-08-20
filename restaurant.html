@@ -264,9 +264,17 @@
     <label class="modal-label">Opmerkingen om aan te vinken bij bestellen (optioneel)</label>
     <p class="modal-text" style="margin-top:-6px;">Bijv. "Zonder ijsklontjes", "Extra pittig". De klant kan deze per besteld stuk aanvinken, en er kunnen er meerdere tegelijk gekozen worden.</p>
     <div class="product-options-list" id="product-options-list"></div>
-    <div class="product-options-add">
-      <input type="text" id="product-option-input" class="modal-input" placeholder="Typ een opmerking en druk op Toevoegen" maxlength="40">
-      <button type="button" class="btn-secondary" id="product-option-add-btn">+ Toevoegen</button>
+    <button type="button" class="btn-secondary product-option-open-btn" id="product-option-open-btn">+ Opmerking toevoegen</button>
+
+    <div class="product-option-picker" id="product-option-picker" style="display:none;">
+      <div class="product-option-picker-existing" id="product-option-existing"></div>
+      <label class="modal-label" style="margin-top:0;">Nieuwe opmerking</label>
+      <p class="modal-text" style="margin-top:-6px;">Kies eventueel een emoji en typ de opmerking.</p>
+      <div class="option-emoji-picker" id="option-emoji-picker"></div>
+      <div class="product-options-add">
+        <input type="text" id="product-option-input" class="modal-input" placeholder="Typ een nieuwe opmerking" maxlength="40">
+        <button type="button" class="btn-secondary" id="product-option-add-btn">+ Toevoegen</button>
+      </div>
     </div>
     <label class="modal-label">Emoji</label>
     <div class="emoji-picker" id="emoji-picker"></div>
