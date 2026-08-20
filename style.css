@@ -500,6 +500,28 @@ header.top a:hover { color: var(--gold-soft); border-color: var(--gold); }
 }
 .product-options-add .modal-input { margin: 0; flex: 1; }
 .product-options-add .btn-secondary { white-space: nowrap; padding: 0 16px; }
+.product-option-open-btn { margin-top: 6px; }
+.product-option-picker {
+  margin-top: 10px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--card);
+}
+.product-option-picker-existing:empty { display: none; }
+.product-option-picker-existing { margin-bottom: 10px; }
+.product-option-chip.existing {
+  cursor: pointer;
+  border-style: dashed;
+  background: transparent;
+}
+.product-option-chip.existing:hover { background: rgba(201, 162, 75, 0.1); }
+.option-emoji-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 10px;
+}
 
 /* Opmerkingen-chips per besteld stuk (order & keuken) */
 .option-unit-row {
