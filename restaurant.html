@@ -127,6 +127,13 @@
 
     <div class="subtab-panel" id="subpanel-algemeen">
       <div class="settings-info-row">
+        <span>Jouw naam</span>
+        <span class="settings-info-value-group">
+          <span id="info-mijn-naam">—</span>
+          <button type="button" class="mini-btn edit" id="btn-rename-mijn-naam">Bewerken</button>
+        </span>
+      </div>
+      <div class="settings-info-row">
         <span>Restaurantnaam</span>
         <span class="settings-info-value-group">
           <span id="info-naam">—</span>
@@ -214,6 +221,19 @@
     <div class="modal-actions">
       <button type="button" class="btn-secondary" data-close>Annuleren</button>
       <button type="button" class="btn-primary" id="rename-restaurant-confirm">Opslaan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: eigen naam wijzigen -->
+<div class="modal-overlay" id="modal-rename-mijn-naam">
+  <div class="modal-box">
+    <div class="modal-title">Jouw naam wijzigen</div>
+    <input type="text" id="rename-mijn-naam-input" class="modal-input" maxlength="30">
+    <div class="modal-error" id="rename-mijn-naam-error"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" data-close>Annuleren</button>
+      <button type="button" class="btn-primary" id="rename-mijn-naam-confirm">Opslaan</button>
     </div>
   </div>
 </div>
