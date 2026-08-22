@@ -815,7 +815,7 @@ function renderCanvas(canvasEl, { editable, onTableClick }) {
     el.style.top = area.y + '%';
     el.style.width = area.w + '%';
     el.style.height = area.h + '%';
-    el.innerHTML = `<div class="fp-area-label">${escapeHtml(area.name)}</div>`;
+    el.innerHTML = `<span class="fp-area-icon">📍</span><div class="fp-area-label">${escapeHtml(area.name)}</div>`;
     if (editable) {
       el.dataset.type = 'area';
       el.dataset.id = id;
@@ -851,6 +851,11 @@ function renderCanvas(canvasEl, { editable, onTableClick }) {
         typeLabel.className = 'fp-table-type-label';
         typeLabel.textContent = '🍽️';
         el.appendChild(typeLabel);
+      } else if (kind === 'bank') {
+        const bankLabel = document.createElement('span');
+        bankLabel.className = 'fp-building-label';
+        bankLabel.textContent = 'Bank';
+        el.appendChild(bankLabel);
       }
     } else {
       const icon = document.createElement('span');
