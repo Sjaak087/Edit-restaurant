@@ -104,14 +104,17 @@ document.querySelectorAll('[data-close]').forEach(btn => {
 // ---- Restaurant maken ----
 document.getElementById('btn-open-create').addEventListener('click', () => {
   document.getElementById('create-name').value = '';
+  document.getElementById('create-my-name').value = '';
   document.getElementById('create-error').textContent = '';
   openModal('modal-create');
 });
 
 document.getElementById('create-confirm').addEventListener('click', async () => {
   const naam = document.getElementById('create-name').value.trim();
+  const mijnNaam = document.getElementById('create-my-name').value.trim();
   const errorEl = document.getElementById('create-error');
   if (!naam) { errorEl.textContent = 'Vul een naam in.'; return; }
+  if (!mijnNaam) { errorEl.textContent = 'Vul je eigen naam in.'; return; }
   if (getMyRestaurants().length >= MAX_RESTAURANTS) { errorEl.textContent = 'Je zit al op het maximum van 2 restaurants.'; return; }
 
   const btn = document.getElementById('create-confirm');
@@ -133,6 +136,7 @@ document.getElementById('create-confirm').addEventListener('click', async () => 
     const memberId = genMemberId();
     await newRef.child('leden/' + memberId).set({
       rol: 'eigenaar',
+      naam: mijnNaam,
       tabs: { bestellen: true, keuken: true, gereed: true, historie: true, instellingen: true },
       toegevoegdOp: Date.now()
     });
@@ -160,14 +164,17 @@ document.getElementById('code-shown-ok').addEventListener('click', () => {
 // ---- Restaurant joinen ----
 document.getElementById('btn-open-join').addEventListener('click', () => {
   document.getElementById('join-code').value = '';
+  document.getElementById('join-my-name').value = '';
   document.getElementById('join-error').textContent = '';
   openModal('modal-join');
 });
 
 document.getElementById('join-confirm').addEventListener('click', async () => {
   const code = document.getElementById('join-code').value.trim().toUpperCase();
+  const mijnNaam = document.getElementById('join-my-name').value.trim();
   const errorEl = document.getElementById('join-error');
   if (!code) { errorEl.textContent = 'Vul een code in.'; return; }
+  if (!mijnNaam) { errorEl.textContent = 'Vul je eigen naam in.'; return; }
   if (getMyRestaurants().length >= MAX_RESTAURANTS) { errorEl.textContent = 'Je zit al op het maximum van 2 restaurants.'; return; }
 
   const btn = document.getElementById('join-confirm');
@@ -192,6 +199,7 @@ document.getElementById('join-confirm').addEventListener('click', async () => {
     const memberId = genMemberId();
     await db.ref('restaurants/' + id + '/leden/' + memberId).set({
       rol: 'gejoined',
+      naam: mijnNaam,
       tabs: { bestellen: true, keuken: false, gereed: false, historie: false, instellingen: false },
       toegevoegdOp: Date.now()
     });
