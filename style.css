@@ -1140,15 +1140,6 @@ header.top a:hover { color: var(--gold-soft); border-color: var(--gold); }
   background: rgba(201, 162, 75, 0.08);
   cursor: grab;
 }
-.fp-area-icon {
-  position: absolute;
-  top: 6px;
-  left: 8px;
-  font-size: calc(1rem * var(--fp-scale, 1));
-  line-height: 1;
-  pointer-events: none;
-  z-index: 2;
-}
 .fp-area-label {
   position: absolute;
   top: calc(-12px * var(--fp-scale, 1));
