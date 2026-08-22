@@ -96,6 +96,20 @@ header.top h1 {
   background-clip: text;
   color: transparent;
 }
+.top-title-group {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.my-name-badge {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+  opacity: 0.9;
+}
 header.top a {
   font-family: var(--font-body);
   font-size: 0.78rem;
