@@ -138,6 +138,13 @@
         </span>
       </div>
       <div class="settings-info-row">
+        <span>Naamkleur</span>
+        <span class="settings-info-value-group">
+          <span class="color-swatch-preview" id="info-title-color"></span>
+          <button type="button" class="mini-btn edit" id="btn-title-color" style="display:none;">Wijzigen</button>
+        </span>
+      </div>
+      <div class="settings-info-row">
         <span>Join-code</span>
         <span class="code-display small" id="info-code">—</span>
       </div>
@@ -260,6 +267,19 @@
     <div class="modal-title">Achtergrondkleur</div>
     <p class="modal-text">Kies een kleur voor de achtergrond van de hele app.</p>
     <div class="color-palette" id="color-palette"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" data-close>Sluiten</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: kleur restaurantnaam kiezen -->
+<div class="modal-overlay" id="modal-title-color">
+  <div class="modal-box">
+    <div class="modal-title">Naamkleur</div>
+    <p class="modal-text">Kies een kleur voor de letters van je restaurantnaam bovenaan.</p>
+    <button type="button" class="color-swatch color-swatch-default" id="title-color-default" title="Standaard (goud)">↺</button>
+    <div class="color-palette" id="title-color-palette"></div>
     <div class="modal-actions">
       <button type="button" class="btn-secondary" data-close>Sluiten</button>
     </div>
