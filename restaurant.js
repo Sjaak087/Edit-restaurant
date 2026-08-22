@@ -75,7 +75,7 @@ restRef.child('leden/' + myMemberId).once('value').then(snap => {
   if (!snap.exists()) {
     const tabs = {};
     ALL_TABS.forEach(t => { tabs[t] = true; });
-    const data = { rol: isOwner ? 'eigenaar' : 'gejoined', tabs: tabs, toegevoegdOp: Date.now() };
+    const data = { rol: isOwner ? 'eigenaar' : 'gejoined', naam: mijnEntry.mijnNaam || 'Naamloos', tabs: tabs, toegevoegdOp: Date.now() };
     return restRef.child('leden/' + myMemberId).set(data).then(() => tabs);
   }
   return snap.val().tabs;
@@ -97,9 +97,18 @@ restRef.child('leden/' + myMemberId).once('value').then(snap => {
       window.location.href = 'index.html';
       return;
     }
-    applyTabPermissions(snap.val().tabs);
+    const lid = snap.val();
+    applyTabPermissions(lid.tabs);
+    updateMyNameBadge(lid.naam);
   });
 });
+
+// ==================== Eigen naam bovenaan ====================
+function updateMyNameBadge(naam) {
+  const badge = document.getElementById('my-name-badge');
+  if (!badge) return;
+  badge.textContent = naam ? `👤 ${naam}` : '';
+}
 
 // ---- Ledenlijst (alleen zichtbaar/bewerkbaar voor de eigenaar) ----
 let LEDEN_STATE = {};
@@ -120,11 +129,11 @@ function renderLedenList() {
     return;
   }
   list.innerHTML = '';
-  let volgnummer = 0;
   entries.forEach(([mid, lid]) => {
     const isEigenaarRow = lid.rol === 'eigenaar';
     const isMe = mid === myMemberId;
-    const naam = isEigenaarRow ? '👑 Eigenaar' : `👤 Lid ${++volgnummer}`;
+    const icon = isEigenaarRow ? '👑' : '👤';
+    const naam = `${icon} ${lid.naam || 'Naamloos'}`;
     const tabs = lid.tabs || {};
     const row = document.createElement('div');
     row.className = 'lid-row';
@@ -134,7 +143,7 @@ function renderLedenList() {
     }).join('');
     row.innerHTML = `
       <div class="lid-row-head">
-        <span class="lid-row-name">${naam}${isMe ? ' <span class="lid-me-tag">(jij)</span>' : ''}</span>
+        <span class="lid-row-name">${escapeHtml(naam)}${isMe ? ' <span class="lid-me-tag">(jij)</span>' : ''}</span>
         ${isEigenaarRow ? '' : `<button type="button" class="mini-btn danger" data-kick="${mid}">Verwijderen</button>`}
       </div>
       <div class="lid-tabs">${tabsHtml}</div>
@@ -359,6 +368,7 @@ const TITLE_COLORS = [
 function applyTitleColor(color) {
   const title = document.getElementById('restaurant-title');
   const preview = document.getElementById('info-title-color');
+  const badge = document.getElementById('my-name-badge');
   if (title) {
     if (color) {
       title.style.background = 'none';
@@ -372,6 +382,10 @@ function applyTitleColor(color) {
   }
   if (preview) {
     preview.style.background = color || 'linear-gradient(100deg, var(--gold-soft) 20%, var(--gold) 45%, var(--gold-soft) 70%)';
+  }
+  if (badge) {
+    badge.style.color = color || '';
+    badge.style.opacity = color ? '1' : '';
   }
 }
 
