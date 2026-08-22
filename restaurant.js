@@ -228,6 +228,7 @@ if (!isOwner) {
 } else {
   document.getElementById('btn-rename-restaurant').style.display = '';
   document.getElementById('btn-header-color').style.display = '';
+  document.getElementById('btn-title-color').style.display = '';
 }
 
 document.getElementById('btn-rename-restaurant').addEventListener('click', () => {
@@ -328,6 +329,83 @@ restRef.child('headerColor').on('value', snap => {
 const btnHeaderColor = document.getElementById('btn-header-color');
 if (btnHeaderColor) {
   btnHeaderColor.addEventListener('click', () => openModal('modal-header-color'));
+}
+
+// ==================== Kleur restaurantnaam ====================
+const TITLE_COLORS = [
+  '#f3ead9', '#ffffff', '#e0b84a', '#c9a24b', '#f2e2ac',
+  '#e8c88a', '#ff8c69', '#e8734a', '#c9793a', '#a8482f',
+  '#ff6b6b', '#e05c5c', '#8c3a3a', '#d46a9c', '#e08cc0',
+  '#c084d4', '#9d6fd8', '#7a7ae0', '#6f9fe0', '#5cc8e0',
+  '#5ce0c8', '#6fe0a8', '#8fe06f', '#b8e05c', '#e0d85c',
+  '#e0a85c', '#d9d9d9', '#a0a0a0', '#7ec9e8', '#f2b8d4'
+];
+
+function applyTitleColor(color) {
+  const title = document.getElementById('restaurant-title');
+  const preview = document.getElementById('info-title-color');
+  if (title) {
+    if (color) {
+      title.style.background = 'none';
+      title.style.webkitTextFillColor = color;
+      title.style.color = color;
+    } else {
+      title.style.background = '';
+      title.style.webkitTextFillColor = '';
+      title.style.color = '';
+    }
+  }
+  if (preview) {
+    preview.style.background = color || 'linear-gradient(100deg, var(--gold-soft) 20%, var(--gold) 45%, var(--gold-soft) 70%)';
+  }
+}
+
+const titleColorPaletteEl = document.getElementById('title-color-palette');
+if (titleColorPaletteEl) {
+  titleColorPaletteEl.innerHTML = TITLE_COLORS.map(c =>
+    `<button type="button" class="color-swatch" data-color="${c}" style="background:${c};"></button>`
+  ).join('');
+  titleColorPaletteEl.querySelectorAll('.color-swatch').forEach(sw => {
+    sw.addEventListener('click', () => {
+      const color = sw.dataset.color;
+      restRef.child('titleColor').set(color).then(() => {
+        closeModal('modal-title-color');
+      }).catch(err => {
+        console.error(err);
+        alert('Er ging iets mis bij het opslaan van de kleur.');
+      });
+    });
+  });
+}
+
+const titleColorDefaultBtn = document.getElementById('title-color-default');
+if (titleColorDefaultBtn) {
+  titleColorDefaultBtn.addEventListener('click', () => {
+    restRef.child('titleColor').remove().then(() => {
+      closeModal('modal-title-color');
+    }).catch(err => {
+      console.error(err);
+      alert('Er ging iets mis bij het opslaan van de kleur.');
+    });
+  });
+}
+
+restRef.child('titleColor').on('value', snap => {
+  const color = snap.val();
+  applyTitleColor(color);
+  if (titleColorPaletteEl) {
+    titleColorPaletteEl.querySelectorAll('.color-swatch').forEach(sw => {
+      sw.classList.toggle('selected', !!color && sw.dataset.color.toLowerCase() === String(color).toLowerCase());
+    });
+  }
+  if (titleColorDefaultBtn) {
+    titleColorDefaultBtn.classList.toggle('selected', !color);
+  }
+});
+
+const btnTitleColor = document.getElementById('btn-title-color');
+if (btnTitleColor) {
+  btnTitleColor.addEventListener('click', () => openModal('modal-title-color'));
 }
 
 document.querySelectorAll('.subtab-btn').forEach(btn => {
