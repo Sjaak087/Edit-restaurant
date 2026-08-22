@@ -846,10 +846,16 @@ function renderCanvas(canvasEl, { editable, onTableClick }) {
 
     if (isOrderable) {
       el.textContent = table.number;
+      if (kind === 'tafel') {
+        const typeLabel = document.createElement('span');
+        typeLabel.className = 'fp-table-type-label';
+        typeLabel.textContent = '🍽️';
+        el.appendChild(typeLabel);
+      }
     } else {
       const icon = document.createElement('span');
       icon.className = 'fp-building-icon';
-      icon.textContent = kind === 'bar' ? '🍸' : '🍳';
+      icon.textContent = kind === 'bar' ? '🍸' : '🧑‍🍳';
       el.appendChild(icon);
       const label = document.createElement('span');
       label.className = 'fp-building-label';
