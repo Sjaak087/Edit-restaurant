@@ -1140,6 +1140,15 @@ header.top a:hover { color: var(--gold-soft); border-color: var(--gold); }
   background: rgba(201, 162, 75, 0.08);
   cursor: grab;
 }
+.fp-area-icon {
+  position: absolute;
+  top: 6px;
+  left: 8px;
+  font-size: calc(1rem * var(--fp-scale, 1));
+  line-height: 1;
+  pointer-events: none;
+  z-index: 2;
+}
 .fp-area-label {
   position: absolute;
   top: calc(-12px * var(--fp-scale, 1));
@@ -1205,18 +1214,15 @@ header.top a:hover { color: var(--gold-soft); border-color: var(--gold); }
   margin-top: calc(-18px * var(--fp-scale, 1));
 }
 
-/* ---- Bank: 90°-hoekbank (L-vorm), net als een tafel te bestellen ---- */
+/* ---- Bank: rechthoekig, net als een tafel te bestellen ---- */
 .fp-table.fp-kind-bank {
-  border-radius: 6px;
-  width: calc(72px * var(--fp-scale, 1));
-  height: calc(72px * var(--fp-scale, 1));
-  margin-left: calc(-36px * var(--fp-scale, 1));
-  margin-top: calc(-36px * var(--fp-scale, 1));
-  border: 2px solid var(--gold);
-  background: linear-gradient(135deg, #3a2f1e, var(--bg-elevated) 70%);
-  clip-path: polygon(58% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 58%, 58% 58%);
-  box-shadow: none;
-  filter: drop-shadow(0 3px 7px rgba(0,0,0,0.35));
+  border-radius: 8px;
+  width: calc(70px * var(--fp-scale, 1));
+  height: calc(40px * var(--fp-scale, 1));
+  margin-left: calc(-35px * var(--fp-scale, 1));
+  margin-top: calc(-20px * var(--fp-scale, 1));
+  border: 2px solid var(--green);
+  background: linear-gradient(135deg, #2f3b28, var(--bg-elevated) 70%);
 }
 .fp-table.fp-kind-bank.bezet {
   border-color: var(--wine);
