@@ -92,6 +92,9 @@
       <div class="fp-toolbar">
         <button type="button" class="fp-tool-btn" id="tool-add-area">➕ Gebied</button>
         <button type="button" class="fp-tool-btn" id="tool-add-table">➕ Tafel</button>
+        <button type="button" class="fp-tool-btn" id="tool-add-bank">🛋️ Bank</button>
+        <button type="button" class="fp-tool-btn" id="tool-add-bar">🍸 Bar</button>
+        <button type="button" class="fp-tool-btn" id="tool-add-keuken">🍳 Keuken</button>
         <button type="button" class="fp-tool-btn danger" id="tool-delete">🗑 Verwijderen</button>
       </div>
       <div class="fp-gridsize-row" id="fp-gridsize-row">
@@ -183,7 +186,7 @@
       <button type="button" class="btn-primary" id="bill-pay-btn">Betalen</button>
     </div>
     <div class="bill-confirm" id="bill-confirm" style="display:none;">
-      <p class="modal-text">Bevestig de betaling van <strong id="bill-confirm-amount"></strong> voor tafel <strong id="bill-confirm-table"></strong>.</p>
+      <p class="modal-text">Bevestig de betaling van <strong id="bill-confirm-amount"></strong> voor <span id="bill-confirm-kind">tafel</span> <strong id="bill-confirm-table"></strong>.</p>
       <div class="modal-actions">
         <button type="button" class="btn-secondary" id="bill-pay-cancel">Terug</button>
         <button type="button" class="btn-primary" id="bill-pay-confirm">✅ Betaald</button>
@@ -217,15 +220,36 @@
   </div>
 </div>
 
-<!-- Modal: tafelnummer -->
+<!-- Modal: tafelnummer / banknummer -->
 <div class="modal-overlay" id="modal-table-number">
   <div class="modal-box">
-    <div class="modal-title">Tafelnummer</div>
+    <div class="modal-title" id="table-number-modal-title">Tafelnummer</div>
     <input type="number" id="table-number-input" class="modal-input" placeholder="Bijv. 4" min="1">
+    <div class="fp-shape-row" id="table-shape-row">
+      <span class="modal-label" style="margin:0 0 8px;">Vorm van de tafel</span>
+      <div class="fp-shape-options" id="table-shape-options">
+        <button type="button" class="fp-shape-btn" data-shape="rond">⚪ Rond</button>
+        <button type="button" class="fp-shape-btn" data-shape="vierkant">◻️ Vierkant</button>
+        <button type="button" class="fp-shape-btn" data-shape="rechthoek">▭ Rechthoekig</button>
+      </div>
+    </div>
     <div class="modal-error" id="table-number-error"></div>
     <div class="modal-actions">
       <button type="button" class="btn-secondary" data-close>Annuleren</button>
       <button type="button" class="btn-primary" id="table-number-confirm">Opslaan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: naam van bar/keuken -->
+<div class="modal-overlay" id="modal-building-name">
+  <div class="modal-box">
+    <div class="modal-title" id="building-name-modal-title">Naam</div>
+    <input type="text" id="building-name-input" class="modal-input" placeholder="Bijv. Bar" maxlength="30">
+    <div class="modal-error" id="building-name-error"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" data-close>Annuleren</button>
+      <button type="button" class="btn-primary" id="building-name-confirm">Opslaan</button>
     </div>
   </div>
 </div>
