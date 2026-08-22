@@ -316,6 +316,18 @@ if (colorPaletteEl) {
   });
 }
 
+const headerColorDefaultBtn = document.getElementById('header-color-default');
+if (headerColorDefaultBtn) {
+  headerColorDefaultBtn.addEventListener('click', () => {
+    restRef.child('headerColor').remove().then(() => {
+      closeModal('modal-header-color');
+    }).catch(err => {
+      console.error(err);
+      alert('Er ging iets mis bij het opslaan van de kleur.');
+    });
+  });
+}
+
 restRef.child('headerColor').on('value', snap => {
   const color = snap.val();
   applyHeaderColor(color);
@@ -323,6 +335,9 @@ restRef.child('headerColor').on('value', snap => {
     colorPaletteEl.querySelectorAll('.color-swatch').forEach(sw => {
       sw.classList.toggle('selected', !!color && sw.dataset.color.toLowerCase() === String(color).toLowerCase());
     });
+  }
+  if (headerColorDefaultBtn) {
+    headerColorDefaultBtn.classList.toggle('selected', !color);
   }
 });
 
