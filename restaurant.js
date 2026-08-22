@@ -217,6 +217,9 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 if (!isOwner) {
   document.getElementById('tool-add-area').style.display = 'none';
   document.getElementById('tool-add-table').style.display = 'none';
+  document.getElementById('tool-add-bank').style.display = 'none';
+  document.getElementById('tool-add-bar').style.display = 'none';
+  document.getElementById('tool-add-keuken').style.display = 'none';
   document.getElementById('tool-delete').style.display = 'none';
   document.getElementById('fp-gridsize-row').style.display = 'none';
   document.getElementById('fp-hint').textContent = 'Alleen de eigenaar kan de plattegrond aanpassen.';
@@ -253,7 +256,8 @@ const HEADER_COLORS = [
   '#6e2c2c', '#a8482f', '#c9793a', '#c9a24b', '#e0b84a',
   '#6f8f5c', '#3f6b4f', '#2f6e6e', '#356b8c', '#2c4a75',
   '#3a3a75', '#5c3a75', '#7a3a63', '#8c4a63', '#b05f7a',
-  '#4a4438', '#5a5a5a', '#787066', '#2a2115', '#f2e8d5'
+  '#4a4438', '#5a5a5a', '#787066', '#2a2115', '#f2e8d5',
+  '#1a2f4d', '#4b2e83', '#7c1f3d', '#1f4d3a', '#b8895c'
 ];
 
 function hexToRgb(hex) {
@@ -830,21 +834,55 @@ function renderCanvas(canvasEl, { editable, onTableClick }) {
   });
 
   Object.entries(TABLES_STATE).forEach(([id, table]) => {
+    const kind = table.kind || 'tafel';
+    const shape = table.shape || 'rond';
+    const isOrderable = kind === 'tafel' || kind === 'bank';
     const el = document.createElement('button');
     el.type = 'button';
-    el.className = 'fp-table';
-    if (!editable && ACTIEVE_TAFELS.has(table.number)) el.classList.add('bezet');
+    el.className = 'fp-table fp-kind-' + kind + (kind === 'tafel' ? ' fp-shape-' + shape : '');
+    if (!editable && isOrderable && ACTIEVE_TAFELS.has(table.number)) el.classList.add('bezet');
     el.style.left = table.x + '%';
     el.style.top = table.y + '%';
-    el.textContent = table.number;
+
+    if (isOrderable) {
+      el.textContent = table.number;
+    } else {
+      const icon = document.createElement('span');
+      icon.className = 'fp-building-icon';
+      icon.textContent = kind === 'bar' ? '🍸' : '🍳';
+      el.appendChild(icon);
+      const label = document.createElement('span');
+      label.className = 'fp-building-label';
+      label.textContent = table.name || (kind === 'bar' ? 'Bar' : 'Keuken');
+      el.appendChild(label);
+    }
+
     if (editable) {
       el.dataset.type = 'table';
       el.dataset.id = id;
-    } else if (onTableClick) {
+      el.dataset.kind = kind;
+    } else if (onTableClick && isOrderable) {
       el.addEventListener('click', () => onTableClick(table));
     }
     canvasEl.appendChild(el);
   });
+}
+
+// ---- Woord/label helpers voor tafel vs. bank ----
+function kindWoord(table) {
+  return (table && table.kind === 'bank') ? 'Bank' : 'Tafel';
+}
+function tableKindByNumber(number) {
+  const found = Object.values(TABLES_STATE).find(t =>
+    (t.kind === 'tafel' || t.kind === 'bank' || !t.kind) && t.number === number
+  );
+  return found ? (found.kind || 'tafel') : 'tafel';
+}
+function kindWoordByNumber(number) {
+  return tableKindByNumber(number) === 'bank' ? 'Bank' : 'Tafel';
+}
+function kindIconByNumber(number) {
+  return tableKindByNumber(number) === 'bank' ? '🛋️' : '🪑';
 }
 
 function renderOrderCanvas() {
@@ -865,7 +903,7 @@ function handleTableClick(table) {
     return;
   }
   window.pendingChoiceTable = table;
-  document.getElementById('table-choice-title').textContent = `Tafel ${table.number}`;
+  document.getElementById('table-choice-title').textContent = `${kindWoord(table)} ${table.number}`;
   openModal('modal-table-choice');
 }
 
@@ -907,6 +945,39 @@ document.getElementById('tool-add-table').addEventListener('click', () => {
   fpHint.textContent = 'Klik op de plattegrond om een tafel te plaatsen.';
 });
 
+document.getElementById('tool-add-bank').addEventListener('click', () => {
+  deleteMode = false;
+  document.getElementById('tool-delete').classList.remove('active');
+  pendingMode = 'bank';
+  fpHint.textContent = 'Klik op de plattegrond om een bank te plaatsen.';
+});
+
+document.getElementById('tool-add-bar').addEventListener('click', () => {
+  deleteMode = false;
+  document.getElementById('tool-delete').classList.remove('active');
+  pendingMode = 'bar';
+  fpHint.textContent = 'Klik op de plattegrond om de bar te plaatsen.';
+});
+
+document.getElementById('tool-add-keuken').addEventListener('click', () => {
+  deleteMode = false;
+  document.getElementById('tool-delete').classList.remove('active');
+  pendingMode = 'keuken';
+  fpHint.textContent = 'Klik op de plattegrond om de keuken te plaatsen.';
+});
+
+// ---- Vormkeuze voor tafels (rond / vierkant / rechthoekig) ----
+let selectedTableShape = 'rond';
+function setTableShapeSelection(shape) {
+  selectedTableShape = shape;
+  document.querySelectorAll('#table-shape-options .fp-shape-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.shape === shape);
+  });
+}
+document.querySelectorAll('#table-shape-options .fp-shape-btn').forEach(btn => {
+  btn.addEventListener('click', () => setTableShapeSelection(btn.dataset.shape));
+});
+
 document.getElementById('tool-delete').addEventListener('click', (e) => {
   deleteMode = !deleteMode;
   pendingMode = null;
@@ -946,14 +1017,32 @@ editCanvas.addEventListener('click', (e) => {
     window.pendingAreaRect = { x, y, w, h };
     return;
   }
-  if (pendingMode === 'table') {
+  if (pendingMode === 'table' || pendingMode === 'bank') {
     const pos = getPercentPos(e.clientX, e.clientY);
+    const kind = pendingMode;
     pendingMode = null;
     fpHint.textContent = defaultHint;
+    window.pendingTableKind = kind;
+    window.pendingTablePos = pos;
     document.getElementById('table-number-input').value = '';
     document.getElementById('table-number-error').textContent = '';
-    window.pendingTablePos = pos;
+    document.getElementById('table-number-modal-title').textContent = kind === 'bank' ? 'Banknummer' : 'Tafelnummer';
+    document.getElementById('table-shape-row').style.display = kind === 'tafel' ? '' : 'none';
+    setTableShapeSelection('rond');
     openModal('modal-table-number');
+    return;
+  }
+  if (pendingMode === 'bar' || pendingMode === 'keuken') {
+    const pos = getPercentPos(e.clientX, e.clientY);
+    const kind = pendingMode;
+    pendingMode = null;
+    fpHint.textContent = defaultHint;
+    window.pendingBuildingKind = kind;
+    window.pendingBuildingPos = pos;
+    document.getElementById('building-name-input').value = '';
+    document.getElementById('building-name-error').textContent = '';
+    document.getElementById('building-name-modal-title').textContent = kind === 'bar' ? 'Naam van de bar' : 'Naam van de keuken';
+    openModal('modal-building-name');
     return;
   }
 });
@@ -969,15 +1058,29 @@ document.getElementById('area-name-confirm').addEventListener('click', () => {
 document.getElementById('table-number-confirm').addEventListener('click', () => {
   const raw = document.getElementById('table-number-input').value.trim();
   const errorEl = document.getElementById('table-number-error');
-  if (!raw) { errorEl.textContent = 'Vul een tafelnummer in.'; return; }
+  if (!raw) { errorEl.textContent = 'Vul een nummer in.'; return; }
   const nummer = Number(raw);
   if (isNaN(nummer) || nummer <= 0) { errorEl.textContent = 'Ongeldig nummer.'; return; }
   const bestaatAl = Object.values(TABLES_STATE).some(t => t.number === nummer);
-  if (bestaatAl) { errorEl.textContent = 'Dit tafelnummer bestaat al.'; return; }
+  if (bestaatAl) { errorEl.textContent = 'Dit nummer bestaat al.'; return; }
 
   const pos = window.pendingTablePos;
-  restRef.child('floorplan/tables').push({ number: nummer, x: pos.x, y: pos.y });
+  const kind = window.pendingTableKind || 'tafel';
+  const data = { kind, number: nummer, x: pos.x, y: pos.y };
+  if (kind === 'tafel') data.shape = selectedTableShape;
+  restRef.child('floorplan/tables').push(data);
   closeModal('modal-table-number');
+});
+
+document.getElementById('building-name-confirm').addEventListener('click', () => {
+  const naam = document.getElementById('building-name-input').value.trim();
+  const errorEl = document.getElementById('building-name-error');
+  if (!naam) { errorEl.textContent = 'Vul een naam in.'; return; }
+
+  const pos = window.pendingBuildingPos;
+  const kind = window.pendingBuildingKind;
+  restRef.child('floorplan/tables').push({ kind, name: naam, x: pos.x, y: pos.y });
+  closeModal('modal-building-name');
 });
 
 // ---- Slepen (verplaatsen) en resizen ----
@@ -991,6 +1094,14 @@ function attachEditHandlers() {
   });
 }
 
+function itemDeleteLabel(item) {
+  const kind = (item && item.kind) || 'tafel';
+  if (kind === 'bank') return `bank ${item.number}`;
+  if (kind === 'bar') return `bar "${item.name}"`;
+  if (kind === 'keuken') return `keuken "${item.name}"`;
+  return `tafel ${item.number}`;
+}
+
 function onDragStart(e) {
   if (pendingMode) return; // laat de klik doorgaan naar het plaatsen van een nieuw gebied/tafel
   if (e.target.classList.contains('fp-resize-handle')) return;
@@ -1000,7 +1111,7 @@ function onDragStart(e) {
 
   if (deleteMode) {
     e.stopPropagation();
-    const label = type === 'table' ? `tafel ${TABLES_STATE[id].number}` : `gebied "${AREAS_STATE[id].name}"`;
+    const label = type === 'table' ? itemDeleteLabel(TABLES_STATE[id]) : `gebied "${AREAS_STATE[id].name}"`;
     if (confirm(`Weet je zeker dat je ${label} wilt verwijderen?`)) {
       restRef.child('floorplan/' + (type === 'table' ? 'tables' : 'areas') + '/' + id).remove();
     }
@@ -1099,7 +1210,7 @@ function openOrderModalForTable(table) {
   orderCounts = {};
   orderItemOptions = {};
   productList().forEach(p => { orderCounts[p.key] = 0; orderItemOptions[p.key] = []; });
-  document.getElementById('order-modal-title').textContent = `Tafel ${table.number}`;
+  document.getElementById('order-modal-title').textContent = `${kindWoord(table)} ${table.number}`;
   document.getElementById('order-note').value = '';
   document.getElementById('order-error').textContent = '';
   renderOrderProducts();
@@ -1241,7 +1352,7 @@ document.getElementById('order-confirm').addEventListener('click', () => {
 // ==================== Rekening & betalen ====================
 function openBillModal(table) {
   window.currentBillTable = table;
-  document.getElementById('bill-modal-title').textContent = `Rekening — Tafel ${table.number}`;
+  document.getElementById('bill-modal-title').textContent = `Rekening — ${kindWoord(table)} ${table.number}`;
   document.getElementById('bill-error').textContent = '';
   document.getElementById('bill-confirm').style.display = 'none';
   document.getElementById('bill-pay-btn').style.display = '';
@@ -1288,6 +1399,7 @@ function openBillModal(table) {
 document.getElementById('bill-pay-btn').addEventListener('click', () => {
   document.getElementById('bill-confirm-amount').textContent = formatPrice(window.currentBillTotal || 0);
   document.getElementById('bill-confirm-table').textContent = window.currentBillTable.number;
+  document.getElementById('bill-confirm-kind').textContent = kindWoord(window.currentBillTable).toLowerCase();
   document.getElementById('bill-confirm').style.display = 'block';
   document.getElementById('bill-pay-btn').style.display = 'none';
 });
@@ -1362,7 +1474,7 @@ function speelMeldingGeluid() {
 function renderOrderCardHtml(id, order, actionHtml) {
   const noteHtml = order.opmerking ? `<div class="note-line">"${escapeHtml(order.opmerking)}"</div>` : '';
   return `
-    <div class="table-badge">🪑 Tafel ${order.tableNumber}</div>
+    <div class="table-badge">${kindIconByNumber(order.tableNumber)} ${kindWoordByNumber(order.tableNumber)} ${order.tableNumber}</div>
     <div class="items-block">${itemsToLinesHtml(order)}</div>
     ${noteHtml}
     <div class="time-line">Binnengekomen om ${formatTime(order.tijd)}</div>
@@ -1480,7 +1592,7 @@ function renderHistory() {
     const noteHtml = order.opmerking ? `<div class="note-line">"${escapeHtml(order.opmerking)}"</div>` : '';
     const betaaldHtml = order.betaaldOp ? ` · betaald om ${formatTime(order.betaaldOp)}` : '';
     card.innerHTML = `
-      <div class="table-badge">🪑 Tafel ${order.tableNumber}</div>
+      <div class="table-badge">${kindIconByNumber(order.tableNumber)} ${kindWoordByNumber(order.tableNumber)} ${order.tableNumber}</div>
       <div class="items-block">${itemsToLinesHtml(order)}</div>
       ${noteHtml}
       <div class="time-line">Besteld om ${formatTime(order.tijd)}${betaaldHtml}</div>
