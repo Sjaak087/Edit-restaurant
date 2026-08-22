@@ -106,9 +106,31 @@ restRef.child('leden/' + myMemberId).once('value').then(snap => {
 // ==================== Eigen naam bovenaan ====================
 function updateMyNameBadge(naam) {
   const badge = document.getElementById('my-name-badge');
-  if (!badge) return;
-  badge.textContent = naam ? `👤 ${naam}` : '';
+  if (badge) badge.textContent = naam ? `👤 ${naam}` : '';
+  const infoEl = document.getElementById('info-mijn-naam');
+  if (infoEl) infoEl.textContent = naam || '—';
 }
+
+document.getElementById('btn-rename-mijn-naam').addEventListener('click', () => {
+  document.getElementById('rename-mijn-naam-input').value = document.getElementById('info-mijn-naam').textContent.trim();
+  document.getElementById('rename-mijn-naam-error').textContent = '';
+  openModal('modal-rename-mijn-naam');
+});
+document.getElementById('rename-mijn-naam-confirm').addEventListener('click', () => {
+  const naam = document.getElementById('rename-mijn-naam-input').value.trim();
+  const errorEl = document.getElementById('rename-mijn-naam-error');
+  if (!naam) { errorEl.textContent = 'Vul een naam in.'; return; }
+  const btn = document.getElementById('rename-mijn-naam-confirm');
+  btn.disabled = true;
+  restRef.child('leden/' + myMemberId + '/naam').set(naam).then(() => {
+    btn.disabled = false;
+    closeModal('modal-rename-mijn-naam');
+  }).catch(err => {
+    console.error(err);
+    btn.disabled = false;
+    errorEl.textContent = 'Er ging iets mis, probeer opnieuw.';
+  });
+});
 
 // ---- Ledenlijst (alleen zichtbaar/bewerkbaar voor de eigenaar) ----
 let LEDEN_STATE = {};
