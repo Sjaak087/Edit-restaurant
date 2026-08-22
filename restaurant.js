@@ -815,7 +815,7 @@ function renderCanvas(canvasEl, { editable, onTableClick }) {
     el.style.top = area.y + '%';
     el.style.width = area.w + '%';
     el.style.height = area.h + '%';
-    el.innerHTML = `<span class="fp-area-icon">📍</span><div class="fp-area-label">${escapeHtml(area.name)}</div>`;
+    el.innerHTML = `<div class="fp-area-label">${escapeHtml(area.name)}</div>`;
     if (editable) {
       el.dataset.type = 'area';
       el.dataset.id = id;
