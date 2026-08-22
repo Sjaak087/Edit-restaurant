@@ -1205,16 +1205,18 @@ header.top a:hover { color: var(--gold-soft); border-color: var(--gold); }
   margin-top: calc(-18px * var(--fp-scale, 1));
 }
 
-/* ---- Bank: net als een tafel te bestellen, maar herkenbaar als bankje ---- */
+/* ---- Bank: 90°-hoekbank (L-vorm), net als een tafel te bestellen ---- */
 .fp-table.fp-kind-bank {
-  border-radius: 10px;
-  width: calc(70px * var(--fp-scale, 1));
-  height: calc(34px * var(--fp-scale, 1));
-  margin-left: calc(-35px * var(--fp-scale, 1));
-  margin-top: calc(-17px * var(--fp-scale, 1));
+  border-radius: 6px;
+  width: calc(64px * var(--fp-scale, 1));
+  height: calc(64px * var(--fp-scale, 1));
+  margin-left: calc(-32px * var(--fp-scale, 1));
+  margin-top: calc(-32px * var(--fp-scale, 1));
   border: 2px solid var(--gold);
   background: linear-gradient(135deg, #3a2f1e, var(--bg-elevated) 70%);
-  box-shadow: 0 3px 10px rgba(0,0,0,0.3), inset 0 0 0 2px rgba(0,0,0,0.12), inset 0 -6px 0 rgba(0,0,0,0.18);
+  clip-path: polygon(38% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 38%, 38% 38%);
+  box-shadow: none;
+  filter: drop-shadow(0 3px 7px rgba(0,0,0,0.35));
 }
 .fp-table.fp-kind-bank.bezet {
   border-color: var(--wine);
@@ -1260,6 +1262,24 @@ header.top a:hover { color: var(--gold-soft); border-color: var(--gold); }
   letter-spacing: 0.03em;
   text-transform: uppercase;
   padding: 1px 6px;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* ---- Tafel-icoontje: zelfde pil-stijl als het label van een gebied ---- */
+.fp-table-type-label {
+  position: absolute;
+  top: calc(-14px * var(--fp-scale, 1));
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-elevated);
+  border: 1px solid var(--gold);
+  color: var(--gold-soft);
+  font-size: calc(0.68rem * var(--fp-scale, 1));
+  line-height: 1;
+  padding: calc(2px * var(--fp-scale, 1)) calc(5px * var(--fp-scale, 1));
   border-radius: var(--radius-pill);
   white-space: nowrap;
   pointer-events: none;
