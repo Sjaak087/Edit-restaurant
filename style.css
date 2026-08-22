@@ -1195,6 +1195,96 @@ header.top a:hover { color: var(--gold-soft); border-color: var(--gold); }
   color: white;
 }
 
+/* ---- Vormen (alleen tafels) ---- */
+.fp-table.fp-shape-vierkant { border-radius: 8px; }
+.fp-table.fp-shape-rechthoek {
+  border-radius: 8px;
+  width: calc(64px * var(--fp-scale, 1));
+  height: calc(36px * var(--fp-scale, 1));
+  margin-left: calc(-32px * var(--fp-scale, 1));
+  margin-top: calc(-18px * var(--fp-scale, 1));
+}
+
+/* ---- Bank: net als een tafel te bestellen, maar herkenbaar als bankje ---- */
+.fp-table.fp-kind-bank {
+  border-radius: 10px;
+  width: calc(70px * var(--fp-scale, 1));
+  height: calc(34px * var(--fp-scale, 1));
+  margin-left: calc(-35px * var(--fp-scale, 1));
+  margin-top: calc(-17px * var(--fp-scale, 1));
+  border: 2px solid var(--gold);
+  background: linear-gradient(135deg, #3a2f1e, var(--bg-elevated) 70%);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.3), inset 0 0 0 2px rgba(0,0,0,0.12), inset 0 -6px 0 rgba(0,0,0,0.18);
+}
+.fp-table.fp-kind-bank.bezet {
+  border-color: var(--wine);
+  background: linear-gradient(135deg, #a34848, var(--wine) 70%);
+  color: white;
+}
+
+/* ---- Bar en Keuken: alleen een naam, niet te bestellen ---- */
+.fp-table.fp-kind-bar,
+.fp-table.fp-kind-keuken {
+  cursor: default;
+  border-radius: 12px;
+  width: calc(54px * var(--fp-scale, 1));
+  height: calc(54px * var(--fp-scale, 1));
+  margin-left: calc(-27px * var(--fp-scale, 1));
+  margin-top: calc(-27px * var(--fp-scale, 1));
+}
+.fp-table.fp-kind-bar:hover,
+.fp-table.fp-kind-keuken:hover { transform: none; }
+.fp-table.fp-kind-bar {
+  border: 2px solid var(--gold-soft);
+  background: repeating-linear-gradient(45deg, #2c2313, #2c2313 6px, #241c10 6px, #241c10 12px);
+}
+.fp-table.fp-kind-keuken {
+  border: 2px solid var(--wine);
+  background: radial-gradient(circle at 32% 28%, #4a1f1f, var(--bg-elevated) 72%);
+}
+.fp-building-icon {
+  font-size: calc(1.15rem * var(--fp-scale, 1));
+  line-height: 1;
+  pointer-events: none;
+}
+.fp-building-label {
+  position: absolute;
+  bottom: calc(-15px * var(--fp-scale, 1));
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-size: calc(0.6rem * var(--fp-scale, 1));
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  padding: 1px 6px;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* ---- Vormkeuze in het tafel-modal ---- */
+.fp-shape-row { margin: 2px 0 12px; }
+.fp-shape-options { display: flex; gap: 8px; flex-wrap: wrap; }
+.fp-shape-btn {
+  flex: 1;
+  min-width: 88px;
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  border-radius: var(--radius);
+  padding: 8px 10px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.fp-shape-btn:hover { border-color: var(--gold); color: var(--gold-soft); }
+.fp-shape-btn.active { border-color: var(--gold); color: var(--gold-soft); background: rgba(201,162,75,0.12); }
+
 /* ==================== Update log ==================== */
 .updates-btn {
   font-family: var(--font-body);
