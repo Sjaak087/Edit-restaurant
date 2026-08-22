@@ -1019,7 +1019,7 @@ editCanvas.addEventListener('click', (e) => {
   }
   if (pendingMode === 'table' || pendingMode === 'bank') {
     const pos = getPercentPos(e.clientX, e.clientY);
-    const kind = pendingMode;
+    const kind = pendingMode === 'table' ? 'tafel' : 'bank';
     pendingMode = null;
     fpHint.textContent = defaultHint;
     window.pendingTableKind = kind;
