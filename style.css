@@ -1355,6 +1355,31 @@ header.top a:hover { color: var(--gold-soft); border-color: var(--gold); }
 }
 .updates-btn:hover { background: var(--gold); color: var(--bg); }
 
+.admin-link {
+  display: block;
+  margin: 22px auto 0;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 0.78rem;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  opacity: 0.7;
+}
+.admin-link:hover { color: var(--gold-soft); opacity: 1; }
+
+.admin-back-link {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.admin-back-link:hover { color: var(--gold-soft); }
+
+.admin-restaurant-card { flex-wrap: wrap; gap: 10px; }
+.admin-restaurant-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
 .landing-topbar {
   display: flex;
   justify-content: flex-end;
