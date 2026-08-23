@@ -154,11 +154,11 @@
           <button type="button" class="mini-btn edit" id="btn-title-color" style="display:none;">Wijzigen</button>
         </span>
       </div>
-      <div class="settings-info-row">
+      <div class="settings-info-row" id="row-join-code" style="display:none;">
         <span>Join-code</span>
         <span class="code-display small" id="info-code">—</span>
       </div>
-      <p class="modal-text">Geef deze code aan personeel of medewerkers zodat zij dit restaurant kunnen joinen op het startscherm.</p>
+      <p class="modal-text" id="join-code-hint" style="display:none;">Geef deze code aan personeel of medewerkers zodat zij dit restaurant kunnen joinen op het startscherm.</p>
     </div>
   </section>
 </div>
@@ -261,6 +261,13 @@
         <button type="button" class="fp-shape-btn" data-shape="rond">⚪ Rond</button>
         <button type="button" class="fp-shape-btn" data-shape="vierkant">◻️ Vierkant</button>
         <button type="button" class="fp-shape-btn" data-shape="rechthoek">▭ Rechthoekig</button>
+      </div>
+    </div>
+    <div class="fp-shape-row" id="bank-orientation-row">
+      <span class="modal-label" style="margin:0 0 8px;">Richting van de bank</span>
+      <div class="fp-shape-options" id="bank-orientation-options">
+        <button type="button" class="fp-shape-btn" data-orientation="horizontaal">↔️ Horizontaal</button>
+        <button type="button" class="fp-shape-btn" data-orientation="verticaal">↕️ Verticaal</button>
       </div>
     </div>
     <div class="modal-error" id="table-number-error"></div>
