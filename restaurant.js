@@ -22,8 +22,8 @@ function saveMyRestaurantsLocal(list) {
 }
 
 // ==================== Leden & rechten per tabblad ====================
-const ALL_TABS = ['bestellen', 'keuken', 'gereed', 'historie', 'instellingen'];
-const TAB_LABELS = { bestellen: 'Bestellen', keuken: 'Keuken', gereed: 'Gereed', historie: 'Historie', instellingen: 'Instellingen' };
+const ALL_TABS = ['bestellen', 'voorraad', 'keuken', 'gereed', 'historie', 'instellingen'];
+const TAB_LABELS = { bestellen: 'Bestellen', voorraad: 'Voorraad', keuken: 'Keuken', gereed: 'Gereed', historie: 'Historie', instellingen: 'Instellingen' };
 
 function genLidId() {
   return 'm' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
@@ -526,6 +526,8 @@ restRef.child('products').on('value', snap => {
   PRODUCTS_STATE = snap.val() || {};
   renderSettingsProducts();
   renderOrderModalIfOpen();
+  renderVoorraadProducts();
+  renderVoorraadOpmerkingen();
 });
 
 function productList() {
@@ -1398,12 +1400,85 @@ function onResizeStart(e) {
 let currentOrderTable = null;
 let orderCounts = {};      // key -> aantal
 let orderItemOptions = {}; // key -> array (per besteld stuk) van gekozen opmerkingen
-let stockStatus = {};      // key -> uitverkocht?
+let stockStatus = {};      // productKey -> uitverkocht?
+let optionStockStatus = {}; // optieLabel (lowercase) -> uitverkocht?
 
 restRef.child('stock').on('value', snap => {
   stockStatus = snap.val() || {};
   renderOrderModalIfOpen();
+  renderVoorraadProducts();
 });
+
+restRef.child('stockOpties').on('value', snap => {
+  optionStockStatus = snap.val() || {};
+  renderOrderModalIfOpen();
+  renderVoorraadOpmerkingen();
+});
+
+function isOptionUitverkocht(label) {
+  return !!optionStockStatus[String(label).toLowerCase()];
+}
+
+// ==================== Voorraad ====================
+function renderVoorraadProducts() {
+  const list = document.getElementById('voorraad-product-list');
+  if (!list) return;
+  const items = productList();
+  if (items.length === 0) {
+    list.innerHTML = '<div class="empty-msg">Nog geen producten. Voeg ze toe via Instellingen → Producten.</div>';
+    return;
+  }
+  list.innerHTML = '';
+  items.forEach(p => {
+    const isOut = !!stockStatus[p.key];
+    const row = document.createElement('div');
+    row.className = 'voorraad-row' + (isOut ? ' uitverkocht' : '');
+    row.innerHTML = `
+      <div class="voorraad-row-main">
+        <span>${p.emoji}</span>
+        <span class="voorraad-row-name">${escapeHtml(p.label)}</span>
+        <span class="price-tag">${formatPrice(p.price)}</span>
+        ${isOut ? '<span class="uitverkocht-tag">Uitverkocht</span>' : ''}
+      </div>
+      <button type="button" class="mini-btn ${isOut ? 'edit' : 'danger'}" data-key="${p.key}">${isOut ? 'Op voorraad zetten' : 'Uitverkocht zetten'}</button>
+    `;
+    row.querySelector('button').addEventListener('click', () => {
+      if (isOut) restRef.child('stock/' + p.key).remove();
+      else restRef.child('stock/' + p.key).set(true);
+    });
+    list.appendChild(row);
+  });
+}
+
+function renderVoorraadOpmerkingen() {
+  const list = document.getElementById('voorraad-optie-list');
+  if (!list) return;
+  const opties = allKnownOptions();
+  if (opties.length === 0) {
+    list.innerHTML = '<div class="empty-msg">Nog geen opmerkingen ingesteld bij producten.</div>';
+    return;
+  }
+  list.innerHTML = '';
+  opties.forEach(o => {
+    const lkey = o.label.toLowerCase();
+    const isOut = isOptionUitverkocht(o.label);
+    const row = document.createElement('div');
+    row.className = 'voorraad-row' + (isOut ? ' uitverkocht' : '');
+    row.innerHTML = `
+      <div class="voorraad-row-main">
+        <span>${o.emoji || '📝'}</span>
+        <span class="voorraad-row-name">${escapeHtml(o.label)}</span>
+        ${isOut ? '<span class="uitverkocht-tag">Uitverkocht</span>' : ''}
+      </div>
+      <button type="button" class="mini-btn ${isOut ? 'edit' : 'danger'}" data-lkey="${lkey}">${isOut ? 'Op voorraad zetten' : 'Uitverkocht zetten'}</button>
+    `;
+    row.querySelector('button').addEventListener('click', () => {
+      if (isOut) restRef.child('stockOpties/' + lkey).remove();
+      else restRef.child('stockOpties/' + lkey).set(true);
+    });
+    list.appendChild(row);
+  });
+}
 
 function openOrderModalForTable(table) {
   currentOrderTable = table;
@@ -1496,11 +1571,14 @@ function renderOrderOptionToggles(key) {
     }
     opties.forEach(opt => {
       const active = selected.includes(opt.label);
+      const isOptOut = isOptionUitverkocht(opt.label);
       const chip = document.createElement('button');
       chip.type = 'button';
-      chip.className = 'ice-chip' + (active ? ' met' : '');
-      chip.textContent = `${active ? '✅ ' : (opt.emoji ? opt.emoji + ' ' : '')}${opt.label}`;
+      chip.className = 'ice-chip' + (active ? ' met' : '') + (isOptOut ? ' uitverkocht' : '');
+      chip.textContent = `${active ? '✅ ' : (opt.emoji ? opt.emoji + ' ' : '')}${opt.label}${isOptOut ? ' (uitverkocht)' : ''}`;
+      if (isOptOut) chip.disabled = true;
       chip.addEventListener('click', () => {
+        if (isOptionUitverkocht(opt.label)) return;
         const idx = orderItemOptions[key][i].indexOf(opt.label);
         if (idx === -1) orderItemOptions[key][i].push(opt.label);
         else orderItemOptions[key][i].splice(idx, 1);
