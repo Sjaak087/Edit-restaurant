@@ -1366,7 +1366,7 @@ header.top a:hover { color: var(--gold-soft); border-color: var(--gold); }
   display: flex;
   flex-direction: column;
   gap: 8px;
-  max-height: 50vh;
+  max-height: 62vh;
   overflow-y: auto;
 }
 .update-item {
@@ -1418,39 +1418,33 @@ header.top a:hover { color: var(--gold-soft); border-color: var(--gold); }
   color: var(--muted);
   font-size: 0.85rem;
   line-height: 1.5;
-  max-height: 38vh;
-  overflow-y: auto;
 }
 .update-item.open .update-item-info { display: block; }
 
 /* ==================== Custom scrollbar ==================== */
 .tab-nav,
-.updates-list,
-.update-item-info {
+.updates-list {
   scrollbar-width: thin;
-  scrollbar-color: var(--gold-soft) transparent;
+  scrollbar-color: rgba(201,162,75,0.35) transparent;
+  -webkit-overflow-scrolling: touch;
 }
 .tab-nav::-webkit-scrollbar,
-.updates-list::-webkit-scrollbar,
-.update-item-info::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+.updates-list::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
 }
 .tab-nav::-webkit-scrollbar-track,
-.updates-list::-webkit-scrollbar-track,
-.update-item-info::-webkit-scrollbar-track {
+.updates-list::-webkit-scrollbar-track {
   background: transparent;
 }
 .tab-nav::-webkit-scrollbar-thumb,
-.updates-list::-webkit-scrollbar-thumb,
-.update-item-info::-webkit-scrollbar-thumb {
-  background: var(--gold-soft);
+.updates-list::-webkit-scrollbar-thumb {
+  background: rgba(201,162,75,0.35);
   border-radius: 4px;
 }
 .tab-nav::-webkit-scrollbar-thumb:hover,
-.updates-list::-webkit-scrollbar-thumb:hover,
-.update-item-info::-webkit-scrollbar-thumb:hover {
-  background: var(--gold);
+.updates-list::-webkit-scrollbar-thumb:hover {
+  background: var(--gold-soft);
 }
 
 .fp-legend {
