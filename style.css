@@ -1244,6 +1244,12 @@ header.top a:hover { color: var(--gold-soft); border-color: var(--gold); }
   background: linear-gradient(135deg, #a34848, var(--wine) 70%);
   color: white;
 }
+.fp-table.fp-kind-bank.fp-orientation-verticaal {
+  width: calc(40px * var(--fp-scale, 1));
+  height: calc(70px * var(--fp-scale, 1));
+  margin-left: calc(-20px * var(--fp-scale, 1));
+  margin-top: calc(-35px * var(--fp-scale, 1));
+}
 
 /* ---- Bar en Keuken: alleen een naam, niet te bestellen ---- */
 .fp-table.fp-kind-bar,
