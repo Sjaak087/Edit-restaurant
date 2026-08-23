@@ -475,6 +475,13 @@ header.top a:hover { color: var(--gold-soft); border-color: var(--gold); }
   color: white;
 }
 .ice-chip.met:hover { background: var(--green-dark); }
+.ice-chip.uitverkocht {
+  border-color: var(--wine);
+  color: #d99a9a;
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.ice-chip.uitverkocht:hover { border-color: var(--wine); color: #d99a9a; }
 
 /* Opmerkingen-editor bij product aanmaken/bewerken */
 .product-options-list {
@@ -1495,6 +1502,29 @@ header.top a:hover { color: var(--gold-soft); border-color: var(--gold); }
 }
 .mini-btn.edit:hover { border-color: var(--gold); color: var(--gold-soft); }
 .mini-btn.danger:hover { border-color: var(--wine); color: #d99a9a; }
+
+.settings-section-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--gold-soft);
+  margin: 0 0 4px;
+}
+.voorraad-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.voorraad-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+}
+.voorraad-row.uitverkocht { border-left: 3px solid var(--wine); opacity: 0.8; }
+.voorraad-row-main { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.voorraad-row-name { font-weight: 700; }
 
 .settings-danger-zone {
   margin-top: 24px;
