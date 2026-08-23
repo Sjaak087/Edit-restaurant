@@ -12,7 +12,7 @@
 const UPDATES = [
   {
     title: 'Systeem beheer en voorraad tab', 
-    date: '23-08-2026', 
+    date: '24-08-2026', 
     info: 'ik heb veel nieuwe dingen toegevoegd laten we beginnen bij de naamkleur aanpassen je kunt nu de naamkleur van je restaurant aanpassen en je moet jezelf nu een naam geven als je een retsaurant joint of maakt deze kleur kun je ook aanpassen ook heb ik toegevoegd dat je nu een restaurant makkelijk kunt verlaten in instellingen en als de eigenaar het restaurant verlaat wordt het hele restaurant verwijdert daarnaast heb ik ook toegevoegd dat je nu een bank horizontaal of verticaal kan zetten en ook heb ik toegevoegd dat ik als eigenaar elk retsaurant kan beheren, aanpassen en verwijderen als nodig ook kan ik hier andere kleine dingen in doen en als laatste (en de grootste) heb ik een nieuwe voorraad tab toegevoegd hier staan alle producten in en je kunt deze op uitverkocht zetten dan zijn ze niet meer te bestellen we hebben ook nog een paar bugfixes doorgevoerd de volgende update zal wat kleiner zijn maar zorg alsnog dat je die ook gaat uitchecken als hij uit is!'
   },    
   {
