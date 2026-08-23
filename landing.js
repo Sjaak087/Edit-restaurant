@@ -129,7 +129,7 @@ document.getElementById('create-confirm').addEventListener('click', async () => 
     await newRef.child('leden/' + memberId).set({
       rol: 'eigenaar',
       naam: mijnNaam,
-      tabs: { bestellen: true, keuken: true, gereed: true, historie: true, instellingen: true },
+      tabs: { bestellen: true, voorraad: true, keuken: true, gereed: true, historie: true, instellingen: true },
       toegevoegdOp: Date.now()
     });
 
@@ -192,7 +192,7 @@ document.getElementById('join-confirm').addEventListener('click', async () => {
     await db.ref('restaurants/' + id + '/leden/' + memberId).set({
       rol: 'gejoined',
       naam: mijnNaam,
-      tabs: { bestellen: true, keuken: false, gereed: false, historie: false, instellingen: false },
+      tabs: { bestellen: true, voorraad: false, keuken: false, gereed: false, historie: false, instellingen: false },
       toegevoegdOp: Date.now()
     });
 
