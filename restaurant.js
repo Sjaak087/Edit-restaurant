@@ -264,6 +264,46 @@ if (!isOwner) {
   document.getElementById('join-code-hint').style.display = 'block';
 }
 
+// ==================== Restaurant verlaten ====================
+document.getElementById('leave-restaurant-hint').textContent = isOwner
+  ? 'Let op: als eigenaar wordt bij het verlaten het hele restaurant definitief verwijderd, inclusief alle leden, tafels, producten en geschiedenis.'
+  : 'Je verliest hierna de toegang tot dit restaurant op dit apparaat.';
+
+document.getElementById('btn-leave-restaurant').addEventListener('click', async () => {
+  const btn = document.getElementById('btn-leave-restaurant');
+  if (isOwner) {
+    const naamHuidig = document.getElementById('info-naam').textContent.trim();
+    if (!confirm(`Weet je zeker dat je "${naamHuidig}" wilt verlaten? Dit verwijdert het HELE restaurant definitief, inclusief alle leden, tafels, producten en geschiedenis. Dit kan niet ongedaan gemaakt worden.`)) return;
+    btn.disabled = true;
+    try {
+      const codeSnap = await restRef.child('code').once('value');
+      const code = codeSnap.val();
+      await restRef.remove();
+      if (code) await db.ref('restaurantCodes/' + code).remove();
+      const list = getMyRestaurants().filter(r => r.id !== restaurantId);
+      saveMyRestaurantsLocal(list);
+      window.location.href = 'index.html';
+    } catch (e) {
+      console.error(e);
+      btn.disabled = false;
+      alert('Er ging iets mis, probeer het opnieuw.');
+    }
+  } else {
+    if (!confirm('Weet je zeker dat je dit restaurant wilt verlaten?')) return;
+    btn.disabled = true;
+    try {
+      await restRef.child('leden/' + myMemberId).remove();
+      const list = getMyRestaurants().filter(r => r.id !== restaurantId);
+      saveMyRestaurantsLocal(list);
+      window.location.href = 'index.html';
+    } catch (e) {
+      console.error(e);
+      btn.disabled = false;
+      alert('Er ging iets mis, probeer het opnieuw.');
+    }
+  }
+});
+
 document.getElementById('btn-rename-restaurant').addEventListener('click', () => {
   document.getElementById('rename-restaurant-input').value = document.getElementById('info-naam').textContent.trim();
   document.getElementById('rename-restaurant-error').textContent = '';
