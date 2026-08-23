@@ -260,6 +260,8 @@ if (!isOwner) {
   document.getElementById('btn-rename-restaurant').style.display = '';
   document.getElementById('btn-header-color').style.display = '';
   document.getElementById('btn-title-color').style.display = '';
+  document.getElementById('row-join-code').style.display = '';
+  document.getElementById('join-code-hint').style.display = 'block';
 }
 
 document.getElementById('btn-rename-restaurant').addEventListener('click', () => {
@@ -965,10 +967,13 @@ function renderCanvas(canvasEl, { editable, onTableClick }) {
   Object.entries(TABLES_STATE).forEach(([id, table]) => {
     const kind = table.kind || 'tafel';
     const shape = table.shape || 'rond';
+    const orientation = table.orientation || 'horizontaal';
     const isOrderable = kind === 'tafel' || kind === 'bank';
     const el = document.createElement('button');
     el.type = 'button';
-    el.className = 'fp-table fp-kind-' + kind + (kind === 'tafel' ? ' fp-shape-' + shape : '');
+    el.className = 'fp-table fp-kind-' + kind
+      + (kind === 'tafel' ? ' fp-shape-' + shape : '')
+      + (kind === 'bank' ? ' fp-orientation-' + orientation : '');
     if (!editable && isOrderable && ACTIEVE_TAFELS.has(table.number)) el.classList.add('bezet');
     el.style.left = table.x + '%';
     el.style.top = table.y + '%';
@@ -1118,6 +1123,18 @@ document.querySelectorAll('#table-shape-options .fp-shape-btn').forEach(btn => {
   btn.addEventListener('click', () => setTableShapeSelection(btn.dataset.shape));
 });
 
+// ---- Richtingkeuze voor banken (horizontaal / verticaal) ----
+let selectedBankOrientation = 'horizontaal';
+function setBankOrientationSelection(orientation) {
+  selectedBankOrientation = orientation;
+  document.querySelectorAll('#bank-orientation-options .fp-shape-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.orientation === orientation);
+  });
+}
+document.querySelectorAll('#bank-orientation-options .fp-shape-btn').forEach(btn => {
+  btn.addEventListener('click', () => setBankOrientationSelection(btn.dataset.orientation));
+});
+
 document.getElementById('tool-delete').addEventListener('click', (e) => {
   deleteMode = !deleteMode;
   pendingMode = null;
@@ -1168,7 +1185,9 @@ editCanvas.addEventListener('click', (e) => {
     document.getElementById('table-number-error').textContent = '';
     document.getElementById('table-number-modal-title').textContent = kind === 'bank' ? 'Banknummer' : 'Tafelnummer';
     document.getElementById('table-shape-row').style.display = kind === 'tafel' ? '' : 'none';
+    document.getElementById('bank-orientation-row').style.display = kind === 'bank' ? '' : 'none';
     setTableShapeSelection('rond');
+    setBankOrientationSelection('horizontaal');
     openModal('modal-table-number');
     return;
   }
@@ -1208,6 +1227,7 @@ document.getElementById('table-number-confirm').addEventListener('click', () => 
   const kind = window.pendingTableKind || 'tafel';
   const data = { kind, number: nummer, x: pos.x, y: pos.y };
   if (kind === 'tafel') data.shape = selectedTableShape;
+  if (kind === 'bank') data.orientation = selectedBankOrientation;
   restRef.child('floorplan/tables').push(data);
   closeModal('modal-table-number');
 });
