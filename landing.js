@@ -62,17 +62,9 @@ function renderMyRestaurants() {
           <div class="restaurant-card-name">${escapeHtml(r.naam)}</div>
           <div class="restaurant-card-role">${r.rol === 'eigenaar' ? '👑 Eigenaar' : '👤 Gejoined'}</div>
         </div>
-        <button type="button" class="restaurant-card-leave" data-id="${r.id}" title="Verlaat dit restaurant">✕</button>
       `;
-      card.querySelector('.restaurant-card-main').addEventListener('click', () => {
+      card.addEventListener('click', () => {
         window.location.href = `restaurant.html?id=${encodeURIComponent(r.id)}`;
-      });
-      card.querySelector('.restaurant-card-leave').addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (!confirm(`"${r.naam}" verlaten op dit apparaat?`)) return;
-        const updated = getMyRestaurants().filter(x => x.id !== r.id);
-        saveMyRestaurants(updated);
-        renderMyRestaurants();
       });
       myRestaurantsEl.appendChild(card);
     });
