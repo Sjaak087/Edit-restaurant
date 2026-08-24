@@ -1,11 +1,15 @@
 // ==================== Update log ====================
-// Voeg hier nieuwe updates toe met een titel, datum en info.
+// Voeg hier nieuwe updates toe met een titel, datum, tijd en info.
 // Belangrijk: de NIEUWSTE update moet BOVENAAN in de lijst staan.
+//
+// De tijd (bijv. '14:30') komt naast de datum te staan, in het kopje van de
+// update — dus die is altijd zichtbaar, ook zonder de update uit te klappen.
 //
 // Voorbeeld van een nieuwe update (kopieer dit blokje en zet het bovenaan):
 // {
 //   title: 'Korte titel van de update',
 //   date: '20-08-2026',
+//   time: '14:30',
 //   info: 'Iets langere uitleg over wat er precies is veranderd of toegevoegd.'
 // },
 
@@ -13,11 +17,13 @@ const UPDATES = [
   {
     title: 'kleine update met een paar verbeteringen',
     date: '24-08-2026',
+    time: '00:00',
     info: 'ik heb een paar kleine dingen toegevoegd ten eerste kun je nu het lettertype veranderen je kunt kiezen uit 15 verschillende lettertypen ik heb ook mijn systeembeheer een beetje beter beveiligd ook kun je nu de tijd van de update release zien bij de update log natuurlijk zijn er ook ngo een paar bugfixes de volgende update zal de grootste ooit worden dus ben er zeker van dat je die ook uitcheckt als hij uit is!'
   },     
   {
     title: 'Systeem beheer en voorraad tab', 
     date: '24-08-2026', 
+    time: '00:00',
     info: 'ik heb veel nieuwe dingen toegevoegd laten we beginnen bij de naamkleur aanpassen je kunt nu de naamkleur van je restaurant aanpassen en je moet jezelf nu een naam geven als je een retsaurant joint of maakt deze kleur kun je ook aanpassen ook heb ik toegevoegd dat je nu een restaurant makkelijk kunt verlaten in instellingen en als de eigenaar het restaurant verlaat wordt het hele restaurant verwijdert daarnaast heb ik ook toegevoegd dat je nu een bank horizontaal of verticaal kan zetten en ook heb ik toegevoegd dat ik als eigenaar elk retsaurant kan beheren, aanpassen en verwijderen als nodig ook kan ik hier andere kleine dingen in doen en als laatste (en de grootste) heb ik een nieuwe voorraad tab toegevoegd hier staan alle producten in en je kunt deze op uitverkocht zetten dan zijn ze niet meer te bestellen we hebben ook nog een paar bugfixes doorgevoerd de volgende update zal wat kleiner zijn maar zorg alsnog dat je die ook gaat uitchecken als hij uit is!'
   },    
   {
@@ -55,7 +61,7 @@ function renderUpdatesList() {
       <button type="button" class="update-item-head">
         <span class="update-item-title">${escapeHtmlUpdates(u.title)}</span>
         <span class="update-item-right">
-          <span class="update-item-date">${escapeHtmlUpdates(u.date)}</span>
+          <span class="update-item-date">${escapeHtmlUpdates(u.date)}${u.time ? ' · ' + escapeHtmlUpdates(u.time) : ''}</span>
           <span class="update-item-arrow">▾</span>
         </span>
       </button>
