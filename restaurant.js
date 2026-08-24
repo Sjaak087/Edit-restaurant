@@ -571,7 +571,7 @@ const FONT_OPTIONS = [
   { label: 'Caveat', family: '"Caveat", cursive' },
   { label: 'Dancing Script', family: '"Dancing Script", cursive' }
 ];
-const FONT_SAMPLE_TEXT = 'Tafel 5 – Menu';
+const FONT_SAMPLE_TEXT = 'Voorbeeld';
 
 function applyFont(family) {
   const root = document.documentElement.style;
@@ -594,7 +594,7 @@ const fontPaletteEl = document.getElementById('font-palette');
 if (fontPaletteEl) {
   fontPaletteEl.innerHTML = FONT_OPTIONS.map(f =>
     `<button type="button" class="font-swatch" data-family="${f.family.replace(/"/g, '&quot;')}" style="font-family:${f.family};">
-      <span class="font-swatch-sample">${FONT_SAMPLE_TEXT}</span>
+      <span class="font-swatch-sample" style="font-family:${f.family};">${FONT_SAMPLE_TEXT}</span>
       <span class="font-swatch-label">${f.label}</span>
     </button>`
   ).join('');
