@@ -592,12 +592,17 @@ function applyFont(family) {
 
 const fontPaletteEl = document.getElementById('font-palette');
 if (fontPaletteEl) {
-  fontPaletteEl.innerHTML = FONT_OPTIONS.map(f =>
-    `<button type="button" class="font-swatch" data-family="${f.family.replace(/"/g, '&quot;')}" style="font-family:${f.family};">
-      <span class="font-swatch-sample" style="font-family:${f.family};">${FONT_SAMPLE_TEXT}</span>
+  fontPaletteEl.innerHTML = FONT_OPTIONS.map(f => {
+    // Belangrijk: f.family bevat zelf aanhalingstekens (bijv. "Playfair Display", Georgia, serif).
+    // Die MOETEN als &quot; geschreven worden zodra ze in een HTML-attribuut (style="...") komen,
+    // anders breekt de aanhalingstekens het attribuut open en valt de browser terug op het
+    // algemene lettertype — waardoor alle voorbeelden hetzelfde lettertype tonen.
+    const familyAttr = f.family.replace(/"/g, '&quot;');
+    return `<button type="button" class="font-swatch" data-family="${familyAttr}" style="font-family:${familyAttr};">
+      <span class="font-swatch-sample" style="font-family:${familyAttr};">${FONT_SAMPLE_TEXT}</span>
       <span class="font-swatch-label">${f.label}</span>
-    </button>`
-  ).join('');
+    </button>`;
+  }).join('');
   fontPaletteEl.querySelectorAll('.font-swatch').forEach(sw => {
     sw.addEventListener('click', () => {
       const family = sw.dataset.family;
