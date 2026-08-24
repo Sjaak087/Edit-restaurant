@@ -552,20 +552,26 @@ if (btnTitleColor) {
 }
 
 // ==================== Lettertype ====================
-// 10 keuzes die gelden voor ALLE tekst in het restaurant (koppen én gewone tekst).
+// 15 keuzes die gelden voor ALLE tekst in het restaurant (koppen én gewone tekst).
 // Codes/tijden (--font-mono) blijven bewust monospace voor de leesbaarheid.
 const FONT_OPTIONS = [
   { label: 'Playfair Display', family: '"Playfair Display", Georgia, serif' },
   { label: 'Merriweather', family: '"Merriweather", Georgia, serif' },
   { label: 'Cormorant Garamond', family: '"Cormorant Garamond", Georgia, serif' },
   { label: 'Lora', family: '"Lora", Georgia, serif' },
+  { label: 'Crimson Text', family: '"Crimson Text", Georgia, serif' },
+  { label: 'Roboto Slab', family: '"Roboto Slab", Georgia, serif' },
   { label: 'Poppins', family: '"Poppins", "Helvetica Neue", Arial, sans-serif' },
   { label: 'Montserrat', family: '"Montserrat", "Helvetica Neue", Arial, sans-serif' },
   { label: 'Raleway', family: '"Raleway", "Helvetica Neue", Arial, sans-serif' },
+  { label: 'Josefin Sans', family: '"Josefin Sans", "Helvetica Neue", Arial, sans-serif' },
   { label: 'Oswald', family: '"Oswald", "Arial Narrow", sans-serif' },
+  { label: 'Bebas Neue', family: '"Bebas Neue", "Arial Narrow", sans-serif' },
+  { label: 'Abril Fatface', family: '"Abril Fatface", Georgia, serif' },
   { label: 'Caveat', family: '"Caveat", cursive' },
-  { label: 'Bebas Neue', family: '"Bebas Neue", "Arial Narrow", sans-serif' }
+  { label: 'Dancing Script', family: '"Dancing Script", cursive' }
 ];
+const FONT_SAMPLE_TEXT = 'Tafel 5 – Menu';
 
 function applyFont(family) {
   const root = document.documentElement.style;
@@ -588,7 +594,7 @@ const fontPaletteEl = document.getElementById('font-palette');
 if (fontPaletteEl) {
   fontPaletteEl.innerHTML = FONT_OPTIONS.map(f =>
     `<button type="button" class="font-swatch" data-family="${f.family.replace(/"/g, '&quot;')}" style="font-family:${f.family};">
-      <span class="font-swatch-preview">Aa</span>
+      <span class="font-swatch-sample">${FONT_SAMPLE_TEXT}</span>
       <span class="font-swatch-label">${f.label}</span>
     </button>`
   ).join('');
