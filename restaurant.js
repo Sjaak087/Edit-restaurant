@@ -289,6 +289,7 @@ if (!isOwner) {
   document.getElementById('btn-rename-restaurant').style.display = '';
   document.getElementById('btn-header-color').style.display = '';
   document.getElementById('btn-title-color').style.display = '';
+  document.getElementById('btn-font').style.display = '';
   document.getElementById('row-join-code').style.display = '';
   document.getElementById('join-code-hint').style.display = 'block';
 }
@@ -548,6 +549,90 @@ restRef.child('titleColor').on('value', snap => {
 const btnTitleColor = document.getElementById('btn-title-color');
 if (btnTitleColor) {
   btnTitleColor.addEventListener('click', () => openModal('modal-title-color'));
+}
+
+// ==================== Lettertype ====================
+// 10 keuzes die gelden voor ALLE tekst in het restaurant (koppen én gewone tekst).
+// Codes/tijden (--font-mono) blijven bewust monospace voor de leesbaarheid.
+const FONT_OPTIONS = [
+  { label: 'Playfair Display', family: '"Playfair Display", Georgia, serif' },
+  { label: 'Merriweather', family: '"Merriweather", Georgia, serif' },
+  { label: 'Cormorant Garamond', family: '"Cormorant Garamond", Georgia, serif' },
+  { label: 'Lora', family: '"Lora", Georgia, serif' },
+  { label: 'Poppins', family: '"Poppins", "Helvetica Neue", Arial, sans-serif' },
+  { label: 'Montserrat', family: '"Montserrat", "Helvetica Neue", Arial, sans-serif' },
+  { label: 'Raleway', family: '"Raleway", "Helvetica Neue", Arial, sans-serif' },
+  { label: 'Oswald', family: '"Oswald", "Arial Narrow", sans-serif' },
+  { label: 'Caveat', family: '"Caveat", cursive' },
+  { label: 'Bebas Neue', family: '"Bebas Neue", "Arial Narrow", sans-serif' }
+];
+
+function applyFont(family) {
+  const root = document.documentElement.style;
+  const info = document.getElementById('info-font');
+  if (family) {
+    root.setProperty('--font-body', family);
+    root.setProperty('--font-display', family);
+  } else {
+    root.removeProperty('--font-body');
+    root.removeProperty('--font-display');
+  }
+  if (info) {
+    const match = FONT_OPTIONS.find(f => f.family === family);
+    info.textContent = match ? match.label : 'Standaard';
+    info.style.fontFamily = family || '';
+  }
+}
+
+const fontPaletteEl = document.getElementById('font-palette');
+if (fontPaletteEl) {
+  fontPaletteEl.innerHTML = FONT_OPTIONS.map(f =>
+    `<button type="button" class="font-swatch" data-family="${f.family.replace(/"/g, '&quot;')}" style="font-family:${f.family};">
+      <span class="font-swatch-preview">Aa</span>
+      <span class="font-swatch-label">${f.label}</span>
+    </button>`
+  ).join('');
+  fontPaletteEl.querySelectorAll('.font-swatch').forEach(sw => {
+    sw.addEventListener('click', () => {
+      const family = sw.dataset.family;
+      restRef.child('font').set(family).then(() => {
+        closeModal('modal-font');
+      }).catch(err => {
+        console.error(err);
+        alert('Er ging iets mis bij het opslaan van het lettertype.');
+      });
+    });
+  });
+}
+
+const fontDefaultBtn = document.getElementById('font-default');
+if (fontDefaultBtn) {
+  fontDefaultBtn.addEventListener('click', () => {
+    restRef.child('font').remove().then(() => {
+      closeModal('modal-font');
+    }).catch(err => {
+      console.error(err);
+      alert('Er ging iets mis bij het opslaan van het lettertype.');
+    });
+  });
+}
+
+restRef.child('font').on('value', snap => {
+  const family = snap.val();
+  applyFont(family);
+  if (fontPaletteEl) {
+    fontPaletteEl.querySelectorAll('.font-swatch').forEach(sw => {
+      sw.classList.toggle('selected', !!family && sw.dataset.family === family);
+    });
+  }
+  if (fontDefaultBtn) {
+    fontDefaultBtn.classList.toggle('selected', !family);
+  }
+});
+
+const btnFont = document.getElementById('btn-font');
+if (btnFont) {
+  btnFont.addEventListener('click', () => openModal('modal-font'));
 }
 
 document.querySelectorAll('.subtab-btn').forEach(btn => {
