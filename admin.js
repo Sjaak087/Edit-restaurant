@@ -34,7 +34,13 @@ db.ref('restaurants').on('value', snap => {
 function renderAdminRestaurants(data) {
   const list = document.getElementById('admin-restaurant-list');
   const emptyMsg = document.getElementById('admin-empty-msg');
-  const entries = Object.entries(data).sort((a, b) => (b[1].aangemaakt || 0) - (a[1].aangemaakt || 0));
+
+  // Restaurants zonder leden zijn "spookrestaurants" (bijv. overgebleven na een
+  // fout, of nog in het proces van verwijderd worden) en gelden niet als een
+  // echt bestaand restaurant, dus die tonen we niet in het beheer.
+  const entries = Object.entries(data)
+    .filter(([, r]) => r.leden && Object.keys(r.leden).length > 0)
+    .sort((a, b) => (b[1].aangemaakt || 0) - (a[1].aangemaakt || 0));
 
   if (entries.length === 0) {
     list.innerHTML = '';
@@ -54,14 +60,32 @@ function renderAdminRestaurants(data) {
         <div class="restaurant-card-role">Code: ${escapeHtmlAdmin(r.code || '—')} · ${ledenAantal} lid/leden · aangemaakt ${formatDatumAdmin(r.aangemaakt)}</div>
       </div>
       <div class="admin-restaurant-actions">
-        <button type="button" class="mini-btn edit" data-edit="${id}">Bewerken</button>
+        <button type="button" class="mini-btn edit" data-view="${id}">Bekijken &amp; beheren</button>
+        <button type="button" class="mini-btn edit" data-edit="${id}">Naam</button>
         <button type="button" class="mini-btn danger" data-delete="${id}">Verwijderen</button>
       </div>
     `;
-    card.querySelector('[data-edit]').addEventListener('click', () => openAdminRename(id, r.naam || ''));
-    card.querySelector('[data-delete]').addEventListener('click', () => deleteAdminRestaurant(id, r));
+    // Klik op de kaart zelf opent de volledige restaurant-weergave, met alle
+    // rechten van een eigenaar (plattegrond, producten, voorraad, leden, enz).
+    card.addEventListener('click', () => openAdminRestaurantView(id));
+    card.querySelector('[data-view]').addEventListener('click', (e) => {
+      e.stopPropagation();
+      openAdminRestaurantView(id);
+    });
+    card.querySelector('[data-edit]').addEventListener('click', (e) => {
+      e.stopPropagation();
+      openAdminRename(id, r.naam || '');
+    });
+    card.querySelector('[data-delete]').addEventListener('click', (e) => {
+      e.stopPropagation();
+      deleteAdminRestaurant(id, r);
+    });
     list.appendChild(card);
   });
+}
+
+function openAdminRestaurantView(id) {
+  window.location.href = `restaurant.html?id=${encodeURIComponent(id)}&admin=1`;
 }
 
 function openAdminRename(id, naam) {
