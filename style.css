@@ -945,7 +945,7 @@ header.top a:hover { color: var(--gold-soft); border-color: var(--gold); }
   padding: 26px 24px;
   width: 100%;
   max-width: 380px;
-  max-height: 88vh;
+  max-height: 92vh;
   overflow-y: auto;
 }
 .modal-box.wide { max-width: 560px; }
@@ -1391,8 +1391,6 @@ header.top a:hover { color: var(--gold-soft); border-color: var(--gold); }
   display: flex;
   flex-direction: column;
   gap: 8px;
-  max-height: 62vh;
-  overflow-y: auto;
 }
 .update-item {
   border: 1px solid var(--line);
@@ -1448,27 +1446,27 @@ header.top a:hover { color: var(--gold-soft); border-color: var(--gold); }
 
 /* ==================== Custom scrollbar ==================== */
 .tab-nav,
-.updates-list {
+.modal-box {
   scrollbar-width: thin;
   scrollbar-color: rgba(201,162,75,0.35) transparent;
   -webkit-overflow-scrolling: touch;
 }
 .tab-nav::-webkit-scrollbar,
-.updates-list::-webkit-scrollbar {
+.modal-box::-webkit-scrollbar {
   width: 4px;
   height: 4px;
 }
 .tab-nav::-webkit-scrollbar-track,
-.updates-list::-webkit-scrollbar-track {
+.modal-box::-webkit-scrollbar-track {
   background: transparent;
 }
 .tab-nav::-webkit-scrollbar-thumb,
-.updates-list::-webkit-scrollbar-thumb {
+.modal-box::-webkit-scrollbar-thumb {
   background: rgba(201,162,75,0.35);
   border-radius: 4px;
 }
 .tab-nav::-webkit-scrollbar-thumb:hover,
-.updates-list::-webkit-scrollbar-thumb:hover {
+.modal-box::-webkit-scrollbar-thumb:hover {
   background: var(--gold-soft);
 }
 
