@@ -7,15 +7,31 @@ function getMyRestaurants() {
   catch (e) { return []; }
 }
 
+// Beheerdersmodus: toegankelijk via het admin-paneel, staat los van of dit
+// apparaat zelf lid is van het restaurant. Geeft volledige eigenaar-rechten
+// zonder dat er een eigen ledenrecord wordt aangemaakt.
+const isAdminMode = params.get('admin') === '1' && sessionStorage.getItem('isRestaurantAdmin') === '1';
+
 const mijnEntry = getMyRestaurants().find(r => r.id === restaurantId);
-if (!restaurantId || !mijnEntry) {
+if (!restaurantId || (!mijnEntry && !isAdminMode)) {
   alert('Dit restaurant is niet bekend op dit apparaat. Join het eerst met een code.');
   window.location.href = 'index.html';
 }
 
-const isOwner = !!mijnEntry && mijnEntry.rol === 'eigenaar';
+const isOwner = isAdminMode ? true : (!!mijnEntry && mijnEntry.rol === 'eigenaar');
+const backUrl = isAdminMode ? 'admin.html' : 'index.html';
 
 const restRef = db.ref('restaurants/' + restaurantId);
+
+const backLink = document.getElementById('back-link');
+if (backLink) {
+  backLink.href = backUrl;
+  if (isAdminMode) backLink.textContent = '← Beheer';
+}
+if (isAdminMode) {
+  const badge = document.getElementById('my-name-badge');
+  if (badge) badge.textContent = '🔧 Beheerdersmodus';
+}
 
 function saveMyRestaurantsLocal(list) {
   localStorage.setItem('mijnRestaurants', JSON.stringify(list));
@@ -46,8 +62,8 @@ async function genUniqueCode() {
 // Zorg dat dit apparaat een lid-id heeft. Bestaande memberships (van vóór deze functie,
 // of als de join-schrijfactie ooit mislukte) krijgen bij het eerste bezoek gewoon alle
 // tabbladen, zodat niemand onverwacht wordt buitengesloten.
-let myMemberId = mijnEntry.memberId;
-if (!myMemberId) {
+let myMemberId = isAdminMode ? null : mijnEntry.memberId;
+if (!isAdminMode && !myMemberId) {
   myMemberId = genLidId();
   const list = getMyRestaurants();
   const idx = list.findIndex(r => r.id === restaurantId);
@@ -71,37 +87,43 @@ function applyTabPermissions(tabs) {
   }
 }
 
-restRef.child('leden/' + myMemberId).once('value').then(snap => {
-  if (!snap.exists()) {
-    const tabs = {};
-    ALL_TABS.forEach(t => { tabs[t] = true; });
-    const data = { rol: isOwner ? 'eigenaar' : 'gejoined', naam: mijnEntry.mijnNaam || 'Naamloos', tabs: tabs, toegevoegdOp: Date.now() };
-    return restRef.child('leden/' + myMemberId).set(data).then(() => tabs);
-  }
-  return snap.val().tabs;
-}).then(tabs => {
-  applyTabPermissions(tabs);
-  if (isOwner) {
-    // Zorg dat de eigenaar zichzelf meteen in de ledenlijst ziet, ook nog vóórdat
-    // het live-abonnement op /leden zijn eerste update heeft binnengekregen.
-    LEDEN_STATE[myMemberId] = LEDEN_STATE[myMemberId] || { rol: 'eigenaar', tabs: tabs, toegevoegdOp: Date.now() };
-    renderLedenList();
-  }
-  // Pas ná het aanmaken/ophalen van dit lid-record live gaan luisteren, anders kan het
-  // even (foutief) lijken alsof je bent gekickt terwijl het record nog geschreven wordt.
-  restRef.child('leden/' + myMemberId).on('value', snap => {
+if (isAdminMode) {
+  // Beheerder is geen echt lid van dit restaurant: geen ledenrecord aanmaken
+  // of beluisteren. Alle tabbladen blijven gewoon zichtbaar (standaard uit de
+  // HTML) en de rechten hieronder (isOwner === true) geven volledige toegang.
+} else {
+  restRef.child('leden/' + myMemberId).once('value').then(snap => {
     if (!snap.exists()) {
-      alert('Je bent verwijderd uit dit restaurant.');
-      const list = getMyRestaurants().filter(r => r.id !== restaurantId);
-      saveMyRestaurantsLocal(list);
-      window.location.href = 'index.html';
-      return;
+      const tabs = {};
+      ALL_TABS.forEach(t => { tabs[t] = true; });
+      const data = { rol: isOwner ? 'eigenaar' : 'gejoined', naam: mijnEntry.mijnNaam || 'Naamloos', tabs: tabs, toegevoegdOp: Date.now() };
+      return restRef.child('leden/' + myMemberId).set(data).then(() => tabs);
     }
-    const lid = snap.val();
-    applyTabPermissions(lid.tabs);
-    updateMyNameBadge(lid.naam);
+    return snap.val().tabs;
+  }).then(tabs => {
+    applyTabPermissions(tabs);
+    if (isOwner) {
+      // Zorg dat de eigenaar zichzelf meteen in de ledenlijst ziet, ook nog vóórdat
+      // het live-abonnement op /leden zijn eerste update heeft binnengekregen.
+      LEDEN_STATE[myMemberId] = LEDEN_STATE[myMemberId] || { rol: 'eigenaar', tabs: tabs, toegevoegdOp: Date.now() };
+      renderLedenList();
+    }
+    // Pas ná het aanmaken/ophalen van dit lid-record live gaan luisteren, anders kan het
+    // even (foutief) lijken alsof je bent gekickt terwijl het record nog geschreven wordt.
+    restRef.child('leden/' + myMemberId).on('value', snap => {
+      if (!snap.exists()) {
+        alert('Je bent verwijderd uit dit restaurant.');
+        const list = getMyRestaurants().filter(r => r.id !== restaurantId);
+        saveMyRestaurantsLocal(list);
+        window.location.href = 'index.html';
+        return;
+      }
+      const lid = snap.val();
+      applyTabPermissions(lid.tabs);
+      updateMyNameBadge(lid.naam);
+    });
   });
-});
+}
 
 // ==================== Eigen naam bovenaan ====================
 function updateMyNameBadge(naam) {
@@ -111,11 +133,18 @@ function updateMyNameBadge(naam) {
   if (infoEl) infoEl.textContent = naam || '—';
 }
 
-document.getElementById('btn-rename-mijn-naam').addEventListener('click', () => {
-  document.getElementById('rename-mijn-naam-input').value = document.getElementById('info-mijn-naam').textContent.trim();
-  document.getElementById('rename-mijn-naam-error').textContent = '';
-  openModal('modal-rename-mijn-naam');
-});
+if (isAdminMode) {
+  // Beheerder heeft geen eigen ledenrecord in dit restaurant, dus deze rij is
+  // hier niet van toepassing.
+  const row = document.getElementById('row-mijn-naam');
+  if (row) row.style.display = 'none';
+} else {
+  document.getElementById('btn-rename-mijn-naam').addEventListener('click', () => {
+    document.getElementById('rename-mijn-naam-input').value = document.getElementById('info-mijn-naam').textContent.trim();
+    document.getElementById('rename-mijn-naam-error').textContent = '';
+    openModal('modal-rename-mijn-naam');
+  });
+}
 document.getElementById('rename-mijn-naam-confirm').addEventListener('click', () => {
   const naam = document.getElementById('rename-mijn-naam-input').value.trim();
   const errorEl = document.getElementById('rename-mijn-naam-error');
@@ -265,13 +294,33 @@ if (!isOwner) {
 }
 
 // ==================== Restaurant verlaten ====================
-document.getElementById('leave-restaurant-hint').textContent = isOwner
-  ? 'Let op: als eigenaar wordt bij het verlaten het hele restaurant definitief verwijderd, inclusief alle leden, tafels, producten en geschiedenis.'
-  : 'Je verliest hierna de toegang tot dit restaurant op dit apparaat.';
+if (isAdminMode) {
+  document.getElementById('btn-leave-restaurant').textContent = '🗑 Restaurant verwijderen';
+  document.getElementById('leave-restaurant-hint').textContent = 'Als beheerder verwijder je hiermee dit hele restaurant definitief, inclusief alle leden, tafels, producten en geschiedenis.';
+} else {
+  document.getElementById('leave-restaurant-hint').textContent = isOwner
+    ? 'Let op: als eigenaar wordt bij het verlaten het hele restaurant definitief verwijderd, inclusief alle leden, tafels, producten en geschiedenis.'
+    : 'Je verliest hierna de toegang tot dit restaurant op dit apparaat.';
+}
 
 document.getElementById('btn-leave-restaurant').addEventListener('click', async () => {
   const btn = document.getElementById('btn-leave-restaurant');
-  if (isOwner) {
+  if (isAdminMode) {
+    const naamHuidig = document.getElementById('info-naam').textContent.trim();
+    if (!confirm(`Weet je zeker dat je "${naamHuidig}" wilt verwijderen? Dit verwijdert het HELE restaurant definitief, inclusief alle leden, tafels, producten en geschiedenis. Dit kan niet ongedaan gemaakt worden.`)) return;
+    btn.disabled = true;
+    try {
+      const codeSnap = await restRef.child('code').once('value');
+      const code = codeSnap.val();
+      await restRef.remove();
+      if (code) await db.ref('restaurantCodes/' + code).remove();
+      window.location.href = backUrl;
+    } catch (e) {
+      console.error(e);
+      btn.disabled = false;
+      alert('Er ging iets mis, probeer het opnieuw.');
+    }
+  } else if (isOwner) {
     const naamHuidig = document.getElementById('info-naam').textContent.trim();
     if (!confirm(`Weet je zeker dat je "${naamHuidig}" wilt verlaten? Dit verwijdert het HELE restaurant definitief, inclusief alle leden, tafels, producten en geschiedenis. Dit kan niet ongedaan gemaakt worden.`)) return;
     btn.disabled = true;
@@ -282,7 +331,7 @@ document.getElementById('btn-leave-restaurant').addEventListener('click', async 
       if (code) await db.ref('restaurantCodes/' + code).remove();
       const list = getMyRestaurants().filter(r => r.id !== restaurantId);
       saveMyRestaurantsLocal(list);
-      window.location.href = 'index.html';
+      window.location.href = backUrl;
     } catch (e) {
       console.error(e);
       btn.disabled = false;
