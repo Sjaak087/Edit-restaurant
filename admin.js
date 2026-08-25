@@ -179,7 +179,7 @@ function renderAdminAnnouncements(data) {
     card.className = 'restaurant-card admin-restaurant-card';
     card.innerHTML = `
       <div class="restaurant-card-main">
-        <div class="restaurant-card-name">📢 ${escapeHtmlAdmin(a.titel || 'Aankondiging')}</div>
+        <div class="restaurant-card-name">📢 ${escapeHtmlAdmin(a.titel || 'Announcement')}</div>
         <div class="restaurant-card-role">${escapeHtmlAdmin(a.info || '')}</div>
         <div class="restaurant-card-role" style="margin-top:2px;">${formatDatumTijdAdmin(a.aangemaakt)}</div>
       </div>
@@ -234,7 +234,7 @@ document.getElementById('admin-announcement-confirm').addEventListener('click', 
 });
 
 function deleteAdminAnnouncement(id, a) {
-  const titel = a.titel || 'deze aankondiging';
+  const titel = a.titel || 'dit announcement';
   if (!confirm(`Weet je zeker dat je "${titel}" wilt verwijderen?`)) return;
   db.ref('announcements/' + id).remove().catch(err => {
     console.error(err);
