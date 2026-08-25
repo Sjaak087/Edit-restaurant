@@ -1862,6 +1862,7 @@ document.getElementById('bill-pay-confirm').addEventListener('click', () => {
   restRef.update(updates).then(() => {
     btn.disabled = false;
     closeModal('modal-bill');
+    speelBetaalGeluid();
   }).catch(err => {
     console.error(err);
     btn.disabled = false;
@@ -1916,6 +1917,13 @@ function itemsToLinesHtml(order) {
 // Instelbaar per restaurant: geen geluid, het standaardgeluid, of een zelf
 // geüpload geluid (max 400 KB, als base64 data-URL opgeslagen in Firebase).
 const meldingGeluidStandaard = new Audio('melding%20geluid.mp3');
+const betaalGeluid = new Audio('betaal%20geluid.mp3');
+function speelBetaalGeluid() {
+  try {
+    betaalGeluid.currentTime = 0;
+    betaalGeluid.play().catch(() => {});
+  } catch (e) { /* geluid niet beschikbaar */ }
+}
 let customGeluidAudio = null; // Audio-object voor het geüploade geluid (lazy)
 let soundSettings = { mode: 'default' };
 const paginaGeladenOp = Date.now();
