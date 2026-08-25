@@ -2062,6 +2062,12 @@ function renderKitchen() {
     ? 'Nieuwe bestellingen worden hier automatisch getoond.'
     : `${nieuw.length} nieuw · ${bereiden.length} in bereiding`;
 
+  const kitchenBadge = document.getElementById('tab-badge-keuken');
+  if (kitchenBadge) {
+    const totaalKeuken = nieuw.length + bereiden.length;
+    kitchenBadge.textContent = totaalKeuken > 0 ? totaalKeuken : '';
+  }
+
   if (nieuw.length === 0) {
     nieuwList.innerHTML = '<div class="empty-msg">Nog geen nieuwe bestellingen</div>';
   } else {
@@ -2102,6 +2108,9 @@ function renderReady() {
   const readyCount = document.getElementById('ready-count');
 
   const klaar = Object.entries(ALLE_ORDERS).filter(([, o]) => o.status === 'klaar').sort((a, b) => a[1].tijd - b[1].tijd);
+
+  const readyBadge = document.getElementById('tab-badge-gereed');
+  if (readyBadge) readyBadge.textContent = klaar.length > 0 ? klaar.length : '';
 
   if (klaar.length === 0) {
     readyList.innerHTML = '<div class="empty-msg">Geen klaargemaakte bestellingen</div>';
