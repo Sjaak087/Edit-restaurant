@@ -1935,6 +1935,9 @@ header.top h1 {
   font-size: 2.15rem;
   background: linear-gradient(100deg, var(--gold-soft) 10%, var(--gold) 40%, var(--wine) 58%, var(--gold) 76%, var(--gold-soft) 92%);
   background-size: 220% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
   animation: shimmer 8s linear infinite;
   filter: drop-shadow(0 2px 14px rgba(212,169,79,0.18));
 }
