@@ -15,6 +15,12 @@
 
 const UPDATES = [
   { 
+    title: 'upload een eigen melding geluid!', 
+    date: '25-08-2026', 
+    time: '21:15', 
+    info: 'ik heb een paar kleine nieuwe dingen toegevoegd ten eerste heb ik toegevoegd dat je je eigen melding geluid kunt uploaden voor als er een bestelling binnenkomt de max is 1 bestand en 400KB ik heb ook een geluidje toegevoegd dat zich afspeeld als je betaald hebt ik heb ook nog toegeovegd dat ik een announcement kan plaatsen wat hetzelfde eruit ziet ls een waarschuwing en als laatste heb ik flinke aanpassingen gedaan aan de stijl hij zal er nu stukken cooler uitzien!'
+  },     
+  { 
     title: 'Zelfservice en andere nieuwe dingen', 
     date: '24-08-2026', 
     time: '20:45', 
