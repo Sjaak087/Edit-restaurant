@@ -2120,3 +2120,16 @@ header.top a:hover { transform: translateY(-1px); box-shadow: var(--shadow-1); }
 *::-webkit-scrollbar { width: 6px; height: 6px; }
 *::-webkit-scrollbar-thumb { background: rgba(212,169,79,0.35); border-radius: 4px; }
 *::-webkit-scrollbar-thumb:hover { background: var(--gold-soft); }
+
+/* Fix: keep the restaurant name above the decorative header layers,
+   including when the default restaurant colour theme is active. */
+header.top::before,
+header.top::after { z-index: 0; }
+header.top .top-title-group,
+header.top h1,
+.selfservice-brand-line,
+.selfservice-top .top-title-group,
+.selfservice-top h1 {
+  position: relative;
+  z-index: 2;
+}
