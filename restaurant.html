@@ -21,6 +21,9 @@
       <span class="my-name-badge" id="my-name-badge"></span>
     </div>
     <div class="header-actions">
+      <button type="button" class="bell-btn" id="btn-announcements" aria-label="Announcements">
+        🔔<span class="bell-badge" id="announcement-badge" style="display:none;"></span>
+      </button>
       <button type="button" class="updates-btn" id="btn-updates">🆕 Update log</button>
       <a href="index.html" id="back-link">← Restaurants</a>
     </div>
@@ -418,6 +421,18 @@
   </div>
 </div>
 
+<!-- Modal: announcements -->
+<div class="modal-overlay" id="modal-announcements">
+  <div class="modal-box wide">
+    <div class="modal-title">📢 Announcements</div>
+    <div class="updates-list" id="announcements-list"></div>
+    <div class="empty-msg" id="announcements-empty-msg" style="display:none;">Geen nieuwe announcements.</div>
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" data-close>Sluiten</button>
+    </div>
+  </div>
+</div>
+
 <!-- Modal: product toevoegen/bewerken -->
 <div class="modal-overlay" id="modal-product">
   <div class="modal-box wide">
@@ -459,7 +474,7 @@
   // versienummer hoeft te verhogen om cache-problemen te voorkomen.
   (function () {
     var v = Date.now();
-    ['firebase-config.js', 'emojis.js', 'restaurant.js', 'updates.js'].forEach(function (file) {
+    ['firebase-config.js', 'emojis.js', 'restaurant.js', 'updates.js', 'announcements.js'].forEach(function (file) {
       document.write('<script src="' + file + '?v=' + v + '"><' + '/script>');
     });
   })();
