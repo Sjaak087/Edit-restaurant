@@ -23,6 +23,25 @@ const backUrl = isAdminMode ? 'admin.html' : 'index.html';
 
 const restRef = db.ref('restaurants/' + restaurantId);
 
+// ==================== Waarschuwing van systeembeheer ====================
+// Alleen voor de echte eigenaar op zijn eigen apparaat (niet voor de admin die
+// het restaurant zelf beheert, en niet voor gewone leden). Verschijnt de
+// eerste keer dat hij het restaurant opent na het versturen van een
+// waarschuwing, en verdwijnt daarna voorgoed zodra hij op Oké drukt.
+if (isOwner && !isAdminMode) {
+  restRef.child('warning').once('value').then(snap => {
+    const warning = snap.val();
+    if (warning && warning.text) {
+      document.getElementById('owner-warning-text').textContent = warning.text;
+      openModal('modal-owner-warning');
+    }
+  });
+}
+document.getElementById('owner-warning-ok').addEventListener('click', () => {
+  closeModal('modal-owner-warning');
+  restRef.child('warning').remove();
+});
+
 const backLink = document.getElementById('back-link');
 if (backLink) {
   backLink.href = backUrl;
@@ -1698,7 +1717,7 @@ function renderOrderOptionToggles(key) {
   if (!container) return;
   container.innerHTML = '';
   const opties = productOptions(p);
-  if (!p || opties.length === 0) return;
+  if (!p) return;
 
   const n = orderCounts[key] || 0;
   if (!orderItemOptions[key]) orderItemOptions[key] = [];
@@ -1714,6 +1733,7 @@ function renderOrderOptionToggles(key) {
       tag.textContent = `#${i + 1}`;
       row.appendChild(tag);
     }
+
     opties.forEach(opt => {
       const active = selected.includes(opt.label);
       const isOptOut = isOptionUitverkocht(opt.label);
@@ -1748,10 +1768,8 @@ document.getElementById('order-confirm').addEventListener('click', () => {
 
   const itemOpties = {};
   Object.keys(items).forEach(key => {
-    const unitsMetKeuzes = (orderItemOptions[key] || []).filter(sel => sel.length > 0);
-    if (unitsMetKeuzes.length > 0) {
-      itemOpties[key] = orderItemOptions[key].map(sel => sel.slice());
-    }
+    const opts = orderItemOptions[key] || [];
+    if (opts.some(sel => sel.length > 0)) itemOpties[key] = opts.map(sel => sel.slice());
   });
 
   const orderData = {
@@ -1872,26 +1890,145 @@ function itemsToLinesHtml(order) {
   return Object.entries(order.items).map(([key, aantal]) => {
     const label = productLabel(key);
     const keuzes = order.itemOpties && order.itemOpties[key];
+    const ijs = order.itemIce && order.itemIce[key];
     if (keuzes && keuzes.length > 0) {
-      return keuzes.map(selected => {
-        const suffix = selected && selected.length > 0
-          ? ` — ${selected.map(o => `${optionEmoji(key, o)} ${escapeHtml(o)}`).join(', ')}`
-          : '';
+      return keuzes.map((selected, unitIndex) => {
+        const extras = [];
+        if (selected && selected.length > 0) extras.push(selected.map(o => `${optionEmoji(key, o)} ${escapeHtml(o)}`).join(', '));
+        if (ijs?.[unitIndex]) extras.push('🧊 IJsklontjes');
+        const suffix = extras.length ? ` — ${extras.join(', ')}` : '';
         return `<div class="item-line">1x ${escapeHtml(label)}${suffix}</div>`;
       }).join('');
     }
-    return `<div class="item-line">${aantal}x ${escapeHtml(label)}</div>`;
+    const iceFlags = Array.isArray(ijs) ? ijs.slice(0, aantal).map(Boolean) : [];
+    const iceCount = iceFlags.filter(Boolean).length;
+    if (aantal > 1 && iceFlags.length === aantal) {
+      return iceFlags.map((hasIce, unitIndex) =>
+        `<div class="item-line">${unitIndex + 1}. 1x ${escapeHtml(label)}${hasIce ? ' — 🧊 IJsklontjes' : ''}</div>`
+      ).join('');
+    }
+    const iceSuffix = iceCount ? ` — 🧊 IJsklontjes: ${iceCount}/${aantal}` : '';
+    return `<div class="item-line">${aantal}x ${escapeHtml(label)}${iceSuffix}</div>`;
   }).join('');
 }
 
 // ---- Meldingsgeluid ----
-const meldingGeluid = new Audio('melding%20geluid.mp3');
+// Instelbaar per restaurant: geen geluid, het standaardgeluid, of een zelf
+// geüpload geluid (max 400 KB, als base64 data-URL opgeslagen in Firebase).
+const meldingGeluidStandaard = new Audio('melding%20geluid.mp3');
+let customGeluidAudio = null; // Audio-object voor het geüploade geluid (lazy)
+let soundSettings = { mode: 'default' };
 const paginaGeladenOp = Date.now();
+
+restRef.child('settings/notificationSound').on('value', snap => {
+  soundSettings = snap.val() || { mode: 'default' };
+  if (soundSettings.mode === 'custom' && soundSettings.data) {
+    customGeluidAudio = new Audio(soundSettings.data);
+  } else {
+    customGeluidAudio = null;
+  }
+  renderSoundSettingsUi();
+});
+
 function speelMeldingGeluid() {
   try {
-    meldingGeluid.currentTime = 0;
-    meldingGeluid.play().catch(() => {});
+    if (soundSettings.mode === 'none') return;
+    if (soundSettings.mode === 'custom' && customGeluidAudio) {
+      customGeluidAudio.currentTime = 0;
+      customGeluidAudio.play().catch(() => {});
+      return;
+    }
+    meldingGeluidStandaard.currentTime = 0;
+    meldingGeluidStandaard.play().catch(() => {});
   } catch (e) { /* geluid niet beschikbaar */ }
+}
+
+// ---- Instellingen: meldingsgeluid kiezen/uploaden (alleen eigenaar) ----
+const MAX_SOUND_BYTES = 400 * 1024;
+
+function renderSoundSettingsUi() {
+  const mode = soundSettings.mode || 'default';
+  const hasCustom = !!soundSettings.data;
+  const btnNone = document.getElementById('sound-choice-none');
+  const btnDefault = document.getElementById('sound-choice-default');
+  const btnCustom = document.getElementById('sound-choice-custom');
+  const previewCustom = document.getElementById('sound-preview-custom');
+  const removeBtn = document.getElementById('sound-upload-remove');
+  const customLabel = document.getElementById('sound-custom-label');
+  if (!btnNone || !btnDefault || !btnCustom) return;
+
+  btnNone.classList.toggle('selected', mode === 'none');
+  btnDefault.classList.toggle('selected', mode === 'default');
+  btnCustom.classList.toggle('selected', mode === 'custom');
+  btnCustom.disabled = !hasCustom;
+  customLabel.textContent = hasCustom
+    ? `🎵 ${soundSettings.name || 'Mijn geüploade geluid'}`
+    : '🎵 Mijn geüploade geluid (nog niets geüpload)';
+  if (previewCustom) previewCustom.style.display = hasCustom ? '' : 'none';
+  if (removeBtn) removeBtn.style.display = hasCustom ? '' : 'none';
+}
+
+if (!isOwner) {
+  document.getElementById('sound-choice-none').disabled = true;
+  document.getElementById('sound-choice-default').disabled = true;
+  document.getElementById('sound-choice-custom').disabled = true;
+  document.getElementById('sound-upload-row').style.display = 'none';
+  document.getElementById('sound-readonly-note').style.display = 'block';
+} else {
+  document.getElementById('sound-choice-none').addEventListener('click', () => {
+    restRef.child('settings/notificationSound/mode').set('none');
+  });
+  document.getElementById('sound-choice-default').addEventListener('click', () => {
+    restRef.child('settings/notificationSound/mode').set('default');
+  });
+  document.getElementById('sound-choice-custom').addEventListener('click', () => {
+    if (!soundSettings.data) return;
+    restRef.child('settings/notificationSound/mode').set('custom');
+  });
+  document.getElementById('sound-preview-default').addEventListener('click', (e) => {
+    e.stopPropagation();
+    meldingGeluidStandaard.currentTime = 0;
+    meldingGeluidStandaard.play().catch(() => {});
+  });
+  document.getElementById('sound-preview-custom').addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (!soundSettings.data) return;
+    const a = new Audio(soundSettings.data);
+    a.play().catch(() => {});
+  });
+  document.getElementById('sound-upload-remove').addEventListener('click', (e) => {
+    e.stopPropagation();
+    restRef.child('settings/notificationSound').set({ mode: 'default' });
+  });
+  document.getElementById('sound-upload-input').addEventListener('change', (e) => {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = '';
+    const errorEl = document.getElementById('sound-upload-error');
+    errorEl.textContent = '';
+    if (!file) return;
+    if (!file.type.startsWith('audio/')) {
+      errorEl.textContent = 'Kies een geluidsbestand.';
+      return;
+    }
+    if (file.size > MAX_SOUND_BYTES) {
+      errorEl.textContent = `Dit bestand is te groot (${Math.round(file.size / 1024)} KB). Maximaal 400 KB toegestaan.`;
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      restRef.child('settings/notificationSound').set({
+        mode: 'custom',
+        data: reader.result,
+        name: file.name,
+        size: file.size
+      }).catch(err => {
+        console.error(err);
+        errorEl.textContent = 'Uploaden mislukt, probeer opnieuw.';
+      });
+    };
+    reader.onerror = () => { errorEl.textContent = 'Bestand kon niet worden gelezen.'; };
+    reader.readAsDataURL(file);
+  });
 }
 
 function renderOrderCardHtml(id, order, actionHtml) {
@@ -2070,4 +2207,47 @@ ordersRef.on('child_removed', snap => {
   renderKitchen();
   renderReady();
   herbereken_actieve_tafels();
+});
+
+// ==================== Zelfservice QR ====================
+function getSelfserviceUrl() {
+  const base = window.location.href.split('?')[0].split('#')[0].replace(/restaurant\.html$/i, 'selfservice.html');
+  return base + '?id=' + encodeURIComponent(restaurantId);
+}
+
+function renderSelfserviceQr() {
+  const box = document.getElementById('selfservice-qr');
+  const urlEl = document.getElementById('selfservice-url');
+  if (!box || !urlEl) return;
+  const url = getSelfserviceUrl();
+  urlEl.textContent = url;
+  box.innerHTML = '';
+  if (window.QRCode) {
+    new QRCode(box, { text: url, width: 220, height: 220, correctLevel: QRCode.CorrectLevel.M });
+  }
+}
+
+const selfserviceSubtabBtn = document.querySelector('[data-subtab="zelfservice"]');
+if (selfserviceSubtabBtn) {
+  selfserviceSubtabBtn.addEventListener('click', () => setTimeout(renderSelfserviceQr, 0));
+}
+document.getElementById('btn-selfservice-scan')?.addEventListener('click', () => {
+  window.open(getSelfserviceUrl(), '_blank', 'noopener');
+});
+document.getElementById('btn-selfservice-pdf')?.addEventListener('click', () => {
+  const url = getSelfserviceUrl();
+  if (!window.jspdf) { alert('PDF-module kon niet worden geladen. Controleer je internetverbinding.'); return; }
+  const QRCanvas = document.querySelector('#selfservice-qr canvas');
+  if (!QRCanvas) { renderSelfserviceQr(); setTimeout(() => document.getElementById('btn-selfservice-pdf').click(), 150); return; }
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF({ unit: 'mm', format: 'a4' });
+  const title = document.getElementById('restaurant-title')?.textContent || 'Restaurant';
+  pdf.setFontSize(24);
+  pdf.text(title, 105, 35, { align: 'center' });
+  pdf.setFontSize(16);
+  pdf.text('Scan om zelf te bestellen', 105, 50, { align: 'center' });
+  pdf.addImage(QRCanvas.toDataURL('image/png'), 'PNG', 55, 65, 100, 100);
+  pdf.setFontSize(10);
+  pdf.text('Kies je tafel, bestel je producten en volg je bestelling.', 105, 180, { align: 'center' });
+  pdf.save('zelfservice-qr-' + (restaurantId || 'restaurant') + '.pdf');
 });
