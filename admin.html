@@ -22,7 +22,7 @@
   <div class="landing-topbar" style="justify-content:space-between;">
     <a href="index.html" class="admin-back-link">← Terug</a>
     <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
-      <button type="button" class="updates-btn" id="btn-admin-new-announcement">📢 Nieuwe aankondiging</button>
+      <button type="button" class="updates-btn" id="btn-admin-new-announcement">📢 New announcement</button>
       <button type="button" class="updates-btn" id="btn-admin-logout">🚪 Uitloggen</button>
     </div>
   </div>
@@ -31,9 +31,9 @@
   <p class="brand-sub">Alle restaurants in het systeem</p>
 
   <div class="landing-section">
-    <div class="landing-section-title">Aankondigingen</div>
+    <div class="landing-section-title">Announcements</div>
     <div id="admin-announcement-list" class="my-restaurants"></div>
-    <div class="empty-msg" id="admin-announcement-empty-msg" style="display:none;">Nog geen aankondigingen verstuurd.</div>
+    <div class="empty-msg" id="admin-announcement-empty-msg" style="display:none;">Nog geen announcements verstuurd.</div>
   </div>
 
   <div class="landing-section">
@@ -72,15 +72,15 @@
   </div>
 </div>
 
-<!-- Modal: aankondiging versturen (admin) -->
+<!-- Modal: announcement versturen (admin) -->
 <div class="modal-overlay" id="modal-admin-announcement">
   <div class="modal-box">
-    <div class="modal-title">📢 Aankondiging versturen</div>
+    <div class="modal-title">📢 Announcement versturen</div>
     <label class="modal-label" style="margin-top:0;">Titel</label>
     <input type="text" id="admin-announcement-title-input" class="modal-input" maxlength="60" placeholder="Bijv. Nieuwe update beschikbaar">
     <label class="modal-label">Info</label>
     <textarea id="admin-announcement-info-input" class="modal-input" rows="5" maxlength="600" placeholder="Bijv. Er is een nieuwe functie toegevoegd, bekijk de update log voor meer info."></textarea>
-    <p class="modal-text" style="margin-bottom:0;">Deze aankondiging is voor iedereen zichtbaar via het belletje naast de update log, totdat ze zelf op Gelezen drukken.</p>
+    <p class="modal-text" style="margin-bottom:0;">Dit announcement is voor iedereen zichtbaar via het belletje naast de update log, totdat ze zelf op Gelezen drukken.</p>
     <div class="modal-error" id="admin-announcement-error"></div>
     <div class="modal-actions">
       <button type="button" class="btn-secondary" data-close>Annuleren</button>
