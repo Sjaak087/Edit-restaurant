@@ -407,6 +407,10 @@ header.top a:hover { color: var(--gold-soft); border-color: var(--gold); }
 }
 .category-heading::before { background: linear-gradient(90deg, transparent, var(--gold) 90%); }
 .category-heading::after { background: linear-gradient(90deg, var(--gold) 10%, transparent); }
+.selfservice-products .category-heading,
+.order-products .category-heading { grid-column: 1 / -1; margin: 22px 0 4px; }
+.selfservice-products .category-heading:first-child,
+.order-products .category-heading:first-child { margin-top: 0; }
 
 /* Producten */
 .products {
