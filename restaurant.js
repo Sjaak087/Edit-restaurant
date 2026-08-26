@@ -139,15 +139,15 @@ if (isAdminMode) {
       }
       const lid = snap.val();
       applyTabPermissions(lid.tabs);
-      updateMyNameBadge(lid.naam);
+      updateMyNameBadge(lid.naam, lid.rolNaam);
     });
   });
 }
 
 // ==================== Eigen naam bovenaan ====================
-function updateMyNameBadge(naam) {
+function updateMyNameBadge(naam, rolNaam) {
   const badge = document.getElementById('my-name-badge');
-  if (badge) badge.textContent = naam ? `👤 ${naam}` : '';
+  if (badge) badge.textContent = naam ? `👤 ${naam}${rolNaam ? ' · ' + rolNaam : ''}` : '';
   const infoEl = document.getElementById('info-mijn-naam');
   if (infoEl) infoEl.textContent = naam || '—';
 }
@@ -213,8 +213,11 @@ function renderLedenList() {
     }).join('');
     row.innerHTML = `
       <div class="lid-row-head">
-        <span class="lid-row-name">${escapeHtml(naam)}${isMe ? ' <span class="lid-me-tag">(jij)</span>' : ''}</span>
-        ${isEigenaarRow ? '' : `<button type="button" class="mini-btn danger" data-kick="${mid}">Verwijderen</button>`}
+        <span class="lid-row-name">${escapeHtml(naam)}${isMe ? ' <span class="lid-me-tag">(jij)</span>' : ''}${lid.rolNaam ? ` <span class="ice-badge">🏷️ ${escapeHtml(lid.rolNaam)}</span>` : ''}</span>
+        <span class="settings-product-actions">
+          <button type="button" class="mini-btn edit" data-role="${mid}">Rol instellen</button>
+          ${isEigenaarRow ? '' : `<button type="button" class="mini-btn danger" data-kick="${mid}">Verwijderen</button>`}
+        </span>
       </div>
       <div class="lid-tabs">${tabsHtml}</div>
     `;
@@ -232,7 +235,83 @@ function renderLedenList() {
       kickLid(btn.dataset.kick, btn);
     });
   });
+  list.querySelectorAll('[data-role]').forEach(btn => {
+    btn.addEventListener('click', () => openMemberRoleModal(btn.dataset.role));
+  });
 }
+
+// Verzamelt alle al eerder gebruikte rollen (over alle leden heen), zodat je
+// die bij een ander lid kunt hergebruiken zonder opnieuw te typen.
+function allKnownRoles() {
+  const map = new Map();
+  Object.values(LEDEN_STATE).forEach(lid => {
+    const naam = lid.rolNaam && lid.rolNaam.trim();
+    if (naam && !map.has(naam.toLowerCase())) map.set(naam.toLowerCase(), naam);
+  });
+  return Array.from(map.values()).sort((a, b) => a.localeCompare(b, 'nl'));
+}
+
+let editingRoleMemberId = null;
+
+function openMemberRoleModal(mid) {
+  editingRoleMemberId = mid;
+  const lid = LEDEN_STATE[mid] || {};
+  document.getElementById('member-role-modal-title').textContent = `Rol voor ${lid.naam || 'lid'}`;
+  document.getElementById('member-role-input').value = '';
+  document.getElementById('member-role-error').textContent = '';
+  renderExistingRolesPicker();
+  openModal('modal-member-role');
+}
+
+// Toont de al eerder gebruikte rollen als klikbare chips, zodat je ze in
+// één klik kunt toewijzen zonder opnieuw te typen.
+function renderExistingRolesPicker() {
+  const wrap = document.getElementById('member-role-existing');
+  if (!wrap) return;
+  const known = allKnownRoles();
+  if (known.length === 0) {
+    wrap.innerHTML = '';
+    return;
+  }
+  wrap.innerHTML = '<div class="modal-label" style="margin-top:0;">Al bestaande rollen (klik om te kiezen)</div>';
+  const row = document.createElement('div');
+  row.className = 'product-options-list';
+  known.forEach(naam => {
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'product-option-chip existing';
+    chip.textContent = naam;
+    chip.addEventListener('click', () => saveMemberRole(naam));
+    row.appendChild(chip);
+  });
+  wrap.appendChild(row);
+}
+
+function saveMemberRole(naam) {
+  if (!editingRoleMemberId) return;
+  restRef.child('leden/' + editingRoleMemberId + '/rolNaam').set(naam).then(() => {
+    closeModal('modal-member-role');
+  }).catch(err => {
+    console.error(err);
+    document.getElementById('member-role-error').textContent = 'Er ging iets mis, probeer opnieuw.';
+  });
+}
+
+document.getElementById('member-role-confirm').addEventListener('click', () => {
+  const naam = document.getElementById('member-role-input').value.trim();
+  if (!naam) { document.getElementById('member-role-error').textContent = 'Vul een rolnaam in.'; return; }
+  saveMemberRole(naam);
+});
+
+document.getElementById('member-role-clear').addEventListener('click', () => {
+  if (!editingRoleMemberId) return;
+  restRef.child('leden/' + editingRoleMemberId + '/rolNaam').remove().then(() => {
+    closeModal('modal-member-role');
+  }).catch(err => {
+    console.error(err);
+    document.getElementById('member-role-error').textContent = 'Er ging iets mis, probeer opnieuw.';
+  });
+});
 
 async function kickLid(mid, btn) {
   if (btn) { btn.disabled = true; btn.textContent = 'Bezig...'; }
