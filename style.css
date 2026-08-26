@@ -1246,6 +1246,16 @@ header.top a:hover { color: var(--gold-soft); border-color: var(--gold); }
   background-size: 5% 5%;
   touch-action: none;
 }
+@media (max-width: 620px) {
+  /* Op een telefoon (portrait) past de plattegrond automatisch: hij wordt
+     vierkant op basis van de beschikbare breedte in plaats van een vaste
+     hoogte, zodat hij altijd volledig binnen het scherm past zonder dat
+     tafels/gebieden uit verhouding raken of er onnodig gescrold moet worden. */
+  .floorplan-canvas {
+    height: auto;
+    aspect-ratio: 1 / 1;
+  }
+}
 .fp-gridsize-row {
   display: flex;
   align-items: center;
