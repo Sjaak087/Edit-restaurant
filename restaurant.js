@@ -1146,6 +1146,11 @@ document.getElementById('category-confirm').addEventListener('click', () => {
     errorEl.textContent = 'Vul een plaats in van 1 t/m 255.';
     return;
   }
+  const dubbel = categoryList().some(c => c.plaats === plaats && c.key !== editingCategoryKey);
+  if (dubbel) {
+    errorEl.textContent = `Plaats ${plaats} is al in gebruik door een andere categorie. Kies een andere plaats.`;
+    return;
+  }
 
   const data = { naam, plaats };
   const key = editingCategoryKey || restRef.child('categories').push().key;
