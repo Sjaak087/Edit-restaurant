@@ -17,7 +17,7 @@ const UPDATES = [
   {
     title: 'Grote update met een aantal nieuwe dingen!', 
     date: '26-08-2026', 
-    time: '20:50', 
+    time: '20:45', 
     info: 'ik heb een paar nieuwe dingen toegevoegd waaronder categorien je kunt producten nu verdelen onder categorien en je kunt bepalen welke categorie bovenaan staat en welke onderaan ook kun je nu bij de historie zien hoeveel van elke categorie besteld is de categorie is heel makkelijk aan te klikken bij een product ook heb ik rollen toegevoegd de iegenaar kan rollen geven aan zijn medewerkers dit is ook te zien langs je naam bovenin ik heb ook toegevoegd dat je nu je eerder gekregen waarschuwingen terug kunt zien bij welk restaurant staat eronder en ook heb ik nog phone support toegevoegd bij de bestel plattegrond hij zal nu automatisch kleiner worden en als laatste heb ik de zelfservice ui wat kleiner gemaakt zodat er meer in het beeld past de volgende updates zullen wat kleiner zijn maar nog steeds goed tot dan!'
   },   
   { 
