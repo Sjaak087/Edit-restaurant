@@ -1769,6 +1769,36 @@ header.top a:hover { color: var(--gold-soft); border-color: var(--gold); }
 .sound-choice-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .sound-preview-btn { flex-shrink: 0; }
 
+/* ==================== Notities ==================== */
+.notes-input-row { margin-bottom: 16px; }
+.notes-input-row .modal-input { margin: 0; }
+.notes-list { display: flex; flex-direction: column; gap: 8px; }
+.note-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+}
+.note-row.afgevinkt { opacity: 0.55; }
+.note-checkbox {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  accent-color: var(--gold);
+  cursor: pointer;
+}
+.note-text {
+  font-family: var(--font-body);
+  color: var(--ink);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.note-row.afgevinkt .note-text { text-decoration: line-through; color: var(--muted); }
+
 .voorraad-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
 .voorraad-row {
   display: flex;
