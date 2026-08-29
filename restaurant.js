@@ -2754,16 +2754,30 @@ if (notesListEl) {
   });
 }
 
+const MAX_NOTITIES = 20;
+
 notesRef.on('value', (snap) => {
   const notities = snap.val() || {};
   const entries = Object.entries(notities).sort(([a], [b]) => (a < b ? -1 : 1));
 
-  if (entries.length === 0) {
+  // Max 20 notities: de oudste (eerste in de oplopende volgorde) worden
+  // verwijderd zodra dit aantal overschreden wordt. Elk apparaat dat de
+  // update ontvangt probeert dit, maar .remove() op een al verwijderd pad
+  // is onschuldig, dus dubbele pogingen vanaf meerdere apparaten zijn geen
+  // probleem.
+  if (entries.length > MAX_NOTITIES) {
+    entries.slice(0, entries.length - MAX_NOTITIES).forEach(([id]) => {
+      notesRef.child(id).remove();
+    });
+  }
+  const zichtbareEntries = entries.slice(-MAX_NOTITIES);
+
+  if (zichtbareEntries.length === 0) {
     notesListEl.innerHTML = '<div class="empty-msg">Nog geen notities</div>';
     return;
   }
 
-  notesListEl.innerHTML = entries.map(([id, n]) => {
+  notesListEl.innerHTML = zichtbareEntries.map(([id, n]) => {
     const afgevinkt = !!n.afgevinkt;
     const tekst = escapeHtml(n.tekst || '');
     return `
@@ -2777,7 +2791,7 @@ notesRef.on('value', (snap) => {
   // Zorg dat afgevinkte notities die al (deels) hun 5 sec hebben gehad
   // alsnog verwijderd worden, ook als dit apparaat de melding pas nu ontvangt
   // (bijv. bij openen van het tabblad of na herverbinden).
-  entries.forEach(([id, n]) => {
+  zichtbareEntries.forEach(([id, n]) => {
     if (n.afgevinkt) scheduleNoteRemoval(id, n.afgevinktOp);
   });
 });
