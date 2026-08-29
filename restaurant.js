@@ -42,6 +42,74 @@ document.getElementById('owner-warning-ok').addEventListener('click', () => {
   restRef.child('warning').remove();
 });
 
+// ==================== Automatische verwijdertimer ====================
+// Sitebeheer kan per restaurant instellen na hoeveel tijd het automatisch
+// verwijderd wordt (restaurants/{id}/autoDelete/deleteAt). Zolang deze
+// pagina open staat, tonen we bovenin een aftellende timer en verwijdert
+// dit apparaat het restaurant zelf zodra de tijd om is (meerdere apparaten
+// kunnen dit tegelijk proberen; .remove() op een al verwijderd pad is
+// onschuldig).
+const deleteTimerBadge = document.getElementById('delete-timer-badge');
+let deleteTimerInterval = null;
+let autoDeleteAt = null;
+let autoDeleteHandled = false;
+
+function formatResterendeTijd(ms) {
+  const totaalMin = Math.max(0, Math.round(ms / 60000));
+  const uren = Math.floor(totaalMin / 60);
+  const minuten = totaalMin % 60;
+  if (uren > 0) return `${uren}u ${minuten}m`;
+  return `${minuten}m`;
+}
+
+async function verwijderRestaurantAutomatisch() {
+  if (autoDeleteHandled) return;
+  autoDeleteHandled = true;
+  try {
+    const codeSnap = await restRef.child('code').once('value');
+    const code = codeSnap.val();
+    await restRef.remove();
+    if (code) await db.ref('restaurantCodes/' + code).remove();
+  } catch (e) {
+    console.error(e);
+    autoDeleteHandled = false;
+    return;
+  }
+  if (!isAdminMode) {
+    const list = getMyRestaurants().filter(r => r.id !== restaurantId);
+    saveMyRestaurantsLocal(list);
+  }
+  alert('Dit restaurant is automatisch verwijderd (verwijdertimer is verlopen).');
+  window.location.href = backUrl;
+}
+
+function tickDeleteTimer() {
+  if (!autoDeleteAt) return;
+  const resterend = autoDeleteAt - Date.now();
+  if (resterend <= 0) {
+    deleteTimerBadge.textContent = '⏱ Wordt nu verwijderd...';
+    verwijderRestaurantAutomatisch();
+    return;
+  }
+  deleteTimerBadge.textContent = `⏱ Verwijderd over ${formatResterendeTijd(resterend)}`;
+}
+
+restRef.child('autoDelete').on('value', (snap) => {
+  const autoDelete = snap.val();
+  if (deleteTimerInterval) { clearInterval(deleteTimerInterval); deleteTimerInterval = null; }
+
+  if (!autoDelete || !autoDelete.deleteAt) {
+    autoDeleteAt = null;
+    deleteTimerBadge.style.display = 'none';
+    return;
+  }
+
+  autoDeleteAt = autoDelete.deleteAt;
+  deleteTimerBadge.style.display = '';
+  tickDeleteTimer();
+  deleteTimerInterval = setInterval(tickDeleteTimer, 15000);
+});
+
 const backLink = document.getElementById('back-link');
 if (backLink) {
   backLink.href = backUrl;
