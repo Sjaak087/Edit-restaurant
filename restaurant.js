@@ -57,8 +57,8 @@ function saveMyRestaurantsLocal(list) {
 }
 
 // ==================== Leden & rechten per tabblad ====================
-const ALL_TABS = ['bestellen', 'voorraad', 'keuken', 'bar', 'gereed', 'historie', 'instellingen'];
-const TAB_LABELS = { bestellen: 'Bestellen', voorraad: 'Voorraad', keuken: 'Keuken', bar: 'Bar', gereed: 'Gereed', historie: 'Historie', instellingen: 'Instellingen' };
+const ALL_TABS = ['bestellen', 'notities', 'voorraad', 'keuken', 'bar', 'gereed', 'historie', 'instellingen'];
+const TAB_LABELS = { bestellen: 'Bestellen', notities: 'Notities', voorraad: 'Voorraad', keuken: 'Keuken', bar: 'Bar', gereed: 'Gereed', historie: 'Historie', instellingen: 'Instellingen' };
 
 function genLidId() {
   return 'm' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
@@ -2702,4 +2702,82 @@ document.getElementById('btn-selfservice-pdf')?.addEventListener('click', () => 
   pdf.setFontSize(10);
   pdf.text('Kies je tafel, bestel je producten en volg je bestelling.', 105, 180, { align: 'center' });
   pdf.save('zelfservice-qr-' + (restaurantId || 'restaurant') + '.pdf');
+});
+
+// ==================== Notities ====================
+// Vrij te typen notities (max 750 tekens), gedeeld met het hele restaurant.
+// Enter voegt een nieuw vinkje toe; afvinken verwijdert de notitie na 5 sec.
+const notesInput = document.getElementById('notes-input');
+const notesListEl = document.getElementById('notes-list');
+const notesRef = restRef.child('notities');
+
+// Elk apparaat plant zijn eigen verwijder-timer bij een afgevinkte notitie,
+// zodat de notitie ook verdwijnt als het apparaat dat 'm afvinkte de app
+// intussen sluit (een ander open apparaat handelt de verwijdering dan af).
+// .remove() op een al verwijderd pad is onschuldig, dus dubbele timers
+// vanaf meerdere apparaten geven geen problemen.
+const geplandeNotitieVerwijderingen = new Set();
+
+function scheduleNoteRemoval(id, afgevinktOp) {
+  if (geplandeNotitieVerwijderingen.has(id)) return;
+  geplandeNotitieVerwijderingen.add(id);
+  const resterendeTijd = Math.max(0, 5000 - (Date.now() - (afgevinktOp || Date.now())));
+  setTimeout(() => {
+    notesRef.child(id).remove();
+    geplandeNotitieVerwijderingen.delete(id);
+  }, resterendeTijd);
+}
+
+if (notesInput) {
+  notesInput.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter') return;
+    e.preventDefault();
+    const tekst = notesInput.value.trim().slice(0, 750);
+    if (!tekst) return;
+    notesRef.push({ tekst, tijd: firebase.database.ServerValue.TIMESTAMP, afgevinkt: false });
+    notesInput.value = '';
+  });
+}
+
+if (notesListEl) {
+  notesListEl.addEventListener('change', (e) => {
+    const cb = e.target.closest('.note-checkbox');
+    if (!cb) return;
+    const id = cb.dataset.id;
+    if (!id) return;
+    if (cb.checked) {
+      const afgevinktOp = Date.now();
+      notesRef.child(id).update({ afgevinkt: true, afgevinktOp });
+    } else {
+      notesRef.child(id).update({ afgevinkt: false, afgevinktOp: null });
+    }
+  });
+}
+
+notesRef.on('value', (snap) => {
+  const notities = snap.val() || {};
+  const entries = Object.entries(notities).sort(([a], [b]) => (a < b ? -1 : 1));
+
+  if (entries.length === 0) {
+    notesListEl.innerHTML = '<div class="empty-msg">Nog geen notities</div>';
+    return;
+  }
+
+  notesListEl.innerHTML = entries.map(([id, n]) => {
+    const afgevinkt = !!n.afgevinkt;
+    const tekst = escapeHtml(n.tekst || '');
+    return `
+      <div class="note-row${afgevinkt ? ' afgevinkt' : ''}">
+        <input type="checkbox" class="note-checkbox" data-id="${id}" ${afgevinkt ? 'checked' : ''}>
+        <span class="note-text">${tekst}</span>
+      </div>
+    `;
+  }).join('');
+
+  // Zorg dat afgevinkte notities die al (deels) hun 5 sec hebben gehad
+  // alsnog verwijderd worden, ook als dit apparaat de melding pas nu ontvangt
+  // (bijv. bij openen van het tabblad of na herverbinden).
+  entries.forEach(([id, n]) => {
+    if (n.afgevinkt) scheduleNoteRemoval(id, n.afgevinktOp);
+  });
 });
