@@ -15,6 +15,18 @@
 
 const UPDATES = [
   {
+    title: 'Middel grote update', 
+    date: '27-08-2026', 
+    time: '21:30', 
+    info: 'ik heb toegeovegd dat je nu kunt kiezen of je een bestelling naar de keuken of de bar stuur ik heb dus ook een extra bar tab toegoevoegd waar je alle bestellingen voor de bar kunt zien ook heb ik toegevoegd dat ook zonder tafel kunt bestellen door op de bar te drukken bestellingen met dingen voor de keuken en voor de bar worden automatisch gesplitst btw ik heb ook nog wat bugfixes gedaan en morgen komt nog een andere bugfix met de counting bij de zelfservice!'
+  }, 
+  {
+    title: 'Volledige phone support', 
+    date: '27-08-2026', 
+    time: '13:00', 
+    info: 'ik heb toegevoegd dat je nu op de telefoon gewoon alles kunt zien zonder dat je helemaal naar links of rechts hoeft te scrollen en alles niet goed kunt zien ik heb ook nog een andere bugfix gedaan de volgende update komt binnenkort uit en zal wat kleiner zijn!'
+  },    
+  {
     title: 'Grote update met een aantal nieuwe dingen!', 
     date: '26-08-2026', 
     time: '20:45', 

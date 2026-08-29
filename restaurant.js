@@ -57,8 +57,8 @@ function saveMyRestaurantsLocal(list) {
 }
 
 // ==================== Leden & rechten per tabblad ====================
-const ALL_TABS = ['bestellen', 'voorraad', 'keuken', 'gereed', 'historie', 'instellingen'];
-const TAB_LABELS = { bestellen: 'Bestellen', voorraad: 'Voorraad', keuken: 'Keuken', gereed: 'Gereed', historie: 'Historie', instellingen: 'Instellingen' };
+const ALL_TABS = ['bestellen', 'voorraad', 'keuken', 'bar', 'gereed', 'historie', 'instellingen'];
+const TAB_LABELS = { bestellen: 'Bestellen', voorraad: 'Voorraad', keuken: 'Keuken', bar: 'Bar', gereed: 'Gereed', historie: 'Historie', instellingen: 'Instellingen' };
 
 function genLidId() {
   return 'm' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
@@ -96,7 +96,10 @@ function applyTabPermissions(tabs) {
     if (!btn) return;
     // Veiligheidsklep: de eigenaar behoudt altijd toegang tot Instellingen, anders zou
     // die zichzelf per ongeluk kunnen buitensluiten van het ledenbeheer.
-    const allowed = (isOwner && t === 'instellingen') || tabs[t] === true;
+    // Ontbreekt een tabblad helemaal in het ledenrecord (bijv. "bar", toegevoegd nadat dit
+    // lid al bestond), dan tellen we dat als toegestaan i.p.v. verborgen — anders zou een
+    // nieuw tabblad onzichtbaar blijven voor iedereen die al langer lid was.
+    const allowed = (isOwner && t === 'instellingen') || tabs[t] === true || tabs[t] === undefined;
     btn.style.display = allowed ? '' : 'none';
     if (allowed && !firstVisible) firstVisible = t;
   });
@@ -208,7 +211,7 @@ function renderLedenList() {
     const row = document.createElement('div');
     row.className = 'lid-row';
     const tabsHtml = ALL_TABS.map(t => {
-      const checked = tabs[t] ? 'checked' : '';
+      const checked = tabs[t] !== false ? 'checked' : '';
       return `<label class="lid-tab-toggle"><input type="checkbox" data-mid="${mid}" data-tab="${t}" ${checked}> ${TAB_LABELS[t]}</label>`;
     }).join('');
     row.innerHTML = `
@@ -844,6 +847,18 @@ function markEmojiSelected(em) {
 let editingProductKey = null;
 let editingProductOptions = []; // array van {label, emoji}
 
+// ---- Bestemming van een product (keuken of bar) ----
+let selectedBestemming = 'keuken';
+function setBestemmingSelection(bestemming) {
+  selectedBestemming = bestemming === 'bar' ? 'bar' : 'keuken';
+  document.querySelectorAll('#product-bestemming-options .fp-shape-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.bestemming === selectedBestemming);
+  });
+}
+document.querySelectorAll('#product-bestemming-options .fp-shape-btn').forEach(btn => {
+  btn.addEventListener('click', () => setBestemmingSelection(btn.dataset.bestemming));
+});
+
 // Klein vast setje emoji's om een opmerking mee te markeren.
 const OPTION_EMOJIS = ['🧊', '🧴', '🥛', '🌶️', '🍋', '➕', '🚫', '✨'];
 let selectedOptionEmoji = null;
@@ -1024,6 +1039,7 @@ document.getElementById('btn-add-product').addEventListener('click', () => {
   document.getElementById('product-price-input').value = '';
   populateCategorySelect();
   document.getElementById('product-category-select').value = '';
+  setBestemmingSelection('keuken');
   document.getElementById('product-option-input').value = '';
   editingProductOptions = [];
   editingOptionIndex = null;
@@ -1046,6 +1062,7 @@ function openEditProduct(key) {
   document.getElementById('product-price-input').value = p.price != null ? p.price : '';
   populateCategorySelect();
   document.getElementById('product-category-select').value = p.categorie || '';
+  setBestemmingSelection(p.bestemming || 'keuken');
   document.getElementById('product-option-input').value = '';
   editingProductOptions = productOptions(p).map(o => ({ label: o.label, emoji: o.emoji || null }));
   editingOptionIndex = null;
@@ -1070,7 +1087,7 @@ document.getElementById('product-confirm').addEventListener('click', () => {
   if (isNaN(prijs) || prijs < 0) { errorEl.textContent = 'Vul een geldige prijs in.'; return; }
 
   const categorie = document.getElementById('product-category-select').value;
-  const data = { label: naam, emoji: selectedEmoji, price: prijs, opties: editingProductOptions.slice() };
+  const data = { label: naam, emoji: selectedEmoji, price: prijs, opties: editingProductOptions.slice(), bestemming: selectedBestemming };
   if (categorie) data.categorie = categorie;
 
   const key = editingProductKey || restRef.child('products').push().key;
@@ -1101,6 +1118,7 @@ function renderSettingsProducts() {
         <span class="menu-dots"></span>
         <span class="settings-product-price">${formatPrice(p.price)}</span>
         ${p.categorie && CATEGORIES_STATE[p.categorie] ? `<span class="ice-badge">🏷️ ${escapeHtml(CATEGORIES_STATE[p.categorie].naam)}</span>` : ''}
+        <span class="ice-badge">${p.bestemming === 'bar' ? '🍸 Bar' : '🔔 Keuken'}</span>
         ${opties.map(o => `<span class="ice-badge">${o.emoji || '📝'} ${escapeHtml(o.label)}</span>`).join('')}
       </div>
       ${isOwner ? `<div class="settings-product-actions">
@@ -1433,7 +1451,7 @@ function renderCanvas(canvasEl, { editable, onTableClick }) {
       el.dataset.type = 'table';
       el.dataset.id = id;
       el.dataset.kind = kind;
-    } else if (onTableClick && isOrderable) {
+    } else if (onTableClick && (isOrderable || kind === 'bar')) {
       el.addEventListener('click', () => onTableClick(table));
     }
     canvasEl.appendChild(el);
@@ -1459,7 +1477,13 @@ function kindIconByNumber(number) {
 
 function renderOrderCanvas() {
   const canvas = document.getElementById('order-canvas');
-  renderCanvas(canvas, { editable: false, onTableClick: (table) => handleTableClick(table) });
+  renderCanvas(canvas, {
+    editable: false,
+    onTableClick: (item) => {
+      if (item.kind === 'bar') { openOrderModalForBar(item); return; }
+      handleTableClick(item);
+    }
+  });
   document.getElementById('order-no-tables').style.display =
     Object.keys(TABLES_STATE).length === 0 ? 'block' : 'none';
 }
@@ -1783,6 +1807,8 @@ function onResizeStart(e) {
 
 // ==================== Bestellen: tafel -> producten kiezen ====================
 let currentOrderTable = null;
+let currentOrderBar = null;   // gevuld i.p.v. currentOrderTable wanneer er bij de bar besteld wordt
+let pendingBarOrder = null;   // items/opties/opmerking die klaarstaan om na betaling te versturen
 let orderCounts = {};      // key -> aantal
 let orderItemOptions = {}; // key -> array (per besteld stuk) van gekozen opmerkingen
 let stockStatus = {};      // productKey -> uitverkocht?
@@ -1867,12 +1893,38 @@ function renderVoorraadOpmerkingen() {
 
 function openOrderModalForTable(table) {
   currentOrderTable = table;
+  currentOrderBar = null;
+  pendingBarOrder = null;
   orderCounts = {};
   orderItemOptions = {};
   productList().forEach(p => { orderCounts[p.key] = 0; orderItemOptions[p.key] = []; });
   document.getElementById('order-modal-title').textContent = `${kindWoord(table)} ${table.number}`;
   document.getElementById('order-note').value = '';
   document.getElementById('order-error').textContent = '';
+  document.getElementById('order-bar-confirm').style.display = 'none';
+  document.getElementById('order-default-actions').style.display = '';
+  document.getElementById('order-confirm').textContent = 'Bestelling sturen naar keuken';
+  renderOrderProducts();
+  openModal('modal-order');
+}
+
+// Bij de bar wordt eerst de bestelling samengesteld zoals normaal, maar in
+// plaats van meteen naar de keuken te sturen moet er eerst worden afgerekend
+// (zie order-confirm hieronder). Pas na bevestigde betaling gaat de
+// bestelling alsnog naar de keuken, met "Bar" in plaats van een tafelnummer.
+function openOrderModalForBar(barItem) {
+  currentOrderTable = null;
+  currentOrderBar = barItem;
+  pendingBarOrder = null;
+  orderCounts = {};
+  orderItemOptions = {};
+  productList().forEach(p => { orderCounts[p.key] = 0; orderItemOptions[p.key] = []; });
+  document.getElementById('order-modal-title').textContent = `🍸 ${barItem.name || 'Bar'}`;
+  document.getElementById('order-note').value = '';
+  document.getElementById('order-error').textContent = '';
+  document.getElementById('order-bar-confirm').style.display = 'none';
+  document.getElementById('order-default-actions').style.display = '';
+  document.getElementById('order-confirm').textContent = 'Doorgaan naar betalen';
   renderOrderProducts();
   openModal('modal-order');
 }
@@ -1987,6 +2039,31 @@ function renderOrderOptionToggles(key) {
   });
 }
 
+// Splitst items (en bijbehorende itemOpties) van één bestelling op in een
+// keuken-groep en een bar-groep, op basis van de bestemming die is ingesteld
+// bij elk product. Zo komt bijv. bij "2x Fanta, 1x Pizza" de Fanta gewoon in
+// de Bar-tab terecht en de Pizza in de Keuken-tab, ook al werden ze in één
+// keer besteld.
+function splitItemsByBestemming(items, itemOpties) {
+  const groepen = { keuken: { items: {}, itemOpties: {} }, bar: { items: {}, itemOpties: {} } };
+  Object.entries(items).forEach(([key, aantal]) => {
+    const p = PRODUCTS_STATE[key];
+    const bestemming = (p && p.bestemming === 'bar') ? 'bar' : 'keuken';
+    groepen[bestemming].items[key] = aantal;
+    if (itemOpties && itemOpties[key]) groepen[bestemming].itemOpties[key] = itemOpties[key];
+  });
+  return groepen;
+}
+
+// Rekent het totaalbedrag uit van een items-object (key -> aantal), op basis
+// van de huidige productprijzen.
+function computeItemsTotal(items) {
+  return Object.entries(items).reduce((sum, [key, aantal]) => {
+    const p = PRODUCTS_STATE[key];
+    return sum + (p ? p.price : 0) * aantal;
+  }, 0);
+}
+
 document.getElementById('order-confirm').addEventListener('click', () => {
   const errorEl = document.getElementById('order-error');
   const items = {};
@@ -1997,28 +2074,101 @@ document.getElementById('order-confirm').addEventListener('click', () => {
     errorEl.textContent = 'Kies eerst iets.';
     return;
   }
+  errorEl.textContent = '';
 
   const itemOpties = {};
   Object.keys(items).forEach(key => {
     const opts = orderItemOptions[key] || [];
     if (opts.some(sel => sel.length > 0)) itemOpties[key] = opts.map(sel => sel.slice());
   });
-
-  const orderData = {
-    tableNumber: currentOrderTable.number,
-    items: items,
-    status: 'nieuw',
-    tijd: Date.now()
-  };
   const opmerking = document.getElementById('order-note').value.trim();
-  if (opmerking) orderData.opmerking = opmerking;
-  if (Object.keys(itemOpties).length > 0) orderData.itemOpties = itemOpties;
 
-  restRef.child('orders').push().set(orderData).then(() => {
+  if (currentOrderBar) {
+    // Bij de bar wordt er eerst afgerekend, en pas daarna naar de keuken gestuurd.
+    pendingBarOrder = { items, itemOpties, opmerking };
+    document.getElementById('order-bar-confirm-amount').textContent = formatPrice(computeItemsTotal(items));
+    document.getElementById('order-default-actions').style.display = 'none';
+    document.getElementById('order-bar-confirm').style.display = 'block';
+    return;
+  }
+
+  const nu = Date.now();
+  const groepen = splitItemsByBestemming(items, itemOpties);
+  const bestemmingen = ['keuken', 'bar'].filter(b => Object.keys(groepen[b].items).length > 0);
+  // Alleen een gedeelde groupId nodig als de bestelling écht in meerdere
+  // tickets wordt opgesplitst; zo telt de wachtrijpositie (in zelfservice)
+  // dit straks als één bestelling in plaats van als twee.
+  const groupId = bestemmingen.length > 1 ? restRef.child('orders').push().key : null;
+  const updates = {};
+  bestemmingen.forEach(bestemming => {
+    const groepItems = groepen[bestemming].items;
+    const id = restRef.child('orders').push().key;
+    const orderData = {
+      tableNumber: currentOrderTable.number,
+      items: groepItems,
+      status: 'nieuw',
+      tijd: nu
+    };
+    if (opmerking) orderData.opmerking = opmerking;
+    if (Object.keys(groepen[bestemming].itemOpties).length > 0) orderData.itemOpties = groepen[bestemming].itemOpties;
+    if (groupId) orderData.orderGroupId = groupId;
+    updates['orders/' + id] = orderData;
+  });
+
+  restRef.update(updates).then(() => {
     closeModal('modal-order');
   }).catch(err => {
     console.error(err);
     errorEl.textContent = 'Er ging iets mis, probeer opnieuw.';
+  });
+});
+
+document.getElementById('order-bar-confirm-cancel').addEventListener('click', () => {
+  document.getElementById('order-bar-confirm').style.display = 'none';
+  document.getElementById('order-default-actions').style.display = '';
+});
+
+document.getElementById('order-bar-confirm-pay').addEventListener('click', () => {
+  if (!pendingBarOrder || !currentOrderBar) return;
+  const btn = document.getElementById('order-bar-confirm-pay');
+  btn.disabled = true;
+
+  const nu = Date.now();
+  const groepen = splitItemsByBestemming(pendingBarOrder.items, pendingBarOrder.itemOpties);
+  const bestemmingen = ['keuken', 'bar'].filter(b => Object.keys(groepen[b].items).length > 0);
+  const groupId = bestemmingen.length > 1 ? restRef.child('orders').push().key : null;
+  const updates = {};
+  bestemmingen.forEach(bestemming => {
+    const groepItems = groepen[bestemming].items;
+    const id = restRef.child('orders').push().key;
+    const orderData = {
+      bar: true,
+      barName: currentOrderBar.name || 'Bar',
+      tableNumber: null,
+      items: groepItems,
+      status: 'nieuw',
+      tijd: nu,
+      betaaldOp: nu
+    };
+    if (pendingBarOrder.opmerking) orderData.opmerking = pendingBarOrder.opmerking;
+    if (Object.keys(groepen[bestemming].itemOpties).length > 0) orderData.itemOpties = groepen[bestemming].itemOpties;
+    if (groupId) orderData.orderGroupId = groupId;
+    // Meteen zowel naar de keuken/bar (orders) als in de historie (al betaald) zetten.
+    updates['orders/' + id] = orderData;
+    updates['history/' + id] = orderData;
+  });
+
+  restRef.update(updates).then(() => {
+    btn.disabled = false;
+    pendingBarOrder = null;
+    closeModal('modal-order');
+    speelBetaalGeluid();
+  }).catch(err => {
+    console.error(err);
+    btn.disabled = false;
+    document.getElementById('order-bar-confirm').style.display = 'none';
+    document.getElementById('order-default-actions').style.display = '';
+    document.getElementById('order-error').textContent = 'Er ging iets mis, probeer opnieuw.';
   });
 });
 
@@ -2271,10 +2421,27 @@ if (!isOwner) {
   });
 }
 
+// Bepaalt of een bestelling in de Keuken- of de Bar-tab thuishoort. Een
+// bestelling gaat alleen naar de Bar als ÁL zijn producten daar besteld
+// moeten worden; zit er ook maar één keuken-product bij, dan gaat de hele
+// bestelling (net als vroeger) naar de Keuken.
+function orderBestemming(order) {
+  const keys = Object.keys(order.items || {});
+  if (keys.length === 0) return 'keuken';
+  const allesBar = keys.every(key => {
+    const p = PRODUCTS_STATE[key];
+    return p && p.bestemming === 'bar';
+  });
+  return allesBar ? 'bar' : 'keuken';
+}
+
 function renderOrderCardHtml(id, order, actionHtml) {
   const noteHtml = order.opmerking ? `<div class="note-line">"${escapeHtml(order.opmerking)}"</div>` : '';
+  const badgeHtml = order.bar
+    ? `🍸 ${escapeHtml(order.barName || 'Bar')}`
+    : `${kindIconByNumber(order.tableNumber)} ${kindWoordByNumber(order.tableNumber)} ${order.tableNumber}`;
   return `
-    <div class="table-badge">${kindIconByNumber(order.tableNumber)} ${kindWoordByNumber(order.tableNumber)} ${order.tableNumber}</div>
+    <div class="table-badge">${badgeHtml}</div>
     <div class="items-block">${itemsToLinesHtml(order)}</div>
     ${noteHtml}
     <div class="time-line">Binnengekomen om ${formatTime(order.tijd)}</div>
@@ -2282,22 +2449,28 @@ function renderOrderCardHtml(id, order, actionHtml) {
   `;
 }
 
-function renderKitchen() {
-  const nieuwList = document.getElementById('kitchen-list-nieuw');
-  const bereidenList = document.getElementById('kitchen-list-bereiden');
-  const kitchenCount = document.getElementById('kitchen-count');
+// Rendert de "Binnengekomen" / "In bereiding" kolommen voor Keuken of Bar.
+// bestemming is 'keuken' of 'bar' en bepaalt zowel welke bestellingen worden
+// getoond als in welke DOM-elementen (kitchen-* voor Keuken, bar-* voor Bar).
+function renderPrepTab(bestemming) {
+  const idPrefix = bestemming === 'bar' ? 'bar' : 'kitchen';
+  const nieuwList = document.getElementById(idPrefix + '-list-nieuw');
+  const bereidenList = document.getElementById(idPrefix + '-list-bereiden');
+  const countEl = document.getElementById(idPrefix + '-count');
+  const badgeEl = document.getElementById('tab-badge-' + bestemming);
+  if (!nieuwList || !bereidenList || !countEl) return;
 
-  const nieuw = Object.entries(ALLE_ORDERS).filter(([, o]) => o.status === 'nieuw').sort((a, b) => a[1].tijd - b[1].tijd);
-  const bereiden = Object.entries(ALLE_ORDERS).filter(([, o]) => o.status === 'bereiden').sort((a, b) => a[1].tijd - b[1].tijd);
+  const relevant = Object.entries(ALLE_ORDERS).filter(([, o]) => orderBestemming(o) === bestemming);
+  const nieuw = relevant.filter(([, o]) => o.status === 'nieuw').sort((a, b) => a[1].tijd - b[1].tijd);
+  const bereiden = relevant.filter(([, o]) => o.status === 'bereiden').sort((a, b) => a[1].tijd - b[1].tijd);
 
-  kitchenCount.textContent = (nieuw.length === 0 && bereiden.length === 0)
+  countEl.textContent = (nieuw.length === 0 && bereiden.length === 0)
     ? 'Nieuwe bestellingen worden hier automatisch getoond.'
     : `${nieuw.length} nieuw · ${bereiden.length} in bereiding`;
 
-  const kitchenBadge = document.getElementById('tab-badge-keuken');
-  if (kitchenBadge) {
-    const totaalKeuken = nieuw.length + bereiden.length;
-    kitchenBadge.textContent = totaalKeuken > 0 ? totaalKeuken : '';
+  if (badgeEl) {
+    const totaal = nieuw.length + bereiden.length;
+    badgeEl.textContent = totaal > 0 ? totaal : '';
   }
 
   if (nieuw.length === 0) {
@@ -2335,6 +2508,11 @@ function renderKitchen() {
   }
 }
 
+function renderKitchen() {
+  renderPrepTab('keuken');
+  renderPrepTab('bar');
+}
+
 function renderReady() {
   const readyList = document.getElementById('ready-list');
   const readyCount = document.getElementById('ready-count');
@@ -2361,6 +2539,13 @@ function renderReady() {
 
   readyList.querySelectorAll('.chip-btn.delivered').forEach(btn => {
     btn.addEventListener('click', () => {
+      const order = ALLE_ORDERS[btn.dataset.id];
+      if (order && order.bar) {
+        // Een bar-bestelling is al betaald (staat al in de historie), dus
+        // die hoeft na bezorging niet meer op een rekening te blijven staan.
+        restRef.child('orders/' + btn.dataset.id).remove();
+        return;
+      }
       // Bezorgd, maar nog niet afgerekend: blijft meetellen op de rekening van de tafel
       // totdat er via "Bestelde dingen" -> "Betalen" wordt afgerekend.
       restRef.child('orders/' + btn.dataset.id + '/status').set('bezorgd');
@@ -2401,8 +2586,11 @@ function renderHistory() {
     card.className = 'order-card';
     const noteHtml = order.opmerking ? `<div class="note-line">"${escapeHtml(order.opmerking)}"</div>` : '';
     const betaaldHtml = order.betaaldOp ? ` · betaald om ${formatTime(order.betaaldOp)}` : '';
+    const badgeHtml = order.bar
+      ? `🍸 ${escapeHtml(order.barName || 'Bar')}`
+      : `${kindIconByNumber(order.tableNumber)} ${kindWoordByNumber(order.tableNumber)} ${order.tableNumber}`;
     card.innerHTML = `
-      <div class="table-badge">${kindIconByNumber(order.tableNumber)} ${kindWoordByNumber(order.tableNumber)} ${order.tableNumber}</div>
+      <div class="table-badge">${badgeHtml}</div>
       <div class="items-block">${itemsToLinesHtml(order)}</div>
       ${noteHtml}
       <div class="time-line">Besteld om ${formatTime(order.tijd)}${betaaldHtml}</div>
@@ -2454,7 +2642,7 @@ ordersRef.on('child_added', snap => {
   renderKitchen();
   renderReady();
   herbereken_actieve_tafels();
-  if (isNew && activeTab === 'keuken') speelMeldingGeluid();
+  if (isNew && (activeTab === 'keuken' || activeTab === 'bar') && orderBestemming(order) === activeTab) speelMeldingGeluid();
 });
 ordersRef.on('child_changed', snap => {
   const vorige = ALLE_ORDERS[snap.key];

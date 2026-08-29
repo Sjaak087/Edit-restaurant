@@ -219,19 +219,45 @@ function submitOrder() {
   });
   if (!Object.keys(items).length) { sendError.textContent = 'Kies eerst minstens één product.'; return; }
 
-  const order = {
-    tableNumber: selectedTable,
-    items,
-    status: 'nieuw',
-    tijd: Date.now(),
-    deviceId
-  };
   const note = document.getElementById('note').value.trim();
-  if (note) order.opmerking = note;
-  if (Object.keys(itemOpties).length) order.itemOpties = itemOpties;
+
+  // Splits de bestelling op in een keuken- en een bar-deel, op basis van de
+  // bestemming die is ingesteld bij elk product (Instellingen -> Producten).
+  // Zo komt bijv. de frisdrank meteen bij de bar terecht en het eten bij de
+  // keuken, ook al is het in één keer besteld.
+  const groepen = { keuken: { items: {}, itemOpties: {} }, bar: { items: {}, itemOpties: {} } };
+  Object.entries(items).forEach(([key, aantal]) => {
+    const p = PRODUCTS[key];
+    const bestemming = (p && p.bestemming === 'bar') ? 'bar' : 'keuken';
+    groepen[bestemming].items[key] = aantal;
+    if (itemOpties[key]) groepen[bestemming].itemOpties[key] = itemOpties[key];
+  });
+
+  const nu = Date.now();
+  const bestemmingen = ['keuken', 'bar'].filter(b => Object.keys(groepen[b].items).length > 0);
+  // Alleen een gedeelde groupId nodig als de bestelling écht in meerdere
+  // tickets wordt opgesplitst; zo telt de wachtrijpositie hierna dit als één
+  // bestelling in plaats van als twee (of meer).
+  const groupId = bestemmingen.length > 1 ? restRef.child('orders').push().key : null;
+  const updates = {};
+  bestemmingen.forEach(bestemming => {
+    const groepItems = groepen[bestemming].items;
+    const id = restRef.child('orders').push().key;
+    const order = {
+      tableNumber: selectedTable,
+      items: groepItems,
+      status: 'nieuw',
+      tijd: nu,
+      deviceId
+    };
+    if (note) order.opmerking = note;
+    if (Object.keys(groepen[bestemming].itemOpties).length) order.itemOpties = groepen[bestemming].itemOpties;
+    if (groupId) order.orderGroupId = groupId;
+    updates['orders/' + id] = order;
+  });
 
   document.getElementById('send').disabled = true;
-  restRef.child('orders').push().set(order).then(() => {
+  restRef.update(updates).then(() => {
     // Bewust NIET de aantallen/opmerkingen resetten: als je nog een bestelling
     // plaatst, blijft staan wat je al had aangeklikt (bijv. handig als je
     // meteen nog een rondje van hetzelfde wilt bestellen).
@@ -267,19 +293,40 @@ function isWaitingForService(order) {
   return !!order && ['nieuw', 'bereiden', 'klaar'].includes(order.status);
 }
 
+// Een ticket bevat na het opsplitsen in submitOrder altijd producten van
+// precies één bestemming (bar of keuken), dus het eerste item bepaalt de
+// bestemming van het hele ticket.
+function orderBestemming(order) {
+  const keys = Object.keys(order?.items || {});
+  for (const key of keys) {
+    const p = PRODUCTS[key];
+    if (p && p.bestemming === 'bar') return 'bar';
+  }
+  return 'keuken';
+}
+
 function positionBefore(id, order) {
   if (!isWaitingForService(order)) return 0;
 
-  // Alleen bestellingen in DEZELFDE fase tellen mee.
-  // Een nieuwe bestelling die nog in 'nieuw' staat mag bijvoorbeeld niet
-  // ineens de wachtrij van een bestelling die al 'bereiden' is veranderen.
   const phase = order.status;
-  const ahead = Object.entries(allOrders)
-    .filter(([oid, o]) => oid !== id && o && o.status === phase);
+  const bestemming = orderBestemming(order);
 
-  // Tel alle andere bestellingen in dezelfde fase die er eerder waren
-  // (eerdere tijd = eerder binnengekomen = voor jou in de rij).
-  return ahead.filter(([, o]) => (o.tijd || 0) < (order.tijd || 0)).length;
+  // In Ontvangen en Wordt bereid tellen bar en keuken apart (een bar-ticket
+  // telt alleen andere bar-tickets voor zich, een keuken-ticket alleen
+  // andere keuken-tickets). Alleen in Klaar worden bar + keuken weer samen
+  // geteld als één wachtrij.
+  //
+  // Let op: we sorteren hier bewust op de Firebase push-id en niet op het
+  // veld 'tijd'. Keuken- en bar-tickets van dezelfde bestelling krijgen
+  // namelijk exact dezelfde 'tijd' (ze worden in één klik aangemaakt), dus
+  // met 'tijd' zouden ze elkaar niet meetellen en dezelfde (verkeerde)
+  // positie tonen. Push-id's zijn altijd strikt oplopend in aanmaakvolgorde,
+  // ook binnen dezelfde milliseconde, dus daarmee ontstaat geen gelijkstand.
+  return Object.entries(allOrders).filter(([oid, o]) => {
+    if (oid === id || !o || o.status !== phase) return false;
+    if (phase !== 'klaar' && orderBestemming(o) !== bestemming) return false;
+    return oid < id;
+  }).length;
 }
 
 function queueMessage(id, order) {
@@ -324,7 +371,6 @@ function renderMine() {
   el.innerHTML = '<div class="selfservice-card"><h2>Mijn bestellingen</h2><div class="selfservice-device-note">Alleen bestellingen van dit apparaat worden hier getoond.</div></div>';
   entries.forEach(([id,o]) => {
     const st = statusInfo(o);
-    const before = positionBefore(id,o);
     const tk = tableKindLabel(o.tableNumber);
     const card = document.createElement('div');
     card.className = 'selfservice-card selfservice-order-card';
