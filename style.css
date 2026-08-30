@@ -1966,6 +1966,25 @@ header.top a:hover { color: var(--gold-soft); border-color: var(--gold); }
 .selfservice-error { color:#d99a9a; font-size:.82rem; font-weight:600; min-height:18px; margin-top:10px; }
 .selfservice-confirm { color: var(--green, #6fae7a); font-size:.88rem; font-weight:600; margin-top:10px; }
 .selfservice-muted { color:var(--muted); }
+.selfservice-my-service {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+}
+.selfservice-my-service-title { font-weight: 600; }
+.selfservice-my-service-status {
+  font-size: .8rem;
+  font-weight: 700;
+  color: var(--gold-soft, var(--gold));
+  white-space: nowrap;
+}
 .selfservice-small { font-size:.8rem; }
 
 .selfservice-tabs {
