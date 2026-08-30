@@ -21,8 +21,10 @@ let TABLES = {};
 let STOCK = {};
 let STOCK_OPTIONS = {};
 let CATEGORIES = {};
+let SERVICES = {};
 let myOrders = {};
 let selectedTable = null;
+let selectedServiceTable = null;
 let counts = {};
 let optionsByProduct = {};
 let allOrders = {};
@@ -85,7 +87,10 @@ restRef.on('value', snap => {
   STOCK = r.stock || {};
   STOCK_OPTIONS = r.stockOpties || {};
   CATEGORIES = r.categories || {};
+  SERVICES = r.services || {};
   renderTables();
+  renderServiceTables();
+  renderServices();
   renderProducts();
   renderMine();
   appEl.classList.remove('selfservice-hidden');
@@ -109,6 +114,66 @@ function renderTables() {
     b.textContent = (isBank ? '🛋️ Bank ' : '🪑 Tafel ') + t.number;
     b.onclick = () => { selectedTable = t.number; renderTables(); };
     el.appendChild(b);
+  });
+}
+
+// ==================== Service aanvragen ====================
+// Eigen, losse tafelkeuze (net als bij bestellen) zodat je niet per se al
+// een tafel voor een bestelling hoeft te hebben gekozen om een service aan
+// te vragen.
+function renderServiceTables() {
+  const el = document.getElementById('service-tables');
+  if (!el) return;
+  const tables = Object.entries(TABLES).filter(([,t]) => {
+    const kind = t.kind || 'tafel';
+    return kind === 'tafel' || kind === 'bank';
+  }).sort((a,b) => (a[1].number || 0) - (b[1].number || 0));
+  el.innerHTML = tables.length ? '' : '<div class="selfservice-muted">Er zijn nog geen tafels ingesteld.</div>';
+  tables.forEach(([id,t]) => {
+    const isBank = t.kind === 'bank';
+    const b = document.createElement('button');
+    b.className = 'selfservice-table' + (selectedServiceTable === t.number ? ' active' : '');
+    b.textContent = (isBank ? '🛋️ Bank ' : '🪑 Tafel ') + t.number;
+    b.onclick = () => { selectedServiceTable = t.number; renderServiceTables(); };
+    el.appendChild(b);
+  });
+}
+
+function serviceList() {
+  return Object.entries(SERVICES).map(([key, s]) => ({ key, ...s }));
+}
+
+function renderServices() {
+  const el = document.getElementById('services');
+  if (!el) return;
+  const items = serviceList();
+  el.innerHTML = items.length ? '' : '<div class="selfservice-muted">Dit restaurant heeft nog geen services ingesteld.</div>';
+  items.forEach(s => {
+    const b = document.createElement('button');
+    b.className = 'selfservice-table';
+    b.textContent = '🛎️ ' + s.titel;
+    b.onclick = () => requestService(s);
+    el.appendChild(b);
+  });
+}
+
+function requestService(s) {
+  const errorEl = document.getElementById('service-error');
+  const confirmEl = document.getElementById('service-confirm');
+  errorEl.textContent = '';
+  confirmEl.style.display = 'none';
+  if (!selectedServiceTable) { errorEl.textContent = 'Kies eerst je tafel.'; return; }
+
+  restRef.child('serviceRequests').push({
+    tableNumber: selectedServiceTable,
+    titel: s.titel,
+    tijd: firebase.database.ServerValue.TIMESTAMP,
+  }).then(() => {
+    confirmEl.textContent = `✅ "${s.titel}" is aangevraagd bij tafel ${selectedServiceTable}. Het personeel komt zo naar je toe.`;
+    confirmEl.style.display = 'block';
+  }).catch(err => {
+    console.error(err);
+    errorEl.textContent = 'Het aanvragen is niet gelukt, probeer opnieuw.';
   });
 }
 
@@ -387,13 +452,25 @@ function renderMine() {
 
 document.getElementById('tab-order').onclick = () => {
   document.getElementById('tab-order').classList.add('active');
+  document.getElementById('tab-service').classList.remove('active');
   document.getElementById('tab-mine').classList.remove('active');
   document.getElementById('order-view').classList.remove('selfservice-hidden');
+  document.getElementById('service-view').classList.add('selfservice-hidden');
+  document.getElementById('mine-view').classList.add('selfservice-hidden');
+};
+document.getElementById('tab-service').onclick = () => {
+  document.getElementById('tab-service').classList.add('active');
+  document.getElementById('tab-order').classList.remove('active');
+  document.getElementById('tab-mine').classList.remove('active');
+  document.getElementById('service-view').classList.remove('selfservice-hidden');
+  document.getElementById('order-view').classList.add('selfservice-hidden');
   document.getElementById('mine-view').classList.add('selfservice-hidden');
 };
 document.getElementById('tab-mine').onclick = () => {
   document.getElementById('tab-mine').classList.add('active');
   document.getElementById('tab-order').classList.remove('active');
+  document.getElementById('tab-service').classList.remove('active');
   document.getElementById('mine-view').classList.remove('selfservice-hidden');
   document.getElementById('order-view').classList.add('selfservice-hidden');
+  document.getElementById('service-view').classList.add('selfservice-hidden');
 };
