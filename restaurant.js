@@ -182,15 +182,31 @@ if (isAdminMode) {
   // of beluisteren. Alle tabbladen blijven gewoon zichtbaar (standaard uit de
   // HTML) en de rechten hieronder (isOwner === true) geven volledige toegang.
 } else {
-  restRef.child('leden/' + myMemberId).once('value').then(snap => {
-    if (!snap.exists()) {
-      const tabs = {};
-      ALL_TABS.forEach(t => { tabs[t] = true; });
-      const data = { rol: isOwner ? 'eigenaar' : 'gejoined', naam: mijnEntry.mijnNaam || 'Naamloos', tabs: tabs, toegevoegdOp: Date.now() };
-      return restRef.child('leden/' + myMemberId).set(data).then(() => tabs);
+  // Eerst checken of het RESTAURANT ZELF nog bestaat, vóórdat we concluderen
+  // dat alleen ons eigen ledenrecord nog aangemaakt moet worden. Zonder deze
+  // check zou een verwijderd restaurant (bijv. door de automatische
+  // verwijdertimer) per ongeluk weer helemaal opnieuw aangemaakt worden
+  // zodra iemand met een oude link/bladwijzer terugkomt — met een lege naam
+  // ("Restaurant") en onszelf als "Naamloos" lid.
+  restRef.once('value').then(restSnap => {
+    if (!restSnap.exists()) {
+      const list = getMyRestaurants().filter(r => r.id !== restaurantId);
+      saveMyRestaurantsLocal(list);
+      alert('Dit restaurant bestaat niet meer.');
+      window.location.href = backUrl;
+      return null;
     }
-    return snap.val().tabs;
+    return restRef.child('leden/' + myMemberId).once('value').then(snap => {
+      if (!snap.exists()) {
+        const tabs = {};
+        ALL_TABS.forEach(t => { tabs[t] = true; });
+        const data = { rol: isOwner ? 'eigenaar' : 'gejoined', naam: mijnEntry.mijnNaam || 'Naamloos', tabs: tabs, toegevoegdOp: Date.now() };
+        return restRef.child('leden/' + myMemberId).set(data).then(() => tabs);
+      }
+      return snap.val().tabs;
+    });
   }).then(tabs => {
+    if (!tabs) return; // restaurant bestond niet meer, hierboven al afgehandeld
     applyTabPermissions(tabs);
     if (isOwner) {
       // Zorg dat de eigenaar zichzelf meteen in de ledenlijst ziet, ook nog vóórdat
