@@ -2401,3 +2401,16 @@ header.top h1,
 
 
 .admin-tab-nav .tab-btn{padding:16px 22px;font-size:1rem;font-weight:700;min-height:56px;}
+
+
+/* Feedback button matches Restaurant joinen */
+#feedbackBtn,
+.feedback-btn{
+  background:#111 !important;
+  color:#fff !important;
+  border:1px solid #2b2b2b !important;
+}
+#feedbackBtn:hover,
+.feedback-btn:hover{
+  background:#1a1a1a !important;
+}
