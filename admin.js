@@ -340,3 +340,18 @@ function cleanupGhostAndExpiredRestaurants(data) {
     }).catch(err => console.error('Opruimen mislukt voor', id, err));
   });
 }
+
+db.ref('feedback').on('value',snap=>{
+ const wrap=document.getElementById('feedback-list');
+ if(!wrap)return;
+ wrap.innerHTML='';
+ const data=snap.val()||{};
+ Object.entries(data).sort((a,b)=>b[1].time-a[1].time).forEach(([id,f])=>{
+   const d=new Date(f.time);
+   const el=document.createElement('div');
+   el.className='restaurant-card';
+   el.innerHTML=`<strong>Van: ${escapeHtmlAdmin(f.name)}</strong><br><small>${d.toLocaleString('nl-NL')}</small><p>${escapeHtmlAdmin(f.text)}</p><button>Gelezen</button>`;
+   el.querySelector('button').onclick=()=>db.ref('feedback/'+id).remove();
+   wrap.appendChild(el);
+ });
+});

@@ -258,3 +258,24 @@ document.getElementById('join-confirm').addEventListener('click', async () => {
     btn.textContent = 'Joinen';
   }
 });
+
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>closeModal('modal-feedback'));
+const fbBtn=document.getElementById('btn-feedback');
+if(fbBtn) fbBtn.onclick=()=>openModal('modal-feedback');
+const sendBtn=document.getElementById('send-feedback');
+if(sendBtn) sendBtn.onclick=async ()=>{
+ const name=document.getElementById('feedback-name').value.trim();
+ const text=document.getElementById('feedback-text').value.trim();
+ if(!name||!text){alert('Vul alles in');return;}
+ const key='feedbackLimit';
+ const last=Number(localStorage.getItem(key)||0);
+ if(Date.now()-last<300000){alert('Max 1 feedback per 5 minuten');return;}
+ await db.ref('feedback').push({name,text,time:Date.now()});
+ localStorage.setItem(key,Date.now());
+ alert('Bedankt!');
+ closeModal('modal-feedback');
+ document.getElementById('feedback-name').value='';
+ document.getElementById('feedback-text').value='';
+};
