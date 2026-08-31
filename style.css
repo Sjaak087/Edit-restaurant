@@ -966,41 +966,6 @@ header.top a:hover { color: var(--gold-soft); border-color: var(--gold); }
 }
 
 .landing-actions { display: flex; flex-direction: column; gap: 14px; width: 100%; }
-
-.feedback-btn {
-  margin-top: 14px;
-}
-.feedback-list { display: flex; flex-direction: column; gap: 12px; }
-.feedback-card {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  width: 100%;
-  padding: 16px 18px;
-  border: 1px solid var(--line);
-  border-left: 3px solid var(--gold);
-  border-radius: var(--radius-lg);
-  background: linear-gradient(155deg, var(--glass), transparent 45%), var(--card);
-  box-shadow: var(--shadow-1);
-  text-align: left;
-  transition: transform 0.22s var(--ease), box-shadow 0.22s var(--ease), border-color 0.22s var(--ease);
-}
-.feedback-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-2); border-color: var(--gold); }
-.feedback-card-main { flex: 1; min-width: 0; }
-.feedback-card-header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 9px; }
-.feedback-card-from { font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; color: var(--ink); }
-.feedback-card-date { font-size: 0.75rem; color: var(--muted); white-space: nowrap; }
-.feedback-card-text { font-size: 0.9rem; line-height: 1.6; color: var(--ink); overflow-wrap: anywhere; }
-.admin-tab-nav { margin: 0 0 26px; display: flex; flex-wrap: wrap; }
-
-@media (max-width: 620px) {
-  .feedback-card { flex-direction: column; }
-  .feedback-card-header { flex-direction: column; gap: 3px; }
-  .feedback-card-date { white-space: normal; }
-  .feedback-card .admin-restaurant-actions { width: 100%; }
-  .feedback-card .admin-restaurant-actions .mini-btn { width: 100%; }
-}
 .landing-actions .big-choice { width: 100%; min-width: 0; }
 
 /* ==================== Modals ==================== */
@@ -2396,4 +2361,16 @@ header.top h1,
 }
 
 
-.admin-tab-nav .tab-btn{padding:16px 22px;font-size:1rem;font-weight:700;min-height:56px;}
+/* Feedback button = Restaurant joinen style */
+#feedbackBtn,
+.feedback-btn{
+  background: var(--bg) !important;
+  color: var(--gold-soft) !important;
+  border: 1px solid var(--gold) !important;
+  border-radius: 16px !important;
+  font-weight: 700 !important;
+}
+#feedbackBtn:hover,
+.feedback-btn:hover{
+  background: #1a1a1a !important;
+}
