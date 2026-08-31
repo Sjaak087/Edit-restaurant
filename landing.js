@@ -259,23 +259,69 @@ document.getElementById('join-confirm').addEventListener('click', async () => {
   }
 });
 
-function openModal(id){document.getElementById(id).classList.add('open')}
-function closeModal(id){document.getElementById(id).classList.remove('open')}
-document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>closeModal('modal-feedback'));
-const fbBtn=document.getElementById('btn-feedback');
-if(fbBtn) fbBtn.onclick=()=>openModal('modal-feedback');
-const sendBtn=document.getElementById('send-feedback');
-if(sendBtn) sendBtn.onclick=async ()=>{
- const name=document.getElementById('feedback-name').value.trim();
- const text=document.getElementById('feedback-text').value.trim();
- if(!name||!text){alert('Vul alles in');return;}
- const key='feedbackLimit';
- const last=Number(localStorage.getItem(key)||0);
- if(Date.now()-last<300000){alert('Max 1 feedback per 5 minuten');return;}
- await db.ref('feedback').push({name,text,time:Date.now()});
- localStorage.setItem(key,Date.now());
- alert('Bedankt!');
- closeModal('modal-feedback');
- document.getElementById('feedback-name').value='';
- document.getElementById('feedback-text').value='';
-};
+
+// ---- Feedback ----
+const feedbackButton = document.getElementById('btn-feedback');
+const feedbackSendButton = document.getElementById('send-feedback');
+const feedbackLimitKey = 'feedbackLastSentAt';
+const FEEDBACK_COOLDOWN_MS = 5 * 60 * 1000;
+
+function getFeedbackCooldownRemaining() {
+  const lastSent = Number(localStorage.getItem(feedbackLimitKey) || 0);
+  return Math.max(0, FEEDBACK_COOLDOWN_MS - (Date.now() - lastSent));
+}
+
+if (feedbackButton) {
+  feedbackButton.addEventListener('click', () => {
+    const errorEl = document.getElementById('feedback-error');
+    errorEl.textContent = '';
+    document.getElementById('feedback-name').value = '';
+    document.getElementById('feedback-text').value = '';
+    const remaining = getFeedbackCooldownRemaining();
+    if (remaining > 0) {
+      const minutes = Math.ceil(remaining / 60000);
+      errorEl.textContent = `Je kunt over ${minutes} minuut${minutes === 1 ? '' : 'en'} opnieuw feedback geven.`;
+    }
+    openModal('modal-feedback');
+  });
+}
+
+if (feedbackSendButton) {
+  feedbackSendButton.addEventListener('click', async () => {
+    const nameEl = document.getElementById('feedback-name');
+    const textEl = document.getElementById('feedback-text');
+    const errorEl = document.getElementById('feedback-error');
+    const name = nameEl.value.trim();
+    const text = textEl.value.trim();
+
+    errorEl.textContent = '';
+    if (!name) { errorEl.textContent = 'Vul je naam in.'; nameEl.focus(); return; }
+    if (!text) { errorEl.textContent = 'Vul je feedback in.'; textEl.focus(); return; }
+
+    const remaining = getFeedbackCooldownRemaining();
+    if (remaining > 0) {
+      const minutes = Math.ceil(remaining / 60000);
+      errorEl.textContent = `Je kunt over ${minutes} minuut${minutes === 1 ? '' : 'en'} opnieuw feedback geven.`;
+      return;
+    }
+
+    feedbackSendButton.disabled = true;
+    feedbackSendButton.textContent = 'Versturen...';
+    try {
+      await db.ref('feedback').push({
+        name: name,
+        text: text,
+        createdAt: Date.now()
+      });
+      localStorage.setItem(feedbackLimitKey, String(Date.now()));
+      closeModal('modal-feedback');
+      alert('Bedankt voor je feedback!');
+    } catch (e) {
+      console.error('Feedback versturen mislukt:', e);
+      errorEl.textContent = 'Er ging iets mis bij het versturen. Probeer het opnieuw.';
+    } finally {
+      feedbackSendButton.disabled = false;
+      feedbackSendButton.textContent = 'Versturen';
+    }
+  });
+}
