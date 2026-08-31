@@ -969,7 +969,11 @@ header.top a:hover { color: var(--gold-soft); border-color: var(--gold); }
 
 .feedback-btn {
   margin-top: 14px;
+  background: linear-gradient(135deg, var(--wine), var(--wine-dark));
+  color: var(--ink);
+  border: 1px solid rgba(212,169,79,.35);
 }
+.feedback-btn:hover{filter:brightness(1.05);}
 .feedback-list { display: flex; flex-direction: column; gap: 12px; }
 .feedback-card {
   display: flex;
