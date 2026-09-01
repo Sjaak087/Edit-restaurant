@@ -11,9 +11,6 @@
   // LIJST MET GEBLOKKEERDE WOORDEN
   // =========================
   window.BLOCKED_WORDS = [
-    'kut', 
-    'kanker', 
-    'L systeem'
     // 'voorbeeld',
     // 'voorbeeld zin'
   ];
@@ -36,8 +33,7 @@
       .normalize('NFKC')
       .toLocaleLowerCase()
       .replace(/[\u200B-\u200D\uFEFF]/g, '')
-      .replace(/\s+/g, ' ')
-      .trim();
+      .replace(/\s+/g, '')
   }
 
   function containsBlockedWord(value) {
