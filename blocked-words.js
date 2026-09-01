@@ -11,6 +11,9 @@
   // LIJST MET GEBLOKKEERDE WOORDEN
   // =========================
   window.BLOCKED_WORDS = [
+    'kut', 
+    'kanker', 
+    'L systeem'
     // 'voorbeeld',
     // 'voorbeeld zin'
   ];
