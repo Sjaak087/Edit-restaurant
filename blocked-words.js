@@ -12,7 +12,42 @@
   // =========================
   window.BLOCKED_WORDS = [
     'l systeem', 
-    'kut systeem'
+    'kut systeem', 
+    'kut', 
+    'kanker', 
+    'mongool', 
+    'loser', 
+    'kut lars', 
+    'l lars', 
+    'fuck', 
+    'gay', 
+    'hoer', 
+    'neuken', 
+    'raggen', 
+    'verkrachten', 
+    'seksen', 
+    'sex', 
+    'opgekankerd', 
+    'nigger', 
+    'nigga', 
+    'aftrekken', 
+    'masturberen', 
+    'kkr', 
+    'lul', 
+    'piemel', 
+    'pimel', 
+    'plassertje', 
+    'comdoom', 
+    'vagina', 
+    'bek', 
+    'vape', 
+    'sigaret', 
+    'sigaar', 
+    'wiet', 
+    'cocaiene', 
+    'drugs', 
+    
+    
     // 'voorbeeld',
     // 'voorbeeld zin'
   ];
