@@ -2416,3 +2416,7 @@ header.top h1,
 .user-presence { font-weight: 700; }
 .user-presence.online { color: #55a64d; }
 .user-presence.offline { color: #777; }
+
+/* Sitebeheer-login moet ook boven het globale blokkadescherm kunnen openen. */
+#modal-admin-login { z-index: 100002 !important; }
+#modal-admin-login.open { z-index: 100002 !important; }

@@ -80,7 +80,7 @@
       if (adminBtn) adminBtn.addEventListener('click', () => {
         // Rechtstreeks naar Sitebeheer, zodat de login-modal niet achter het
         // blokkeerscherm komt te staan. De normale admin-login blijft vereist.
-        window.location.href = 'admin.html';
+        window.location.href = 'index.html?openSitebeheer=1';
       });
     }
     if (!banned && until) {
@@ -144,9 +144,9 @@
     userRef().child('warnings').on('value', snap=>{
       const data=snap.val()||{}; const entries=Object.entries(data).sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0));
       const pending=entries.find(([,w])=>w && w.read!==true);
-      if (pending && location.pathname.toLowerCase().includes('restaurant.html')) showPendingWarning(pending[0],pending[1]);
+      if (pending && !location.pathname.toLowerCase().includes('admin.html')) showPendingWarning(pending[0],pending[1]);
       const list=document.getElementById('warnings-list'), empty=document.getElementById('warnings-empty-msg');
-      if(list && location.pathname.toLowerCase().includes('restaurant.html')) {
+      if(list && !location.pathname.toLowerCase().includes('admin.html')) {
         entries.forEach(([id,w])=>{ if(document.getElementById('global-warning-'+id)) return; const item=document.createElement('div'); item.id='global-warning-'+id; item.className='announcement-item'; item.innerHTML=`<div class="announcement-item-head"><span class="announcement-item-title">⚠️ Sitewaarschuwing</span><span class="announcement-item-date">${esc(fmt(w.createdAt))}</span></div><div class="announcement-item-info">${esc(w.text)}</div>`; list.appendChild(item); }); if(entries.length && empty) empty.style.display='none';
       }
     });
