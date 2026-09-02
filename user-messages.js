@@ -74,7 +74,7 @@
     el.innerHTML='';
     const needle=q.trim().toLowerCase();
     if(!needle) return;
-    Object.entries(ALL_USERS).filter(([id,u])=>id!==userId && u && u.username && u.username.toLowerCase().includes(needle))
+    Object.entries(ALL_USERS).filter(([id,u])=>u && u.username && u.username.toLowerCase().includes(needle))
       .sort((a,b)=>a[1].username.localeCompare(b[1].username,'nl'))
       .slice(0,10).forEach(([id,u])=>{
         const row=document.createElement('button'); row.type='button'; row.className='user-search-result'; row.textContent=u.username;
