@@ -190,6 +190,7 @@ document.getElementById('create-confirm').addEventListener('click', async () => 
     const memberId = genMemberId();
     await newRef.child('leden/' + memberId).set({
       rol: 'eigenaar',
+      userId: window.BESTELSYSTEEM_USER_ID || '',
       naam: mijnNaam,
       tabs: { bestellen: true, voorraad: true, keuken: true, gereed: true, historie: true, instellingen: true },
       toegevoegdOp: Date.now()
@@ -252,6 +253,7 @@ document.getElementById('join-confirm').addEventListener('click', async () => {
     const memberId = genMemberId();
     await db.ref('restaurants/' + id + '/leden/' + memberId).set({
       rol: 'gejoined',
+      userId: window.BESTELSYSTEEM_USER_ID || '',
       naam: mijnNaam,
       tabs: { bestellen: true, voorraad: false, keuken: false, gereed: false, historie: false, instellingen: false },
       toegevoegdOp: Date.now()

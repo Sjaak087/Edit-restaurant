@@ -11,6 +11,9 @@ function setUsername(value) {
   if (!username || username.length > USERNAME_MAX_LENGTH) return false;
   localStorage.setItem(USERNAME_STORAGE_KEY, username);
   updateUsernameLabels();
+  if (typeof db !== 'undefined' && window.BESTELSYSTEEM_USER_ID) {
+    db.ref('users/' + window.BESTELSYSTEEM_USER_ID).update({ username: username, lastSeen: Date.now() }).catch(() => {});
+  }
   window.dispatchEvent(new CustomEvent('usernameChanged', { detail: { username } }));
   return true;
 }

@@ -183,7 +183,7 @@
   // versienummer hoeft te verhogen om cache-problemen te voorkomen.
   (function () {
     var v = Date.now();
-    ['blocked-words.js', 'firebase-config.js', 'admin-config.js', 'username.js', 'landing.js', 'admin-login.js', 'updates.js', 'announcements.js'].forEach(function (file) {
+    ['blocked-words.js', 'firebase-config.js', 'admin-config.js', 'username.js', 'access-control.js', 'landing.js', 'admin-login.js', 'updates.js', 'announcements.js'].forEach(function (file) {
       document.write('<script src="' + file + '?v=' + v + '"><' + '/script>');
     });
   })();

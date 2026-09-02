@@ -209,7 +209,7 @@ if (isAdminMode) {
       if (!snap.exists()) {
         const tabs = {};
         ALL_TABS.forEach(t => { tabs[t] = true; });
-        const data = { rol: isOwner ? 'eigenaar' : 'gejoined', naam: mijnEntry.mijnNaam || 'Naamloos', tabs: tabs, toegevoegdOp: Date.now() };
+        const data = { rol: isOwner ? 'eigenaar' : 'gejoined', userId: window.BESTELSYSTEEM_USER_ID || '', naam: mijnEntry.mijnNaam || getUsername() || 'Naamloos', tabs: tabs, toegevoegdOp: Date.now() };
         return restRef.child('leden/' + myMemberId).set(data).then(() => tabs);
       }
       return snap.val().tabs;
@@ -234,6 +234,9 @@ if (isAdminMode) {
         return;
       }
       const lid = snap.val();
+      if (window.BESTELSYSTEEM_USER_ID && lid.userId !== window.BESTELSYSTEEM_USER_ID) {
+        restRef.child('leden/' + myMemberId + '/userId').set(window.BESTELSYSTEEM_USER_ID);
+      }
       const username = getUsername();
       if (username && lid.naam !== username) {
         restRef.child('leden/' + myMemberId + '/naam').set(username);
