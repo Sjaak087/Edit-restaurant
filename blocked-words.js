@@ -58,6 +58,85 @@
     // 'voorbeeld zin'
   ];
 
+  // Genereer automatisch veel voorkomende typvarianten voor ELK geblokkeerd woord.
+  // Zo worden o.a. hoofdletters, dubbele letters, leetspeak en veelgebruikte
+  // lettervervangingen afgevangen zonder voor ieder woord handmatig varianten
+  // te hoeven onderhouden.
+  (function addTypingVariants() {
+    var substitutions = {
+      'a': ['a', '4', '@'],
+      'e': ['e', '3'],
+      'i': ['i', '1', '!', 'y'],
+      'o': ['o', '0'],
+      's': ['s', '5', 'z'],
+      't': ['t', '7'],
+      'g': ['g', '9', 'q'],
+      'k': ['k', 'c', 'q'],
+      'c': ['c', 'k', 'q'],
+      'u': ['u', 'v'],
+      'v': ['v', 'u'],
+      'f': ['f', 'ph'],
+      'x': ['x', 'ks'],
+      'j': ['j', 'y'],
+      'y': ['y', 'j', 'i'],
+      'p': ['p', 'b'],
+      'b': ['b', 'p'],
+      'm': ['m', 'nn'],
+      'n': ['n', 'nn'],
+      'r': ['r'],
+      'l': ['l', 'll'],
+      'd': ['d', 't'],
+      'w': ['w', 'vv']
+    };
+
+    var original = window.BLOCKED_WORDS.slice();
+    var variants = new Set(window.BLOCKED_WORDS);
+
+    function addVariant(v) {
+      if (v && v.length <= 80) variants.add(v);
+    }
+
+    original.forEach(function (word) {
+      var base = String(word).toLocaleLowerCase().normalize('NFKC');
+      if (!base) return;
+
+      // Spatie-/streepjesvarianten.
+      addVariant(base.replace(/\s+/g, ''));
+      addVariant(base.replace(/\s+/g, '-'));
+      addVariant(base.replace(/\s+/g, '_'));
+
+      // Per letter maximaal 2 substitutierondes; dit levert veel varianten op
+      // zonder de browser onnodig zwaar te belasten.
+      var current = new Set([base]);
+      for (var round = 0; round < 2; round++) {
+        var next = new Set(current);
+        current.forEach(function (value) {
+          for (var i = 0; i < value.length; i++) {
+            var ch = value[i];
+            var choices = substitutions[ch] || [ch];
+            choices.forEach(function (replacement) {
+              if (replacement === ch) return;
+              next.add(value.slice(0, i) + replacement + value.slice(i + 1));
+            });
+          }
+        });
+        current = next;
+      }
+      current.forEach(addVariant);
+
+      // Veel voorkomende extra tikfouten: ontbrekende, dubbele of omgewisselde letter.
+      for (var i = 0; i < base.length; i++) {
+        addVariant(base.slice(0, i) + base.slice(i + 1));
+        addVariant(base.slice(0, i) + base[i] + base.slice(i));
+        if (i < base.length - 1) {
+          addVariant(base.slice(0, i) + base[i + 1] + base[i] + base.slice(i + 2));
+        }
+      }
+    });
+
+    window.BLOCKED_WORDS = Array.from(variants);
+  })();
+
   var ERROR_MESSAGE = 'Dit woord is niet toegestaan.';
   var lastAllowedValue = new WeakMap();
   var textFieldTypes = ['text', 'search', 'email', 'url', 'tel', 'password'];
