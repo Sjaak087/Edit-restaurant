@@ -2407,3 +2407,12 @@ header.top h1,
 .user-message-item { padding:14px; border:1px solid var(--line); border-radius:var(--radius); background:linear-gradient(155deg,var(--glass),transparent 45%),var(--card); margin-bottom:9px; }
 .user-message-head { display:flex; justify-content:space-between; gap:10px; font-weight:700; color:var(--gold-soft); }
 .user-message-text { margin-top:8px; white-space:pre-wrap; line-height:1.55; color:var(--ink); }
+
+
+.global-access-lock-actions { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:18px; }
+.global-access-lock-actions .btn-primary, .global-access-lock-actions .btn-secondary { margin-top:0; }
+
+/* Username beheer: uitsluitend Online/Offline als presence-status. */
+.user-presence { font-weight: 700; }
+.user-presence.online { color: #55a64d; }
+.user-presence.offline { color: #777; }

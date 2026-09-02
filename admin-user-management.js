@@ -28,9 +28,9 @@
       const restaurants=userRestaurants(uid,u.username);
       const locked = !!u.banned || (u.timeoutUntil && Number(u.timeoutUntil)>Date.now());
       const card=document.createElement('div'); card.className='restaurant-card admin-restaurant-card user-admin-card';
-      const status = u.online ? '<span class="user-status-dot online"></span>Online' : '<span class="user-status-dot"></span>Offline';
+      const status = u.online ? '<span class="user-presence online">Online</span>' : '<span class="user-presence offline">Offline</span>';
       const state = u.banned ? '⛔ Verbannen' : (locked ? '⏱ Time out tot '+fmt(u.timeoutUntil) : '✓ Actief');
-      card.innerHTML=`<div class="restaurant-card-main"><div class="restaurant-card-name">👤 ${esc(u.username||'Onbekend')}</div><div class="restaurant-card-role">${status} · ${esc(state)}</div><div class="restaurant-card-role">Laatst gezien: ${esc(fmt(u.lastSeen))}</div><div class="user-admin-detail"><strong>Restaurants (${restaurants.length})</strong><div class="user-admin-restaurants">${restaurants.length?restaurants.map(r=>`<div class="user-admin-restaurant">${esc(r.naam)}</div>`).join(''):'<span class="restaurant-card-role">Geen restaurants gevonden.</span>'}</div><div class="user-admin-actions"><button type="button" class="mini-btn edit" data-detail>Bekijken</button>${u.banned?'<button type="button" class="mini-btn edit" data-unban>Unbannen</button>':'<button type="button" class="mini-btn danger" data-ban>Verbannen</button>'}${!u.banned?'<button type="button" class="mini-btn edit" data-timeout>Time out</button><button type="button" class="mini-btn edit" data-warning>⚠️ Waarschuwing</button>':''}</div><div class="user-warning-history" data-history></div></div></div>`;
+      card.innerHTML=`<div class="restaurant-card-main"><div class="restaurant-card-name">👤 ${esc(u.username||'Onbekend')}</div><div class="restaurant-card-role">${status}</div><div class="restaurant-card-role">${esc(state)}</div><div class="user-admin-detail"><strong>Restaurants (${restaurants.length})</strong><div class="user-admin-restaurants">${restaurants.length?restaurants.map(r=>`<div class="user-admin-restaurant">${esc(r.naam)}</div>`).join(''):'<span class="restaurant-card-role">Geen restaurants gevonden.</span>'}</div><div class="user-admin-actions"><button type="button" class="mini-btn edit" data-detail>Bekijken</button>${u.banned?'<button type="button" class="mini-btn edit" data-unban>Unbannen</button>':'<button type="button" class="mini-btn danger" data-ban>Verbannen</button>'}${!u.banned?'<button type="button" class="mini-btn edit" data-timeout>Time out</button><button type="button" class="mini-btn edit" data-warning>⚠️ Waarschuwing</button>':''}</div><div class="user-warning-history" data-history></div></div></div>`;
       card.querySelector('[data-detail]').onclick=e=>{e.stopPropagation(); card.querySelector('[data-history]').innerHTML='<div class="restaurant-card-role">Gebruikers-ID: '+esc(uid)+'</div>'+(u.warnings?Object.entries(u.warnings).sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0)).map(([id,w])=>`<div class="announcement-item" style="margin-top:8px;"><div class="announcement-item-head"><span class="announcement-item-title">⚠️ Waarschuwing</span><span class="announcement-item-date">${esc(fmt(w.createdAt))}</span></div><div class="announcement-item-info">${esc(w.text)}</div></div>`).join(''):'<div class="restaurant-card-role" style="margin-top:8px;">Geen eerdere waarschuwingen.</div>'); };
       const ban=card.querySelector('[data-ban]'); if(ban) ban.onclick=e=>{e.stopPropagation(); if(confirm(`Weet je zeker dat ${u.username||'deze gebruiker'} verbannen moet worden?`)) db.ref('users/'+uid).update({banned:true,timeoutUntil:null});};
       const unban=card.querySelector('[data-unban]'); if(unban) unban.onclick=e=>{e.stopPropagation(); db.ref('users/'+uid).update({banned:false,timeoutUntil:null});};
@@ -46,6 +46,28 @@
   document.getElementById('admin-user-warning-confirm').onclick=async()=>{ const err=document.getElementById('admin-user-warning-error'); const text=document.getElementById('admin-user-warning-input').value.trim(); if(!selectedUserId||!text){err.textContent='Vul een bericht in.';return;} const b=document.getElementById('admin-user-warning-confirm');b.disabled=true;try{await db.ref('users/'+selectedUserId+'/warnings').push().set({text,createdAt:Date.now(),read:false});closeModal('modal-admin-user-warning');}catch(e){console.error(e);err.textContent='Opslaan mislukt.';}finally{b.disabled=false;}};
 
   const msgList=document.getElementById('admin-user-messages-list'), msgEmpty=document.getElementById('admin-user-messages-empty');
-  db.ref('userMessages').on('value',snap=>{ const data=snap.val()||{}; const entries=Object.entries(data).sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0)); const unread=entries.filter(([,m])=>!m.read).length; if(badge){badge.textContent=unread>9?'9+':String(unread);badge.style.display=unread?'inline-flex':'none';} msgList.innerHTML='';msgEmpty.style.display=entries.length?'none':'block';entries.forEach(([id,m])=>{const item=document.createElement('div');item.className='user-message-item';item.innerHTML=`<div class="user-message-head"><span>👤 ${esc(m.username||'Onbekend')}</span><span>${esc(fmt(m.createdAt))}</span></div><div class="user-message-text">${esc(m.text)}</div><div class="user-admin-actions"><button class="mini-btn edit" data-read>${m.read?'Gelezen':'Markeer als gelezen'}</button></div>`;item.querySelector('[data-read]').onclick=()=>db.ref('userMessages/'+id+'/read').set(true);msgList.appendChild(item);}); });
+  function renderMessages(data) {
+    const entries=Object.entries(data||{}).sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0));
+    const unread=entries.filter(([,m])=>!m.read).length;
+    if(badge){badge.textContent=unread>9?'9+':String(unread);badge.style.display=unread?'inline-flex':'none';}
+    msgList.innerHTML=''; msgEmpty.style.display=entries.length?'none':'block';
+    entries.forEach(([id,m])=>{
+      const item=document.createElement('div'); item.className='user-message-item';
+      item.innerHTML=`<div class="user-message-head"><span>👤 ${esc(m.username||'Onbekend')}</span><span>${esc(fmt(m.createdAt))}</span></div><div class="user-message-text">${esc(m.text)}</div><div class="user-admin-actions"><button class="mini-btn edit" data-read>${m.read?'Gelezen':'Markeer als gelezen'}</button></div>`;
+      item.querySelector('[data-read]').onclick=async()=>{
+        const writes=[db.ref('userMessages/'+id+'/read').set(true)];
+        if(m.userId) writes.push(db.ref('users/'+m.userId+'/ownerMessages/'+id+'/read').set(true));
+        await Promise.allSettled(writes);
+      };
+      msgList.appendChild(item);
+    });
+  }
+  db.ref('userMessages').on('value',snap=>renderMessages(snap.val()||{}));
+  // Fallback/bron: berichten die onder de gebruiker zijn opgeslagen.
+  db.ref('users').on('value',snap=>{
+    const users=snap.val()||{}, merged={};
+    Object.values(users).forEach(u=>Object.entries(u.ownerMessages||{}).forEach(([id,m])=>{ merged[id]=m; }));
+    db.ref('userMessages').once('value').then(ms=>{ Object.assign(merged,ms.val()||{}); renderMessages(merged); }).catch(()=>renderMessages(merged));
+  });
   document.getElementById('btn-admin-messages').onclick=()=>openModal('modal-admin-messages');
 })();

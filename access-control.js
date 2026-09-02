@@ -29,16 +29,34 @@
     if (typeof db === 'undefined') return;
     const connectedRef = db.ref('.info/connected');
     connectedRef.on('value', snap => {
-      if (snap.val() !== true || !username()) return;
-      userRef().update({ username: username(), online: true, lastSeen: Date.now() }).catch(()=>{});
-      userRef().onDisconnect().update({ online: false, lastSeen: firebase.database.ServerValue.TIMESTAMP }).catch(()=>{});
+      const connected = snap.val() === true;
+      if (!username()) return;
+      if (connected) {
+        // onDisconnect wordt door Firebase server-side uitgevoerd, ook als
+        // het tabblad/crash/browser onverwacht wegvalt. Daardoor blijft een
+        // gebruiker niet onterecht op Online staan.
+        userRef().onDisconnect().update({ online: false, lastSeen: firebase.database.ServerValue.TIMESTAMP }).then(() => {
+          return userRef().update({ username: username(), online: true, lastSeen: firebase.database.ServerValue.TIMESTAMP });
+        }).catch(()=>{});
+      } else {
+        // Zodra de Firebase-verbinding wegvalt, mag de beheerpagina hem niet
+        // als online blijven tonen. De server-side onDisconnect is de bron
+        // voor het definitieve offline-signaal.
+      }
     });
-    window.addEventListener('beforeunload', () => {
-      userRef().update({ online: false, lastSeen: Date.now() }).catch(()=>{});
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && username()) {
+        db.ref('.info/connected').once('value').then(snap => {
+          if (snap.val() === true) userRef().update({ username: username(), online: true, lastSeen: firebase.database.ServerValue.TIMESTAMP }).catch(()=>{});
+        }).catch(()=>{});
+      }
     });
-    setInterval(() => {
-      if (username()) userRef().update({ username: username(), lastSeen: Date.now() }).catch(()=>{});
-    }, 30000);
+  }
+
+  let accessExpiryTimer = null;
+
+  function clearAccessExpiryTimer() {
+    if (accessExpiryTimer) { clearTimeout(accessExpiryTimer); accessExpiryTimer = null; }
   }
 
   function renderLock(type, until) {
@@ -51,11 +69,31 @@
       <div class="global-access-lock-icon">${banned ? '⛔' : '⏱️'}</div>
       <h1>${banned ? 'Je bent verbannen van deze website' : 'Je hebt een time out gekregen'}</h1>
       <p>${banned ? 'Je hebt momenteel geen toegang tot deze website.' : `Je hebt een time out gekregen tot <strong>${esc(fmt(until))}</strong>.`}</p>
-      ${banned ? '<button type="button" class="btn-primary" id="global-access-message">✉️ Stuur bericht naar owner</button>' : ''}
+      ${banned ? '<div class="global-access-lock-actions"><button type="button" class="btn-primary" id="global-access-message">✉️ Stuur bericht naar owner</button><button type="button" class="btn-secondary" id="global-access-admin">🔧 Sitebeheer</button></div>' : ''}
     </div>`;
     document.body.appendChild(overlay);
     document.body.classList.add('access-locked');
-    if (banned) document.getElementById('global-access-message').addEventListener('click', () => openMessageModal());
+    if (banned) {
+      document.getElementById('global-access-message').addEventListener('click', () => openMessageModal());
+      document.getElementById('global-access-admin').addEventListener('click', () => {
+        if (sessionStorage.getItem('isRestaurantAdmin') === '1') {
+          window.location.href = 'admin.html';
+        } else {
+          const adminBtn = document.getElementById('btn-admin');
+          if (adminBtn) adminBtn.click();
+          else window.location.href = 'admin.html';
+        }
+      });
+    }
+    if (!banned && until) {
+      clearAccessExpiryTimer();
+      const delay = Math.max(0, Number(until) - Date.now()) + 50;
+      accessExpiryTimer = setTimeout(() => {
+        // Controleer opnieuw via Firebase zodra de timeout afloopt,
+        // zodat de gebruiker zonder herladen direct weer toegang krijgt.
+        userRef().once('value').then(snap => enforceUserState(snap.val() || {})).catch(() => {});
+      }, delay);
+    }
   }
 
   function openMessageModal() {
@@ -79,9 +117,17 @@
         if (!text) { err.textContent = 'Typ eerst een bericht.'; return; }
         const btn = document.getElementById('global-user-message-send'); btn.disabled = true;
         try {
-          await db.ref('userMessages').push().set({ userId, username: username() || 'Onbekend', text, createdAt: Date.now(), read: false });
+          const message = { userId, username: username() || 'Onbekend', text, createdAt: Date.now(), read: false };
+          // Bewaar het bericht ook onder de eigen gebruiker. Dit werkt met
+          // dezelfde gebruikersrechten als de bestaande gebruikersstatus.
+          const msgRef = userRef().child('ownerMessages').push();
+          await msgRef.set(message);
+          // Daarnaast proberen we de centrale berichtenlijst bij te werken.
+          // Als daarvoor geen schrijfrechten bestaan, blijft het bericht via
+          // users/<uid>/ownerMessages gewoon beschikbaar voor Sitebeheer.
+          try { await db.ref('userMessages/' + msgRef.key).set(message); } catch (secondaryError) { console.warn('Centrale berichtenlijst niet beschikbaar; gebruikerskopie is opgeslagen.', secondaryError); }
           modal.remove();
-        } catch (e) { console.error(e); err.textContent = 'Versturen mislukt.'; btn.disabled = false; }
+        } catch (e) { console.error(e); err.textContent = 'Versturen mislukt. Probeer het opnieuw.'; btn.disabled = false; }
       };
     }
   }
@@ -110,6 +156,7 @@
   function removeLock() {
     const lock=document.getElementById('global-access-lock'); if(lock) lock.remove();
     document.body.classList.remove('access-locked');
+    clearAccessExpiryTimer();
   }
 
   function enforceUserState(user) {
@@ -129,8 +176,21 @@
     enforceUserState(snap.val() || {});
   }
 
+  // Realtime controle: wijzigingen van de beheerder (timeout/ban/unban)
+  // worden direct op het geopende apparaat verwerkt, zonder pagina-refresh.
   userRef().on('value', snap => {
     if (username()) enforceUserState(snap.val() || {});
+  });
+
+  // Extra child-listeners maken wijzigingen aan afzonderlijke velden ook
+  // onmiddellijk zichtbaar wanneer Firebase alleen dat veld synchroniseert.
+  userRef().child('banned').on('value', () => {
+    if (!username()) return;
+    userRef().once('value').then(snap => enforceUserState(snap.val() || {})).catch(() => {});
+  });
+  userRef().child('timeoutUntil').on('value', () => {
+    if (!username()) return;
+    userRef().once('value').then(snap => enforceUserState(snap.val() || {})).catch(() => {});
   });
 
   window.refreshGlobalUserAccess = gate;
