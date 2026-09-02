@@ -2420,3 +2420,15 @@ header.top h1,
 /* Sitebeheer-login moet ook boven het globale blokkadescherm kunnen openen. */
 #modal-admin-login { z-index: 100002 !important; }
 #modal-admin-login.open { z-index: 100002 !important; }
+
+/* ==================== Persoonlijke berichten ==================== */
+.tab-count, .bell-badge { align-items:center; justify-content:center; min-width:20px; height:20px; padding:0 6px; border-radius:999px; font-size:12px; font-weight:700; line-height:20px; }
+.tab-count { margin-left:5px; background:var(--gold, #c9a227); color:#fff; vertical-align:middle; }
+.message-toolbar { display:flex; justify-content:flex-end; margin-bottom:14px; }
+.user-search-results { display:flex; flex-direction:column; gap:6px; margin-top:7px; max-height:180px; overflow:auto; }
+.user-search-result { width:100%; text-align:left; border:1px solid rgba(0,0,0,.1); background:rgba(255,255,255,.7); border-radius:10px; padding:10px 12px; cursor:pointer; font:inherit; }
+.user-search-result:hover { filter:brightness(.97); }
+.selected-user { margin:7px 0 12px; padding:9px 12px; border-radius:10px; background:rgba(201,162,39,.12); font-weight:600; }
+.user-message-item { cursor:pointer; }
+.user-message-item.unread { border-left:4px solid var(--gold, #c9a227); }
+.message-full-text { white-space:pre-wrap; line-height:1.6; margin:14px 0; padding:14px; border-radius:10px; background:rgba(0,0,0,.035); }
