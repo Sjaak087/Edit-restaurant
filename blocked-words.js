@@ -45,9 +45,15 @@
     'sigaar', 
     'wiet', 
     'cocaiene', 
-    'drugs', 
-    
-    
+    'drugs',
+
+    // Extra geblokkeerde woorden + veelvoorkomende typvarianten
+    'tering', 'ttering', 'terring', 'terinng', 'terring', 'ter1ng', 'teringg', 'terinng', 't3ring',
+    'tifus', 'tyfus', 'tifuss', 'tifusss', 'tifus', 'tifuz', 'tifoes', 'tifoes', 't1fus', 'tif4s',
+    'fiefus', 'fiefuss', 'fieffus', 'fiefuz', 'fiefusss', 'fiefus', 'fiefuss', 'f1efus', 'fief4s',
+    'pijpen', 'pypen', 'pijpenn', 'pijpe', 'pijpen', 'pijpn', 'pijpen', 'pijp3n', 'p1jpen', 'pijpenn',
+    'kancer', 'cancer', 'canker', 'kankar', 'kankor', 'kankur', 'kankerr', 'kancerr', 'cankerr', 'kkr',
+
     // 'voorbeeld',
     // 'voorbeeld zin'
   ];
