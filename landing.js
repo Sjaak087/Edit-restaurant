@@ -1,6 +1,15 @@
 const MAX_RESTAURANTS = 2;
 const STORAGE_KEY = 'mijnRestaurants';
 
+function requireUsername() {
+  const username = getUsername();
+  if (username) return username;
+  openModal('modal-username-setup');
+  const input = document.getElementById('username-setup-input');
+  if (input) input.focus();
+  return '';
+}
+
 function getMyRestaurants() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -148,15 +157,15 @@ document.querySelectorAll('[data-close]').forEach(btn => {
 
 // ---- Restaurant maken ----
 document.getElementById('btn-open-create').addEventListener('click', () => {
+  if (!requireUsername()) return;
   document.getElementById('create-name').value = '';
-  document.getElementById('create-my-name').value = '';
-  document.getElementById('create-error').textContent = '';
+    document.getElementById('create-error').textContent = '';
   openModal('modal-create');
 });
 
 document.getElementById('create-confirm').addEventListener('click', async () => {
   const naam = document.getElementById('create-name').value.trim();
-  const mijnNaam = document.getElementById('create-my-name').value.trim();
+  const mijnNaam = getUsername();
   const errorEl = document.getElementById('create-error');
   if (!naam) { errorEl.textContent = 'Vul een naam in.'; return; }
   if (!mijnNaam) { errorEl.textContent = 'Vul je eigen naam in.'; return; }
@@ -208,15 +217,15 @@ document.getElementById('code-shown-ok').addEventListener('click', () => {
 
 // ---- Restaurant joinen ----
 document.getElementById('btn-open-join').addEventListener('click', () => {
+  if (!requireUsername()) return;
   document.getElementById('join-code').value = '';
-  document.getElementById('join-my-name').value = '';
-  document.getElementById('join-error').textContent = '';
+    document.getElementById('join-error').textContent = '';
   openModal('modal-join');
 });
 
 document.getElementById('join-confirm').addEventListener('click', async () => {
   const code = document.getElementById('join-code').value.trim().toUpperCase();
-  const mijnNaam = document.getElementById('join-my-name').value.trim();
+  const mijnNaam = getUsername();
   const errorEl = document.getElementById('join-error');
   if (!code) { errorEl.textContent = 'Vul een code in.'; return; }
   if (!mijnNaam) { errorEl.textContent = 'Vul je eigen naam in.'; return; }
@@ -275,7 +284,7 @@ if (feedbackButton) {
   feedbackButton.addEventListener('click', () => {
     const errorEl = document.getElementById('feedback-error');
     errorEl.textContent = '';
-    document.getElementById('feedback-name').value = '';
+    document.getElementById('feedback-name').value = getUsername();
     document.getElementById('feedback-text').value = '';
     const remaining = getFeedbackCooldownRemaining();
     if (remaining > 0) {
