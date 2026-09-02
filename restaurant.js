@@ -33,20 +33,23 @@ window.addEventListener('usernameChanged', event => {
 });
 
 // ==================== Waarschuwing van systeembeheer ====================
-// Alleen voor de echte eigenaar op zijn eigen apparaat (niet voor de admin die
-// het restaurant zelf beheert, en niet voor gewone leden). Verschijnt de
-// eerste keer dat hij het restaurant opent na het versturen van een
-// waarschuwing, en verdwijnt daarna voorgoed zodra hij op Oké drukt.
+// Persoonlijke waarschuwingen worden centraal via access-control.js opgehaald.
+// Daardoor krijgt iedere gebruiker zijn waarschuwing zodra de restaurantsite
+// geopend/joined wordt, ongeacht of hij eigenaar of gewoon lid is.
+// De oude restaurant-waarschuwing blijft alleen voor het bestaande
+// restaurant-specifieke waarschuwingstype.
 if (isOwner && !isAdminMode) {
   restRef.child('warning').once('value').then(snap => {
     const warning = snap.val();
     if (warning && warning.text) {
-      document.getElementById('owner-warning-text').textContent = warning.text;
+      const textEl = document.getElementById('owner-warning-text');
+      if (textEl) textEl.textContent = warning.text;
       openModal('modal-owner-warning');
     }
   });
 }
-document.getElementById('owner-warning-ok').addEventListener('click', () => {
+const ownerWarningOk = document.getElementById('owner-warning-ok');
+if (ownerWarningOk) ownerWarningOk.addEventListener('click', () => {
   closeModal('modal-owner-warning');
   restRef.child('warning').remove();
 });

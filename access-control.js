@@ -69,20 +69,18 @@
       <div class="global-access-lock-icon">${banned ? '⛔' : '⏱️'}</div>
       <h1>${banned ? 'Je bent verbannen van deze website' : 'Je hebt een time out gekregen'}</h1>
       <p>${banned ? 'Je hebt momenteel geen toegang tot deze website.' : `Je hebt een time out gekregen tot <strong>${esc(fmt(until))}</strong>.`}</p>
-      ${banned ? '<div class="global-access-lock-actions"><button type="button" class="btn-primary" id="global-access-message">✉️ Stuur bericht naar owner</button><button type="button" class="btn-secondary" id="global-access-admin">🔧 Sitebeheer</button></div>' : ''}
+      ${banned ? '<div class="global-access-lock-actions"><button type="button" class="btn-secondary" id="global-access-admin">🔧 Sitebeheer</button><button type="button" class="btn-primary" id="global-access-message">✉️ Stuur bericht naar owner</button></div>' : ''}
     </div>`;
     document.body.appendChild(overlay);
     document.body.classList.add('access-locked');
     if (banned) {
-      document.getElementById('global-access-message').addEventListener('click', () => openMessageModal());
-      document.getElementById('global-access-admin').addEventListener('click', () => {
-        if (sessionStorage.getItem('isRestaurantAdmin') === '1') {
-          window.location.href = 'admin.html';
-        } else {
-          const adminBtn = document.getElementById('btn-admin');
-          if (adminBtn) adminBtn.click();
-          else window.location.href = 'admin.html';
-        }
+      const messageBtn = document.getElementById('global-access-message');
+      const adminBtn = document.getElementById('global-access-admin');
+      if (messageBtn) messageBtn.addEventListener('click', () => openMessageModal());
+      if (adminBtn) adminBtn.addEventListener('click', () => {
+        // Rechtstreeks naar Sitebeheer, zodat de login-modal niet achter het
+        // blokkeerscherm komt te staan. De normale admin-login blijft vereist.
+        window.location.href = 'admin.html';
       });
     }
     if (!banned && until) {
@@ -102,6 +100,7 @@
       modal = document.createElement('div');
       modal.id = 'global-user-message-modal';
       modal.className = 'modal-overlay open';
+      modal.style.zIndex = '100001';
       modal.innerHTML = `<div class="modal-box"><div class="modal-title">✉️ Bericht naar owner</div>
         <p class="modal-text">Stuur een bericht naar de sitebeheerder.</p>
         <textarea id="global-user-message-input" class="modal-input" rows="6" maxlength="1000" placeholder="Typ je bericht..."></textarea>
