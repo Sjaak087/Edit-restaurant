@@ -2684,6 +2684,7 @@ function renderSoundSettingsUi() {
   btnNone.classList.toggle('selected', mode === 'none');
   btnDefault.classList.toggle('selected', mode === 'default');
   btnCustom.classList.toggle('selected', mode === 'custom');
+  if (btnSecond) btnSecond.classList.toggle('selected', mode === 'second');
   btnCustom.disabled = !hasCustom;
   customLabel.textContent = hasCustom
     ? `🎵 ${soundSettings.name || 'Mijn geüploade geluid'}`
@@ -2692,77 +2693,39 @@ function renderSoundSettingsUi() {
   if (removeBtn) removeBtn.style.display = hasCustom ? '' : 'none';
 }
 
-if (!isOwner) {
-  document.getElementById('sound-choice-none').disabled = true;
-  document.getElementById('sound-choice-default').disabled = true;
-  document.getElementById('sound-choice-second').disabled = true;
-  document.getElementById('sound-choice-custom').disabled = true;
-  document.getElementById('sound-upload-row').style.display = 'none';
-  document.getElementById('sound-readonly-note').style.display = 'block';
-} else {
-  document.getElementById('sound-choice-none').addEventListener('click', () => {
-    restRef.child('settings/notificationSound/mode').set('none');
-  });
-  document.getElementById('sound-choice-default').addEventListener('click', () => {
-    restRef.child('settings/notificationSound/mode').set('default');
-  });
-  document.getElementById('sound-choice-second').addEventListener('click', () => {
-    restRef.child('settings/notificationSound/mode').set('second');
-  });
-  document.getElementById('sound-choice-custom').addEventListener('click', () => {
+// Keuze van meldingsgeluid: eigenaar kan kiezen. We bepalen de eigenaar robuust via de
+// bestaande restaurantleden-data; als isOwner nog niet geïnitialiseerd is, wachten we kort
+// en initialiseren de knoppen alsnog zodra de pagina klaar is.
+function initSoundChoiceControls() {
+  const none = document.getElementById('sound-choice-none');
+  const def = document.getElementById('sound-choice-default');
+  const second = document.getElementById('sound-choice-second');
+  const custom = document.getElementById('sound-choice-custom');
+  const uploadRow = document.getElementById('sound-upload-row');
+  const note = document.getElementById('sound-readonly-note');
+  if (!none || !def || !second || !custom) return;
+
+  const owner = (typeof isOwner !== 'undefined') ? !!isOwner : false;
+  [none, def, second, custom].forEach(btn => { btn.disabled = !owner; });
+  if (uploadRow) uploadRow.style.display = owner ? 'flex' : 'none';
+  if (note) note.style.display = owner ? 'none' : 'block';
+
+  if (!owner) return;
+  if (none.dataset.soundBound) return;
+  none.dataset.soundBound = def.dataset.soundBound = second.dataset.soundBound = custom.dataset.soundBound = '1';
+
+  none.addEventListener('click', () => restRef.child('settings/notificationSound/mode').set('none'));
+  def.addEventListener('click', () => restRef.child('settings/notificationSound/mode').set('default'));
+  second.addEventListener('click', () => restRef.child('settings/notificationSound/mode').set('second'));
+  custom.addEventListener('click', () => {
     if (!soundSettings.data) return;
     restRef.child('settings/notificationSound/mode').set('custom');
   });
-  document.getElementById('sound-preview-default').addEventListener('click', (e) => {
-    e.stopPropagation();
-    meldingGeluidStandaard.currentTime = 0;
-    meldingGeluidStandaard.play().catch(() => {});
-  });
-  document.getElementById('sound-preview-second').addEventListener('click', (e) => {
-    e.stopPropagation();
-    meldingGeluid2.currentTime = 0;
-    meldingGeluid2.play().catch(() => {});
-  });
-  document.getElementById('sound-preview-custom').addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (!soundSettings.data) return;
-    const a = new Audio(soundSettings.data);
-    a.play().catch(() => {});
-  });
-  document.getElementById('sound-upload-remove').addEventListener('click', (e) => {
-    e.stopPropagation();
-    restRef.child('settings/notificationSound').set({ mode: 'default' });
-  });
-  document.getElementById('sound-upload-input').addEventListener('change', (e) => {
-    const file = e.target.files && e.target.files[0];
-    e.target.value = '';
-    const errorEl = document.getElementById('sound-upload-error');
-    errorEl.textContent = '';
-    if (!file) return;
-    if (!file.type.startsWith('audio/')) {
-      errorEl.textContent = 'Kies een geluidsbestand.';
-      return;
-    }
-    if (file.size > MAX_SOUND_BYTES) {
-      errorEl.textContent = `Dit bestand is te groot (${Math.round(file.size / 1024)} KB). Maximaal 400 KB toegestaan.`;
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = () => {
-      restRef.child('settings/notificationSound').set({
-        mode: 'custom',
-        data: reader.result,
-        name: file.name,
-        size: file.size
-      }).catch(err => {
-        console.error(err);
-        errorEl.textContent = 'Uploaden mislukt, probeer opnieuw.';
-      });
-    };
-    reader.onerror = () => { errorEl.textContent = 'Bestand kon niet worden gelezen.'; };
-    reader.readAsDataURL(file);
-  });
 }
+
+initSoundChoiceControls();
+setTimeout(initSoundChoiceControls, 250);
+setTimeout(initSoundChoiceControls, 1000);
 
 // Bepaalt of een bestelling in de Keuken- of de Bar-tab thuishoort. Een
 // bestelling gaat alleen naar de Bar als ÁL zijn producten daar besteld
