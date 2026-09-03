@@ -2432,3 +2432,11 @@ header.top h1,
 .user-message-item { cursor:pointer; }
 .user-message-item.unread { border-left:4px solid var(--gold, #c9a227); }
 .message-full-text { white-space:pre-wrap; line-height:1.6; margin:14px 0; padding:14px; border-radius:10px; background:rgba(0,0,0,.035); }
+
+
+/* Lid beheren */
+.member-permission-row{display:flex;align-items:center;gap:10px;font-size:14px;cursor:pointer;}
+.member-permission-row input{width:18px;height:18px;}
+.member-permission-hint{font-size:12px;opacity:.65;margin-top:5px;}
+.btn-danger{border:0;border-radius:10px;padding:10px 14px;background:#c94b4b;color:#fff;font-weight:600;cursor:pointer;}
+.btn-danger:hover{filter:brightness(.95);}

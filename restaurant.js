@@ -212,7 +212,7 @@ if (isAdminMode) {
       if (!snap.exists()) {
         const tabs = {};
         ALL_TABS.forEach(t => { tabs[t] = true; });
-        const data = { rol: isOwner ? 'eigenaar' : 'gejoined', userId: window.BESTELSYSTEEM_USER_ID || '', naam: mijnEntry.mijnNaam || getUsername() || 'Naamloos', tabs: tabs, toegevoegdOp: Date.now() };
+        const data = { rol: isOwner ? 'eigenaar' : 'gejoined', userId: window.BESTELSYSTEEM_USER_ID || '', naam: mijnEntry.mijnNaam || getUsername() || 'Naamloos', tabs: tabs, canAanmaken: false, toegevoegdOp: Date.now() };
         return restRef.child('leden/' + myMemberId).set(data).then(() => tabs);
       }
       return snap.val().tabs;
@@ -223,7 +223,7 @@ if (isAdminMode) {
     if (isOwner) {
       // Zorg dat de eigenaar zichzelf meteen in de ledenlijst ziet, ook nog vóórdat
       // het live-abonnement op /leden zijn eerste update heeft binnengekregen.
-      LEDEN_STATE[myMemberId] = LEDEN_STATE[myMemberId] || { rol: 'eigenaar', tabs: tabs, toegevoegdOp: Date.now() };
+      LEDEN_STATE[myMemberId] = LEDEN_STATE[myMemberId] || { rol: 'eigenaar', tabs: tabs, canAanmaken: false, toegevoegdOp: Date.now() };
       renderLedenList();
     }
     // Pas ná het aanmaken/ophalen van dit lid-record live gaan luisteren, anders kan het
@@ -245,7 +245,7 @@ if (isAdminMode) {
         restRef.child('leden/' + myMemberId + '/naam').set(username);
       }
       applyTabPermissions(lid.tabs);
-      updateMyNameBadge(lid.naam, lid.rolNaam);
+      updateMyNameBadge(lid.customNaam || lid.naam, lid.rolNaam);
     });
   });
 }
@@ -319,7 +319,7 @@ function renderLedenList() {
     const isEigenaarRow = lid.rol === 'eigenaar';
     const isMe = mid === myMemberId;
     const icon = isEigenaarRow ? '👑' : '👤';
-    const naam = `${icon} ${lid.naam || 'Naamloos'}`;
+    const naam = `${icon} ${lid.customNaam || lid.naam || 'Naamloos'}`;
     const tabs = lid.tabs || {};
     const row = document.createElement('div');
     row.className = 'lid-row';
@@ -331,7 +331,7 @@ function renderLedenList() {
       <div class="lid-row-head">
         <span class="lid-row-name">${escapeHtml(naam)}${isMe ? ' <span class="lid-me-tag">(jij)</span>' : ''}${lid.rolNaam ? ` <span class="ice-badge">🏷️ ${escapeHtml(lid.rolNaam)}</span>` : ''}</span>
         <span class="settings-product-actions">
-          <button type="button" class="mini-btn edit" data-role="${mid}">Rol instellen</button>
+          <button type="button" class="mini-btn edit" data-role="${mid}">Lid beheren</button>
           ${isEigenaarRow ? '' : `<button type="button" class="mini-btn danger" data-kick="${mid}">Verwijderen</button>`}
         </span>
       </div>
@@ -372,23 +372,22 @@ let editingRoleMemberId = null;
 function openMemberRoleModal(mid) {
   editingRoleMemberId = mid;
   const lid = LEDEN_STATE[mid] || {};
-  document.getElementById('member-role-modal-title').textContent = `Rol voor ${lid.naam || 'lid'}`;
-  document.getElementById('member-role-input').value = '';
+  document.getElementById('member-manage-modal-title').textContent = `Lid beheren: ${lid.naam || 'lid'}`;
+  document.getElementById('member-role-input').value = lid.rolNaam || '';
+  document.getElementById('member-custom-name-input').value = lid.customNaam || '';
+  document.getElementById('member-can-create-input').checked = lid.canAanmaken === true;
   document.getElementById('member-role-error').textContent = '';
   renderExistingRolesPicker();
-  openModal('modal-member-role');
+  const removeBtn = document.getElementById('member-manage-remove');
+  removeBtn.style.display = lid.rol === 'eigenaar' ? 'none' : '';
+  openModal('modal-member-manage');
 }
 
-// Toont de al eerder gebruikte rollen als klikbare chips, zodat je ze in
-// één klik kunt toewijzen zonder opnieuw te typen.
 function renderExistingRolesPicker() {
-  const wrap = document.getElementById('member-role-existing');
+  const wrap = document.getElementById('member-manage-existing');
   if (!wrap) return;
   const known = allKnownRoles();
-  if (known.length === 0) {
-    wrap.innerHTML = '';
-    return;
-  }
+  if (known.length === 0) { wrap.innerHTML = ''; return; }
   wrap.innerHTML = '<div class="modal-label" style="margin-top:0;">Al bestaande rollen (klik om te kiezen)</div>';
   const row = document.createElement('div');
   row.className = 'product-options-list';
@@ -397,36 +396,47 @@ function renderExistingRolesPicker() {
     chip.type = 'button';
     chip.className = 'product-option-chip existing';
     chip.textContent = naam;
-    chip.addEventListener('click', () => saveMemberRole(naam));
+    chip.addEventListener('click', () => { document.getElementById('member-role-input').value = naam; });
     row.appendChild(chip);
   });
   wrap.appendChild(row);
 }
 
-function saveMemberRole(naam) {
+async function saveMemberManagement() {
   if (!editingRoleMemberId) return;
-  restRef.child('leden/' + editingRoleMemberId + '/rolNaam').set(naam).then(() => {
-    closeModal('modal-member-role');
-  }).catch(err => {
-    console.error(err);
-    document.getElementById('member-role-error').textContent = 'Er ging iets mis, probeer opnieuw.';
-  });
+  const role = document.getElementById('member-role-input').value.trim();
+  const customNaam = document.getElementById('member-custom-name-input').value.trim();
+  const canAanmaken = document.getElementById('member-can-create-input').checked === true;
+  const err = document.getElementById('member-role-error');
+  const lid = LEDEN_STATE[editingRoleMemberId] || {};
+  const updates = {};
+  if (role) updates[`leden/${editingRoleMemberId}/rolNaam`] = role;
+  else updates[`leden/${editingRoleMemberId}/rolNaam`] = null;
+  if (customNaam) updates[`leden/${editingRoleMemberId}/customNaam`] = customNaam;
+  else updates[`leden/${editingRoleMemberId}/customNaam`] = null;
+  // Expliciet opslaan: false is de standaard voor bestaande én nieuwe leden.
+  updates[`leden/${editingRoleMemberId}/canAanmaken`] = canAanmaken;
+  try {
+    await restRef.update(updates);
+    closeModal('modal-member-manage');
+  } catch (e) {
+    console.error(e);
+    err.textContent = 'Opslaan mislukt, probeer opnieuw.';
+  }
 }
 
-document.getElementById('member-role-confirm').addEventListener('click', () => {
-  const naam = document.getElementById('member-role-input').value.trim();
-  if (!naam) { document.getElementById('member-role-error').textContent = 'Vul een rolnaam in.'; return; }
-  saveMemberRole(naam);
-});
+document.getElementById('member-role-confirm').addEventListener('click', saveMemberManagement);
 
 document.getElementById('member-role-clear').addEventListener('click', () => {
   if (!editingRoleMemberId) return;
-  restRef.child('leden/' + editingRoleMemberId + '/rolNaam').remove().then(() => {
-    closeModal('modal-member-role');
-  }).catch(err => {
-    console.error(err);
-    document.getElementById('member-role-error').textContent = 'Er ging iets mis, probeer opnieuw.';
-  });
+  document.getElementById('member-role-input').value = '';
+});
+
+document.getElementById('member-manage-remove').addEventListener('click', () => {
+  if (!editingRoleMemberId) return;
+  if (!confirm('Weet je zeker dat je dit lid uit het restaurant wilt verwijderen? De join-code wordt daarna automatisch vernieuwd.')) return;
+  kickLid(editingRoleMemberId, document.getElementById('member-manage-remove'));
+  closeModal('modal-member-manage');
 });
 
 async function kickLid(mid, btn) {
@@ -487,6 +497,25 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
   });
 });
 
+// ==================== Rechten voor leden: aanmaken ====================
+// Alleen de eigenaar of een lid met canAanmaken=true mag nieuwe onderdelen aanmaken.
+let canAanmaken = isOwner;
+if (!isAdminMode && !isOwner) {
+  restRef.child('leden/' + myMemberId + '/canAanmaken').on('value', snap => {
+    canAanmaken = snap.val() === true;
+    applyCreatePermissions();
+  });
+}
+function applyCreatePermissions() {
+  if (isOwner || isAdminMode || canAanmaken) return;
+  ['btn-add-product','btn-add-category','btn-add-service','tool-add-area','tool-add-table','tool-add-bank','tool-add-bar','tool-add-keuken'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.style.display = 'none';
+  });
+  ['producten-readonly-note','categorieen-readonly-note','services-readonly-note'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.style.display = 'block';
+  });
+}
+
 // ==================== Rechten (alleen eigenaar mag plattegrond/producten aanpassen) ====================
 if (!isOwner) {
   document.getElementById('tool-add-area').style.display = 'none';
@@ -511,6 +540,30 @@ if (!isOwner) {
   document.getElementById('row-join-code').style.display = '';
   document.getElementById('join-code-hint').style.display = 'block';
 }
+
+// Een lid met de instelling 'Producten en alles kunnen aanmaken' mag de
+// aanmaakacties gebruiken. Layout-aanpassingen blijven verder alleen voor de eigenaar.
+function refreshCreateControlsForMember() {
+  if (isOwner || isAdminMode || !canAanmaken) return;
+  ['btn-add-product','btn-add-category','btn-add-service'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.style.display = '';
+  });
+  ['producten-readonly-note','categorieen-readonly-note','services-readonly-note'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.style.display = 'none';
+  });
+  ['tool-add-area','tool-add-table','tool-add-bank','tool-add-bar','tool-add-keuken'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.style.display = '';
+  });
+  const hint = document.getElementById('fp-hint');
+  if (hint) hint.textContent = 'Je hebt toestemming om onderdelen aan te maken.';
+}
+
+const _oldApplyCreatePermissions = applyCreatePermissions;
+applyCreatePermissions = function() {
+  _oldApplyCreatePermissions();
+  refreshCreateControlsForMember();
+};
+applyCreatePermissions();
 
 // ==================== Restaurant verlaten ====================
 if (isAdminMode) {
@@ -1148,6 +1201,7 @@ document.getElementById('product-option-open-btn').addEventListener('click', () 
 });
 
 document.getElementById('btn-add-product').addEventListener('click', () => {
+  if (!canAanmaken && !isOwner && !isAdminMode) { alert('Je hebt geen toestemming om producten aan te maken.'); return; }
   editingProductKey = null;
   document.getElementById('product-modal-title').textContent = 'Nieuw product';
   document.getElementById('product-name-input').value = '';
@@ -1328,6 +1382,7 @@ function renderSettingsCategories() {
 let editingCategoryKey = null;
 
 document.getElementById('btn-add-category').addEventListener('click', () => {
+  if (!canAanmaken && !isOwner && !isAdminMode) { alert('Je hebt geen toestemming om categorieën aan te maken.'); return; }
   editingCategoryKey = null;
   document.getElementById('category-modal-title').textContent = 'Nieuwe categorie';
   document.getElementById('category-name-input').value = '';
@@ -1419,6 +1474,7 @@ function renderSettingsServices() {
 let editingServiceKey = null;
 
 document.getElementById('btn-add-service').addEventListener('click', () => {
+  if (!canAanmaken && !isOwner && !isAdminMode) { alert('Je hebt geen toestemming om services aan te maken.'); return; }
   editingServiceKey = null;
   document.getElementById('service-modal-title').textContent = 'Nieuwe service';
   document.getElementById('service-title-input').value = '';
