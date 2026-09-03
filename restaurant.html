@@ -6,7 +6,7 @@
 <title>Bestelsysteem</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Work+Sans:wght@400;500;600;700&family=Merriweather:wght@400;700&family=Cormorant+Garamond:wght@400;600;700&family=Lora:wght@400;600;700&family=Poppins:wght@400;500;600;700&family=Montserrat:wght@400;600;700&family=Raleway:wght@400;600;700&family=Oswald:wght@400;600;700&family=Caveat:wght@500;700&family=Bebas+Neue&family=Abril+Fatface&family=Roboto+Slab:wght@400;600;700&family=Josefin+Sans:wght@400;600;700&family=Dancing+Script:wght@500;700&family=Crimson+Text:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Work+Sans:wght@400;500;600;700&family=Merriweather:wght@400;700&family=Cormorant+Garamond:wght@400;600;700&family=Lora:wght@400;600;700&family=Poppins:wght@400;500;600;700&family=Montserrat:wght@400;600;700&family=Raleway:wght@400;600;700&family=Oswald:wght@400;600;700&family=Caveat:wght@500;700&family=Bebas+Neue&family=Abril+Fatface&family=Roboto+Slab:wght@400;600;700&family=Josefin+Sans:wght@400;600;700&family=Dancing+Script:wght@500;700&family=Crimson+Text:wght@400;600;700&family=Nunito:wght@400;600;700&family=DM+Sans:wght@400;500;700&family=Quicksand:wght@400;500;700&family=Libre+Baskerville:wght@400;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" id="app-style-link">
 <script>document.getElementById('app-style-link').setAttribute('href', 'style.css?v=' + Date.now());</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -217,6 +217,13 @@
         <span class="settings-info-value-group">
           <span class="color-swatch-preview" id="info-title-color"></span>
           <button type="button" class="mini-btn edit" id="btn-title-color" style="display:none;">Wijzigen</button>
+        </span>
+      </div>
+      <div class="settings-info-row">
+        <span>Achtergrondpatroon</span>
+        <span class="settings-info-value-group">
+          <span id="info-bg-pattern">Geen</span>
+          <button type="button" class="mini-btn edit" id="btn-bg-pattern" style="display:none;">Wijzigen</button>
         </span>
       </div>
       <div class="settings-info-row">
@@ -477,6 +484,17 @@
     <div class="modal-actions">
       <button type="button" class="btn-secondary" data-close>Sluiten</button>
     </div>
+  </div>
+</div>
+
+<!-- Modal: achtergrondpatroon kiezen -->
+<div class="modal-overlay" id="modal-bg-pattern">
+  <div class="modal-box wide">
+    <div class="modal-title">Achtergrondpatroon</div>
+    <p class="modal-text">Kies een patroon dat subtiel maar duidelijk zichtbaar op de achtergrond van je restaurant wordt geplaatst.</p>
+    <button type="button" class="color-swatch color-swatch-default" id="pattern-default" title="Geen patroon">↺</button>
+    <div class="pattern-palette" id="pattern-palette"></div>
+    <div class="modal-actions"><button type="button" class="btn-secondary" data-close>Sluiten</button></div>
   </div>
 </div>
 

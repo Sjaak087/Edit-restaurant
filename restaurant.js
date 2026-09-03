@@ -840,7 +840,12 @@ const FONT_OPTIONS = [
   { label: 'Bebas Neue', family: '"Bebas Neue", "Arial Narrow", sans-serif' },
   { label: 'Abril Fatface', family: '"Abril Fatface", Georgia, serif' },
   { label: 'Caveat', family: '"Caveat", cursive' },
-  { label: 'Dancing Script', family: '"Dancing Script", cursive' }
+  { label: 'Dancing Script', family: '"Dancing Script", cursive' },
+  { label: 'Nunito', family: '"Nunito", sans-serif' },
+  { label: 'DM Sans', family: '"DM Sans", sans-serif' },
+  { label: 'Quicksand', family: '"Quicksand", sans-serif' },
+  { label: 'Libre Baskerville', family: '"Libre Baskerville", Georgia, serif' },
+  { label: 'Space Grotesk', family: '"Space Grotesk", sans-serif' }
 ];
 const FONT_SAMPLE_TEXT = 'Voorbeeld';
 
@@ -3118,3 +3123,30 @@ notesRef.on('value', (snap) => {
     if (n.afgevinkt) scheduleNoteRemoval(id, n.afgevinktOp);
   });
 });
+
+// ==================== Achtergrondpatronen ====================
+const BG_PATTERNS = [
+  {id:'cupcakes',label:'🧁 Cupcakes',bg:'radial-gradient(circle at 25% 25%, rgba(255,220,190,.28) 0 3px, transparent 4px), radial-gradient(circle at 75% 75%, rgba(255,220,190,.22) 0 3px, transparent 4px), linear-gradient(135deg, transparent 46%, rgba(255,210,170,.22) 47% 53%, transparent 54%)',size:'52px 52px'},
+  {id:'hearts',label:'♥ Hartjes',bg:'radial-gradient(circle at 30% 35%, rgba(212,120,120,.28) 0 4px, transparent 5px), radial-gradient(circle at 70% 65%, rgba(212,120,120,.22) 0 4px, transparent 5px)',size:'46px 46px'},
+  {id:'stars',label:'✦ Sterren',bg:'linear-gradient(45deg, transparent 45%, rgba(224,184,74,.25) 46% 54%, transparent 55%), linear-gradient(-45deg, transparent 45%, rgba(224,184,74,.25) 46% 54%, transparent 55%)',size:'34px 34px'},
+  {id:'coffee',label:'☕ Koffie',bg:'radial-gradient(ellipse at center, rgba(200,160,110,.24) 0 6px, transparent 7px), radial-gradient(ellipse at center, rgba(200,160,110,.18) 0 2px, transparent 3px)',size:'48px 48px'},
+  {id:'flowers',label:'✿ Bloemen',bg:'radial-gradient(circle at center, rgba(220,170,190,.3) 0 3px, transparent 4px), radial-gradient(circle at 50% 30%, rgba(220,170,190,.22) 0 3px, transparent 4px), radial-gradient(circle at 30% 50%, rgba(220,170,190,.22) 0 3px, transparent 4px)',size:'54px 54px'},
+  {id:'pizza',label:'🍕 Pizza',bg:'radial-gradient(circle at 25% 25%, rgba(220,150,70,.28) 0 5px, transparent 6px), radial-gradient(circle at 75% 70%, rgba(190,90,60,.25) 0 4px, transparent 5px)',size:'58px 58px'},
+  {id:'leaves',label:'🍃 Bladeren',bg:'linear-gradient(35deg, transparent 43%, rgba(100,150,95,.26) 44% 48%, transparent 49%), linear-gradient(145deg, transparent 43%, rgba(100,150,95,.20) 44% 48%, transparent 49%)',size:'42px 42px'},
+  {id:'dots',label:'• Stippen',bg:'radial-gradient(circle, rgba(255,255,255,.22) 0 2px, transparent 2.5px)',size:'24px 24px'},
+  {id:'waves',label:'〰 Golven',bg:'repeating-linear-gradient(0deg, transparent 0 10px, rgba(220,190,120,.18) 11px 12px, transparent 13px 22px)',size:'44px 44px'},
+  {id:'grid',label:'▦ Raster',bg:'linear-gradient(rgba(255,255,255,.12) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,.12) 1px, transparent 1px)',size:'32px 32px'}
+];
+const BG_COLORS_EXTRA = ['#171310','#2a1c18','#17231d','#1b2430','#29201a','#30251e','#221b2d','#14272a','#31221d','#f0e5d1'];
+function applyBgPattern(pattern){
+  const root=document.documentElement.style, body=document.body;
+  if(!pattern){ root.removeProperty('--bg-pattern'); body.classList.remove('pattern-active'); document.getElementById('info-bg-pattern')?.replaceChildren(document.createTextNode('Geen')); return; }
+  const p=BG_PATTERNS.find(x=>x.id===pattern.id)||BG_PATTERNS.find(x=>x.id===pattern); if(!p)return;
+  root.setProperty('--bg-pattern',p.bg); root.setProperty('--bg-pattern-size',p.size); body.style.backgroundSize=p.size; body.classList.add('pattern-active');
+  const info=document.getElementById('info-bg-pattern'); if(info) info.textContent=p.label;
+}
+const patternPaletteEl=document.getElementById('pattern-palette');
+if(patternPaletteEl){ patternPaletteEl.innerHTML=BG_PATTERNS.map(p=>`<button type="button" class="pattern-swatch" data-pattern="${p.id}" style="background-image:${p.bg};background-size:${p.size};"><span class="pattern-label">${p.label}</span></button>`).join(''); patternPaletteEl.querySelectorAll('.pattern-swatch').forEach(b=>b.addEventListener('click',()=>restRef.child('backgroundPattern').set(b.dataset.pattern).then(()=>closeModal('modal-bg-pattern')))); }
+const patternDefault=document.getElementById('pattern-default'); if(patternDefault) patternDefault.addEventListener('click',()=>restRef.child('backgroundPattern').remove().then(()=>closeModal('modal-bg-pattern')));
+restRef.child('backgroundPattern').on('value',snap=>{const v=snap.val(); applyBgPattern(v); patternPaletteEl?.querySelectorAll('.pattern-swatch').forEach(b=>b.classList.toggle('selected',b.dataset.pattern===v)); patternDefault?.classList.toggle('selected',!v);});
+const btnBgPattern=document.getElementById('btn-bg-pattern'); if(btnBgPattern) btnBgPattern.addEventListener('click',()=>openModal('modal-bg-pattern'));
