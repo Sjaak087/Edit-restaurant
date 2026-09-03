@@ -2630,6 +2630,7 @@ function itemsToLinesHtml(order) {
 // Instelbaar per restaurant: geen geluid, het standaardgeluid, of een zelf
 // geüpload geluid (max 400 KB, als base64 data-URL opgeslagen in Firebase).
 const meldingGeluidStandaard = new Audio('melding%20geluid.mp3');
+const meldingGeluid2 = new Audio('melding%20geluid%202.mp3');
 const betaalGeluid = new Audio('betaal%20geluid.mp3');
 function speelBetaalGeluid() {
   try {
@@ -2659,8 +2660,9 @@ function speelMeldingGeluid() {
       customGeluidAudio.play().catch(() => {});
       return;
     }
-    meldingGeluidStandaard.currentTime = 0;
-    meldingGeluidStandaard.play().catch(() => {});
+    const audio = soundSettings.mode === 'second' ? meldingGeluid2 : meldingGeluidStandaard;
+    audio.currentTime = 0;
+    audio.play().catch(() => {});
   } catch (e) { /* geluid niet beschikbaar */ }
 }
 
@@ -2672,6 +2674,7 @@ function renderSoundSettingsUi() {
   const hasCustom = !!soundSettings.data;
   const btnNone = document.getElementById('sound-choice-none');
   const btnDefault = document.getElementById('sound-choice-default');
+  const btnSecond = document.getElementById('sound-choice-second');
   const btnCustom = document.getElementById('sound-choice-custom');
   const previewCustom = document.getElementById('sound-preview-custom');
   const removeBtn = document.getElementById('sound-upload-remove');
@@ -2692,6 +2695,7 @@ function renderSoundSettingsUi() {
 if (!isOwner) {
   document.getElementById('sound-choice-none').disabled = true;
   document.getElementById('sound-choice-default').disabled = true;
+  document.getElementById('sound-choice-second').disabled = true;
   document.getElementById('sound-choice-custom').disabled = true;
   document.getElementById('sound-upload-row').style.display = 'none';
   document.getElementById('sound-readonly-note').style.display = 'block';
@@ -2702,6 +2706,9 @@ if (!isOwner) {
   document.getElementById('sound-choice-default').addEventListener('click', () => {
     restRef.child('settings/notificationSound/mode').set('default');
   });
+  document.getElementById('sound-choice-second').addEventListener('click', () => {
+    restRef.child('settings/notificationSound/mode').set('second');
+  });
   document.getElementById('sound-choice-custom').addEventListener('click', () => {
     if (!soundSettings.data) return;
     restRef.child('settings/notificationSound/mode').set('custom');
@@ -2710,6 +2717,11 @@ if (!isOwner) {
     e.stopPropagation();
     meldingGeluidStandaard.currentTime = 0;
     meldingGeluidStandaard.play().catch(() => {});
+  });
+  document.getElementById('sound-preview-second').addEventListener('click', (e) => {
+    e.stopPropagation();
+    meldingGeluid2.currentTime = 0;
+    meldingGeluid2.play().catch(() => {});
   });
   document.getElementById('sound-preview-custom').addEventListener('click', (e) => {
     e.stopPropagation();
