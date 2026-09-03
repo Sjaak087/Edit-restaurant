@@ -536,6 +536,7 @@ if (!isOwner) {
   document.getElementById('btn-rename-restaurant').style.display = '';
   document.getElementById('btn-header-color').style.display = '';
   document.getElementById('btn-title-color').style.display = '';
+  document.getElementById('btn-bg-pattern').style.display = '';
   document.getElementById('btn-font').style.display = '';
   document.getElementById('row-join-code').style.display = '';
   document.getElementById('join-code-hint').style.display = 'block';
@@ -652,7 +653,9 @@ const HEADER_COLORS = [
   '#6f8f5c', '#3f6b4f', '#2f6e6e', '#356b8c', '#2c4a75',
   '#3a3a75', '#5c3a75', '#7a3a63', '#8c4a63', '#b05f7a',
   '#4a4438', '#5a5a5a', '#787066', '#2a2115', '#f2e8d5',
-  '#1a2f4d', '#4b2e83', '#7c1f3d', '#1f4d3a', '#b8895c'
+  '#1a2f4d', '#4b2e83', '#7c1f3d', '#1f4d3a', '#b8895c',
+  '#12343b', '#284b63', '#3b5b92', '#6b4e71', '#8a5a7d',
+  '#9b3d5a', '#b85c5c', '#d17a5a', '#d6a04d', '#e2c15a'
 ];
 
 function hexToRgb(hex) {
