@@ -212,7 +212,7 @@ if (isAdminMode) {
       if (!snap.exists()) {
         const tabs = {};
         ALL_TABS.forEach(t => { tabs[t] = true; });
-        const data = { rol: isOwner ? 'eigenaar' : 'gejoined', userId: window.BESTELSYSTEEM_USER_ID || '', naam: mijnEntry.mijnNaam || getUsername() || 'Naamloos', tabs: tabs, canAanmaken: false, toegevoegdOp: Date.now() };
+        const data = { rol: isOwner ? 'eigenaar' : 'gejoined', userId: window.BESTELSYSTEEM_USER_ID || '', naam: mijnEntry.mijnNaam || getUsername() || 'Naamloos', tabs: tabs, canAanmaken: true, toegevoegdOp: Date.now() };
         return restRef.child('leden/' + myMemberId).set(data).then(() => tabs);
       }
       return snap.val().tabs;
@@ -223,7 +223,7 @@ if (isAdminMode) {
     if (isOwner) {
       // Zorg dat de eigenaar zichzelf meteen in de ledenlijst ziet, ook nog vóórdat
       // het live-abonnement op /leden zijn eerste update heeft binnengekregen.
-      LEDEN_STATE[myMemberId] = LEDEN_STATE[myMemberId] || { rol: 'eigenaar', tabs: tabs, canAanmaken: false, toegevoegdOp: Date.now() };
+      LEDEN_STATE[myMemberId] = LEDEN_STATE[myMemberId] || { rol: 'eigenaar', tabs: tabs, canAanmaken: true, toegevoegdOp: Date.now() };
       renderLedenList();
     }
     // Pas ná het aanmaken/ophalen van dit lid-record live gaan luisteren, anders kan het
