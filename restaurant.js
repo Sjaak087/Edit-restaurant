@@ -2721,6 +2721,36 @@ function initSoundChoiceControls() {
     if (!soundSettings.data) return;
     restRef.child('settings/notificationSound/mode').set('custom');
   });
+
+  // De knop 'Beluisteren' zit binnen de keuze-knop. Stop de klik hier,
+  // zodat luisteren niet tegelijk de meldingsgeluid-keuze verandert.
+  const previewDefault = document.getElementById('sound-preview-default');
+  const previewSecond = document.getElementById('sound-preview-second');
+  const previewCustom = document.getElementById('sound-preview-custom');
+  const playPreview = (audio, event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!audio) return;
+    audio.pause();
+    audio.currentTime = 0;
+    audio.play().catch(() => {});
+  };
+  if (previewDefault && !previewDefault.dataset.previewBound) {
+    previewDefault.dataset.previewBound = '1';
+    previewDefault.addEventListener('click', e => playPreview(meldingGeluidStandaard, e));
+  }
+  if (previewSecond && !previewSecond.dataset.previewBound) {
+    previewSecond.dataset.previewBound = '1';
+    previewSecond.addEventListener('click', e => playPreview(meldingGeluid2, e));
+  }
+  if (previewCustom && !previewCustom.dataset.previewBound) {
+    previewCustom.dataset.previewBound = '1';
+    previewCustom.addEventListener('click', e => {
+      if (!soundSettings.data) return playPreview(null, e);
+      if (!customGeluidAudio) customGeluidAudio = new Audio(soundSettings.data);
+      playPreview(customGeluidAudio, e);
+    });
+  }
 }
 
 initSoundChoiceControls();
