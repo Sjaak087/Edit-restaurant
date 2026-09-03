@@ -31,18 +31,17 @@
   </header>
 
   <nav class="tab-nav">
-    <button type="button" class="tab-btn active" data-tab="bestellen">🍽 Bestellen</button>
-    <button type="button" class="tab-btn" data-tab="notities">📝 Notities</button>
-    <button type="button" class="tab-btn" data-tab="voorraad">📦 Voorraad</button>
-    <button type="button" class="tab-btn" data-tab="keuken">🔔 Keuken<span class="tab-badge" id="tab-badge-keuken"></span></button>
+    <button type="button" class="tab-btn active" data-tab="notities">📝 Notities</button>
+    <button type="button" class="tab-btn" data-tab="bestellen">🍽 Bestellen</button>
     <button type="button" class="tab-btn" data-tab="bar">🍸 Bar<span class="tab-badge" id="tab-badge-bar"></span></button>
-    <button type="button" class="tab-btn" data-tab="gereed">✅ Gereed<span class="tab-badge" id="tab-badge-gereed"></span></button>
+    <button type="button" class="tab-btn" data-tab="keuken">🔔 Keuken<span class="tab-badge" id="tab-badge-keuken"></span></button>
+    <button type="button" class="tab-btn" data-tab="voorraad">📦 Voorraad</button>
     <button type="button" class="tab-btn" data-tab="historie">🧾 Historie</button>
     <button type="button" class="tab-btn" data-tab="instellingen">⚙️ Instellingen</button>
   </nav>
 
   <!-- ===== BESTELLEN ===== -->
-  <section class="tab-panel active" id="panel-bestellen">
+  <section class="tab-panel" id="panel-bestellen">
     <div class="fp-legend">
       <span class="fp-dot vrij"></span> Vrij &nbsp;&nbsp;<span class="fp-dot bezet"></span> Bezet — tik op een tafel om te bestellen
     </div>
@@ -53,7 +52,7 @@
   </section>
 
   <!-- ===== NOTITIES ===== -->
-  <section class="tab-panel" id="panel-notities">
+  <section class="tab-panel active" id="panel-notities">
     <p class="modal-text" style="margin-top:0;">Notities worden gedeeld met het hele restaurant. Typ iets en druk op Enter om het als vinkje toe te voegen. Afgevinkte notities verdwijnen na 5 seconden.</p>
     <div class="notes-input-row">
       <input type="text" id="notes-input" class="modal-input" maxlength="750" placeholder="Typ een notitie en druk op Enter...">
