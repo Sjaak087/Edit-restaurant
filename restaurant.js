@@ -137,7 +137,7 @@ function saveMyRestaurantsLocal(list) {
 }
 
 // ==================== Leden & rechten per tabblad ====================
-const ALL_TABS = ['bestellen', 'notities', 'voorraad', 'keuken', 'bar', 'gereed', 'historie', 'instellingen'];
+const ALL_TABS = ['notities', 'bestellen', 'gereed', 'bar', 'keuken', 'voorraad', 'historie', 'instellingen'];
 const TAB_LABELS = { bestellen: 'Bestellen', notities: 'Notities', voorraad: 'Voorraad', keuken: 'Keuken', bar: 'Bar', gereed: 'Gereed', historie: 'Historie', instellingen: 'Instellingen' };
 
 function genLidId() {
@@ -476,7 +476,7 @@ restRef.child('code').on('value', snap => {
 });
 
 // ==================== Tabs ====================
-let activeTab = 'bestellen';
+let activeTab = 'notities';
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
