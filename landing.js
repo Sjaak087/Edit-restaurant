@@ -322,7 +322,7 @@ if (feedbackSendButton) {
       const sourceLang = window.AutoTranslator ? window.AutoTranslator.currentLanguage() : (localStorage.getItem('appLanguage') || 'nl');
       const translated = window.AutoTranslator
         ? await window.AutoTranslator.buildBilingual(text, sourceLang)
-        : { nl:text, en:text, sourceLang };
+        : { nl:text, en:text, de:text, sourceLang };
       await db.ref('feedback').push({
         name: name,
         text: text,
