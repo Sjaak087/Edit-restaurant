@@ -72,10 +72,10 @@ function renderAnnouncements() {
     item.className = 'announcement-item';
     item.innerHTML = `
       <div class="announcement-item-head">
-        <span class="announcement-item-title">📢 ${escapeHtmlAnnouncements(a.titel)}</span>
+        <span class="announcement-item-title">📢 ${escapeHtmlAnnouncements(window.AutoTranslator && a.titelTranslations ? window.AutoTranslator.pickBilingual(a.titelTranslations) : a.titel)}</span>
         <span class="announcement-item-date">${escapeHtmlAnnouncements(formatAankondigingDatumTijd(a.aangemaakt))}</span>
       </div>
-      <div class="announcement-item-info">${escapeHtmlAnnouncements(a.info)}</div>
+      <div class="announcement-item-info">${escapeHtmlAnnouncements(window.AutoTranslator && a.infoTranslations ? window.AutoTranslator.pickBilingual(a.infoTranslations) : a.info)}</div>
       <div class="announcement-item-actions">
         <button type="button" class="btn-primary announcement-read-btn">Gelezen</button>
       </div>
@@ -139,7 +139,7 @@ function renderWarningHistory() {
         <span class="announcement-item-title">⚠️ ${escapeHtmlAnnouncements(w._global ? 'Sitewaarschuwing' : (w.restaurantNaam || 'Restaurant'))}</span>
         <span class="announcement-item-date">${escapeHtmlAnnouncements(formatAankondigingDatumTijd(w.createdAt))}</span>
       </div>
-      <div class="announcement-item-info">${escapeHtmlAnnouncements(w.text)}</div>
+      <div class="announcement-item-info">${escapeHtmlAnnouncements(window.AutoTranslator && w.textTranslations ? window.AutoTranslator.pickBilingual(w.textTranslations) : w.text)}</div>
     `;
     warningsListEl.appendChild(item);
   });

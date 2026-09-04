@@ -200,8 +200,8 @@ function renderAdminAnnouncements(data) {
     card.className = 'restaurant-card admin-restaurant-card';
     card.innerHTML = `
       <div class="restaurant-card-main">
-        <div class="restaurant-card-name">📢 ${escapeHtmlAdmin(a.titel || 'Announcement')}</div>
-        <div class="restaurant-card-role">${escapeHtmlAdmin(a.info || '')}</div>
+        <div class="restaurant-card-name">📢 ${escapeHtmlAdmin(window.AutoTranslator && a.titelTranslations ? window.AutoTranslator.pickBilingual(a.titelTranslations) : (a.titel || 'Announcement'))}</div>
+        <div class="restaurant-card-role">${escapeHtmlAdmin(window.AutoTranslator && a.infoTranslations ? window.AutoTranslator.pickBilingual(a.infoTranslations) : (a.info || ''))}</div>
         <div class="restaurant-card-role" style="margin-top:2px;">${formatDatumTijdAdmin(a.aangemaakt)}</div>
       </div>
       <div class="admin-restaurant-actions">
@@ -231,7 +231,7 @@ document.getElementById('btn-admin-new-announcement').addEventListener('click', 
   openModal('modal-admin-announcement');
 });
 
-document.getElementById('admin-announcement-confirm').addEventListener('click', () => {
+document.getElementById('admin-announcement-confirm').addEventListener('click', async () => {
   const titel = document.getElementById('admin-announcement-title-input').value.trim();
   const info = document.getElementById('admin-announcement-info-input').value.trim();
   const errorEl = document.getElementById('admin-announcement-error');
@@ -240,18 +240,26 @@ document.getElementById('admin-announcement-confirm').addEventListener('click', 
 
   const btn = document.getElementById('admin-announcement-confirm');
   btn.disabled = true;
-  db.ref('announcements').push().set({
-    titel: titel,
-    info: info,
-    aangemaakt: Date.now()
-  }).then(() => {
-    btn.disabled = false;
+  try {
+    const sourceLang = window.AutoTranslator ? window.AutoTranslator.currentLanguage() : (localStorage.getItem('appLanguage') || 'nl');
+    const translated = window.AutoTranslator
+      ? await window.AutoTranslator.translateFieldSet({ titel, info }, sourceLang)
+      : { titel: { nl: titel, en: titel }, info: { nl: info, en: info } };
+    await db.ref('announcements').push().set({
+      titel: titel,
+      info: info,
+      titelTranslations: translated.titel,
+      infoTranslations: translated.info,
+      sourceLang,
+      aangemaakt: Date.now()
+    });
     closeModal('modal-admin-announcement');
-  }).catch(err => {
+  } catch (err) {
     console.error(err);
-    btn.disabled = false;
     errorEl.textContent = 'Er ging iets mis, probeer opnieuw.';
-  });
+  } finally {
+    btn.disabled = false;
+  }
 });
 
 function deleteAdminAnnouncement(id, a) {
@@ -379,7 +387,7 @@ db.ref('feedback').on('value', snap => {
     const createdAt = Number(feedback.createdAt ?? feedback.time ?? 0);
     const dateText = createdAt ? formatDatumTijdAdmin(createdAt) : '—';
     const name = feedback.name ?? feedback.naam ?? 'Onbekend';
-    const text = feedback.text ?? feedback.tekst ?? '';
+    const text = (window.AutoTranslator && feedback.textTranslations) ? window.AutoTranslator.pickBilingual(feedback.textTranslations) : (feedback.text ?? feedback.tekst ?? '');
 
     card.innerHTML = `
       <div class="feedback-card-main">

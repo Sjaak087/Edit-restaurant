@@ -116,7 +116,9 @@
         if (!text) { err.textContent = 'Typ eerst een bericht.'; return; }
         const btn = document.getElementById('global-user-message-send'); btn.disabled = true;
         try {
-          const message = { userId, username: username() || 'Onbekend', text, createdAt: Date.now(), read: false };
+          const sourceLang = window.AutoTranslator ? window.AutoTranslator.currentLanguage() : (localStorage.getItem('appLanguage') || 'nl');
+          const translated = window.AutoTranslator ? await window.AutoTranslator.buildBilingual(text, sourceLang) : { nl:text, en:text, sourceLang };
+          const message = { userId, username: username() || 'Onbekend', text, textTranslations: translated, sourceLang, createdAt: Date.now(), read: false };
           // Bewaar het bericht ook onder de eigen gebruiker. Dit werkt met
           // dezelfde gebruikersrechten als de bestaande gebruikersstatus.
           const msgRef = userRef().child('ownerMessages').push();
@@ -135,7 +137,7 @@
   function showPendingWarning(warningId, warning) {
     if (!warning || !warning.text || document.getElementById('global-warning-lock')) return;
     const overlay=document.createElement('div'); overlay.id='global-warning-lock'; overlay.className='global-access-lock';
-    overlay.innerHTML=`<div class="global-access-lock-card"><div class="global-access-lock-icon">⚠️</div><h1>Waarschuwing</h1><p style="white-space:pre-wrap">${esc(warning.text)}</p><button type="button" class="btn-primary" id="global-warning-ok">Begrepen</button></div>`;
+    overlay.innerHTML=`<div class="global-access-lock-card"><div class="global-access-lock-icon">⚠️</div><h1>Waarschuwing</h1><p style="white-space:pre-wrap">${esc(window.AutoTranslator && warning.textTranslations ? window.AutoTranslator.pickBilingual(warning.textTranslations) : warning.text)}</p><button type="button" class="btn-primary" id="global-warning-ok">Begrepen</button></div>`;
     document.body.appendChild(overlay);
     document.getElementById('global-warning-ok').onclick=async()=>{ overlay.remove(); await userRef().child('warnings/'+warningId+'/read').set(true); };
   }

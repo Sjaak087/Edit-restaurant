@@ -12,6 +12,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>document.write('<script src="i18n.js?v=' + Date.now() + '"><\/script>');</script>
+<script src="auto-translator.js?v=1"></script>
 </head>
 <body>
 
@@ -670,7 +671,7 @@
   // versienummer hoeft te verhogen om cache-problemen te voorkomen.
   (function () {
     var v = Date.now();
-    ['blocked-words.js', 'firebase-config.js', 'emojis.js', 'username.js', 'access-control.js', 'restaurant.js', 'updates.js', 'announcements.js'].forEach(function (file) {
+    ['auto-translator.js', 'blocked-words.js', 'firebase-config.js', 'emojis.js', 'username.js', 'access-control.js', 'restaurant.js', 'updates.js', 'announcements.js'].forEach(function (file) {
       document.write('<script src="' + file + '?v=' + v + '"><' + '/script>');
     });
   })();
