@@ -848,14 +848,13 @@
   };
   Object.keys(deExtra).forEach(k=>{ if(!deDict[k]) deDict[k]=deExtra[k]; });
 
-  async function translateTextToGerman(text){
+  // Interfacevertaling is bewust lokaal en synchroon. Vrije communicatie-tekst
+  // (announcements/berichten/feedback) gebruikt daarvoor AutoTranslator; de UI
+  // mag nooit op een netwerkvertaling wachten.
+  function translateTextToGerman(text){
     const raw = String(text == null ? '' : text).trim();
     if(!raw) return raw;
-    if(deDict[raw]) return deDict[raw];
-    if(window.AutoTranslator && typeof window.AutoTranslator.translateText==='function'){
-      try { return await window.AutoTranslator.translateText(raw,'en','de'); } catch(_) {}
-    }
-    return raw;
+    return deDict[raw] || raw;
   }
   function translateDynamicGerman(raw){
     const key=String(raw||'').trim();
@@ -919,19 +918,16 @@
         const fromDict = (deDict[key] && deDict[key] !== key && deDict[key] !== english) ? deDict[key] : ((english && deDict[english] && deDict[english] !== english) ? deDict[english] : null);
         if(fromDict){ el.nodeValue=raw.replace(key,fromDict); return; }
         if(english){
-          translateTextToGerman(english).then(trans=>{ if(trans && el.isConnected && localStorage.getItem('appLanguage')==='de' && el.nodeValue.trim()===key) el.nodeValue=el.nodeValue.replace(key,trans); });
+          const trans = translateTextToGerman(english);
+          if(trans && trans!==english && el.isConnected && localStorage.getItem('appLanguage')==='de' && el.nodeValue.trim()===key) el.nodeValue=el.nodeValue.replace(key,trans);
           return;
         }
         // Last-resort translation for standard UI text that is created dynamically
         // and was not present in the static dictionary. Never apply this to
         // product names, notes, usernames, restaurant names, or other user content.
-        if(!isProtectedUserContent(el.parentElement) && looksLikeStandardEnglish(key)){
-          translateTextToGerman(key).then(trans=>{
-            if(trans && trans!==key && el.isConnected && localStorage.getItem('appLanguage')==='de' && el.nodeValue.trim()===key){
-              el.nodeValue=el.nodeValue.replace(key,trans);
-            }
-          });
-        }
+        // Onbekende vrije tekst niet automatisch uit de interface vertalen.
+        // Daarmee voorkomen we netwerkverzoeken, race conditions en vastlopers.
+        return;
         return;
       }
       if(lang==='en'){
@@ -954,7 +950,7 @@
         const english=deDict[v]===v ? (dict[v] || (Object.values(dict).includes(v) ? v : null)) : (dict[v] || (Object.values(dict).includes(v) ? v : null));
         const direct=translateDynamicGerman(v) || ((deDict[v] && deDict[v] !== v && deDict[v] !== english) ? deDict[v] : null) || (english && deDict[english] && deDict[english] !== english ? deDict[english] : null);
         if(direct) el.setAttribute(a,direct);
-        else if(english) translateTextToGerman(english).then(t=>{ if(el.isConnected && localStorage.getItem('appLanguage')==='de') el.setAttribute(a,t); });
+        else if(english) { const t=translateTextToGerman(english); if(t && t!==english && el.isConnected && localStorage.getItem('appLanguage')==='de') el.setAttribute(a,t); }
       });
       el.childNodes.forEach(n=>translateElement(n));
     }

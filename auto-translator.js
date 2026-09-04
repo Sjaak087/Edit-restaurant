@@ -44,10 +44,18 @@
     });
 
     try {
-      const response = await fetch(API_URL + '?' + params.toString(), {
-        method: 'GET',
-        headers: { 'Accept': 'application/json' }
-      });
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 8000);
+      let response;
+      try {
+        response = await fetch(API_URL + '?' + params.toString(), {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' },
+          signal: controller.signal
+        });
+      } finally {
+        clearTimeout(timeout);
+      }
       if (response.ok) {
         const data = await response.json();
         const translated = data && data.responseData && data.responseData.translatedText
@@ -65,7 +73,14 @@
       const fallbackUrl = 'https://translate.googleapis.com/translate_a/single?' + new URLSearchParams({
         client: 'gtx', sl: from, tl: to, dt: 't', q: source
       }).toString();
-      const fallback = await fetch(fallbackUrl, { method:'GET', headers:{'Accept':'application/json'} });
+      const controller2 = new AbortController();
+      const timeout2 = setTimeout(() => controller2.abort(), 8000);
+      let fallback;
+      try {
+        fallback = await fetch(fallbackUrl, { method:'GET', headers:{'Accept':'application/json'}, signal: controller2.signal });
+      } finally {
+        clearTimeout(timeout2);
+      }
       if (fallback.ok) {
         const data = await fallback.json();
         const translated = Array.isArray(data) && Array.isArray(data[0])
