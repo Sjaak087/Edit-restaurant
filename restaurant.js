@@ -2816,7 +2816,7 @@ function renderPrepTab(bestemming) {
     nieuw.forEach(([id, order]) => {
       const card = document.createElement('div');
       card.className = 'order-card nieuw';
-      card.innerHTML = renderOrderCardHtml(id, order, `<div class="actions"><button class="chip-btn prepare" data-id="${id}">Start bereiden</button></div>`);
+      card.innerHTML = renderOrderCardHtml(id, order, `<div class="actions"><button class="chip-btn prepare" data-id="${id}">${window.I18N ? window.I18N.t('Start bereiden') : 'Start bereiden'}</button></div>`);
       nieuwList.appendChild(card);
     });
     nieuwList.querySelectorAll('.chip-btn.prepare').forEach(btn => {
@@ -2833,7 +2833,7 @@ function renderPrepTab(bestemming) {
     bereiden.forEach(([id, order]) => {
       const card = document.createElement('div');
       card.className = 'order-card bereiden';
-      card.innerHTML = renderOrderCardHtml(id, order, `<div class="actions"><button class="chip-btn ready" data-id="${id}">Klaar</button></div>`);
+      card.innerHTML = renderOrderCardHtml(id, order, `<div class="actions"><button class="chip-btn ready" data-id="${id}">${window.I18N ? window.I18N.t('Klaar') : 'Klaar'}</button></div>`);
       bereidenList.appendChild(card);
     });
     bereidenList.querySelectorAll('.chip-btn.ready').forEach(btn => {
@@ -2869,7 +2869,7 @@ function renderReady() {
   klaar.forEach(([id, order]) => {
     const card = document.createElement('div');
     card.className = 'order-card';
-    card.innerHTML = renderOrderCardHtml(id, order, `<div class="actions"><button class="chip-btn delivered" data-id="${id}">Bezorgd</button></div>`);
+    card.innerHTML = renderOrderCardHtml(id, order, `<div class="actions"><button class="chip-btn delivered" data-id="${id}">${window.I18N ? window.I18N.t('Bezorgd') : 'Bezorgd'}</button></div>`);
     readyList.appendChild(card);
   });
 

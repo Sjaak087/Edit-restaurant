@@ -528,5 +528,6 @@
     if(!window.__i18nObserver){ const obs=new MutationObserver(ms=>{if(localStorage.getItem('appLanguage')!=='en')return;ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===3)translateElement(n);else if(n.nodeType===1)translateElement(n);}));}); obs.observe(document.body,{childList:true,subtree:true,characterData:true}); window.__i18nObserver=obs; }
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',setup); else setup();
-  window.I18N={dict,apply,translateElement};
+  function t(key){ return (localStorage.getItem('appLanguage')==='en' && dict[key]) ? dict[key] : key; }
+  window.I18N={dict,apply,translateElement,t};
 })();
