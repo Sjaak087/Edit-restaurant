@@ -709,6 +709,97 @@
     "Nog geen leden gevonden.":"No members found yet.",
     "Nog geen feedback ontvangen.":"No feedback received yet."
   });
+  Object.assign(dict, {
+    'Vrij':'Free',
+    'Bezet — tik op een tafel om te bestellen':'Occupied — tap a table to order',
+    'Notities worden gedeeld met het hele restaurant. Typ iets en druk op Enter om het als vinkje toe te voegen. Afgevinkte notities verdwijnen na 5 seconden.':'Notes are shared with the entire restaurant. Type something and press Enter to add it as a checklist item. Checked-off notes disappear after 5 seconds.',
+    'Nieuwe bestellingen worden hier automatisch getoond.':'New orders will appear here automatically.',
+    '📥 Binnengekomen':'📥 Received',
+    '🔥 In bereiding':'🔥 Preparing',
+    'Klaargemaakte bestellingen wachtend op bezorging.':'Prepared orders waiting for delivery.',
+    'Historie resetten':'Reset history',
+    'Alle afgerekende bestellingen.':'All paid orders.',
+    'Alle afgerekende bestellingen verschijnen hier.':'All paid orders appear here.',
+    'Totaaloverzicht':'Summary',
+    'Totale omzet':'Total revenue',
+    'Binnengekomen om':'Received at',
+    'Besteld om':'Ordered at',
+    'betaald om':'paid at',
+    'klaar voor bezorging':'ready for delivery',
+    'Klaar om te bezorgen':'Ready for delivery',
+    'Klaar om te bezorgen.':'Ready for delivery.',
+    '⏱ Wordt nu verwijderd...':'⏱ Being deleted now...',
+    'Mijn geüpload geluid':'My uploaded sound',
+    '🎵 Mijn geüpload geluid':'🎵 My uploaded sound',
+    '🎵 Mijn geüploade geluid (nog niets geüpload)':'🎵 My uploaded sound (nothing uploaded yet)',
+    'Nog geen nieuwe bestellingen':'No new orders yet',
+    'Nog niets in bereiding':'Nothing being prepared yet',
+    'Geen klaargemaakte bestellingen':'No prepared orders',
+    'Nog geen historie':'No history yet',
+    'Start bereiden':'Start preparing',
+    'Klaar':'Ready',
+    'Bezorgd':'Delivered',
+    'Binnengekomen':'Received',
+    'In bereiding':'Preparing',
+    'Tafel':'Table',
+    'tafel':'table',
+    'Tafelnummer':'Table number',
+    'Totale omzet':'Total revenue',
+    'Totaal':'Total',
+    'Bestelling':'Order',
+    'Bestellingen':'Orders',
+    'bestelling':'order',
+    'bestellingen':'orders',
+    'Historie':'History',
+    'Gereed':'Ready',
+    'Op voorraad zetten':'Mark as in stock',
+    'Uitverkocht':'Out of stock',
+    'Klaar voor bezorging':'Ready for delivery',
+    'Klaar voor bezorging.':'Ready for delivery.',
+    'Klaargemaakt':'Prepared',
+    'Bezorging':'Delivery',
+    'Verzonden':'Sent',
+    'Ontvangen':'Received',
+    'Wordt bereid':'Preparing',
+    'Betaald':'Paid',
+    'Betaald, verstuur naar keuken':'Paid, send to kitchen',
+    '✅ Betaald, verstuur naar keuken':'✅ Paid, send to kitchen',
+    'Bestelling sturen naar keuken':'Send order to kitchen',
+    'Bestelling naar de keuken sturen':'Send order to kitchen',
+    'Doorgaan naar betalen':'Continue to payment',
+    'Geen openstaande bestellingen.':'No open orders.',
+    'Nog geen openstaande bestellingen.':'No open orders yet.',
+    'Geen nieuwe bestellingen':'No new orders',
+    'Geen bestelling':'No order',
+    'Voorbereiden':'Prepare',
+    'Voorbereid':'Prepared',
+    'Serveren':'Serve',
+    'Geserveerd':'Served',
+    'Klaar om te bezorgen':'Ready for delivery',
+    'Klaargemaakte bestellingen wachtend op bezorging.':'Prepared orders waiting for delivery.',
+    'Serviceaanvragen':'Service requests',
+    'Openstaande serviceaanvragen':'Open service requests',
+    'Afgeronde serviceaanvragen':'Completed service requests',
+    'Gevraagde services':'Requested services',
+    'Geen openstaande serviceaanvragen.':'No open service requests.',
+    'Service aangevraagd':'Service requested',
+    'Aangevraagd':'Requested',
+    'Gedaan':'Done',
+    'Bezig...':'Loading...',
+    'Aanvragen':'Request',
+    'Openstaand':'Open',
+    'Afgerond':'Completed',
+    'Nieuwe bestelling':'New order',
+    'Nieuwe bestellingen':'New orders',
+    'Binnengekomen bestellingen':'Received orders',
+    'Bestellingen in bereiding':'Orders being prepared',
+    'Klaargemaakte bestellingen':'Prepared orders',
+    'Afgerekende bestellingen':'Paid orders',
+    'Alle bestellingen':'All orders',
+    'Order':'Order',
+    'Bar bestelling':'Bar order',
+    'Keuken bestelling':'Kitchen order'
+  });
   function translateElement(el){
     if(!el) return;
     if(el.nodeType===Node.TEXT_NODE){
@@ -722,11 +813,41 @@
         if(replaced !== raw){ el.nodeValue = replaced; return; }
         const dynamic = raw
           .replace(/^(\d+) nieuw · (\d+) in bereiding$/, '$1 new · $2 preparing')
+          .replace(/^(\d+) nieuw$/, '$1 new')
+          .replace(/^(\d+) nieuwe bestellingen?$/, '$1 new orders')
           .replace(/^(\d+) klaar voor bezorging$/, '$1 ready for delivery')
+          .replace(/^(\d+) klaar$/, '$1 ready')
           .replace(/^Binnengekomen om (.+)$/, 'Received at $1')
-          .replace(/^Service "([^"]+)" verwijderen\?$/, 'Delete service "$1"?')
+          .replace(/^Binnengekomen op (.+)$/, 'Received on $1')
+          .replace(/^Besteld om (.+)$/, 'Ordered at $1')
+          .replace(/^Besteld op (.+)$/, 'Ordered on $1')
+          .replace(/^betaald om (.+)$/, 'paid at $1')
+          .replace(/^Betaald om (.+)$/, 'Paid at $1')
+          .replace(/^Klaar om te bezorgen$/, 'Ready for delivery')
+          .replace(/^Klaar om te bezorgen\.$/, 'Ready for delivery.')
+          .replace(/^Klaar om te bezorgen$/, 'Ready for delivery')
+          .replace(/^klaar om te bezorgen$/, 'ready for delivery')
+          .replace(/^klaar om te bezorgen\.$/, 'ready for delivery.')
+          .replace(/^Klaargemaakt(?:e)?$/, 'Prepared')
+          .replace(/^Klaargemaakte bestellingen$/, 'Prepared orders')
+          .replace(/^Klaargemaakte bestellingen wachtend op bezorging\.$/, 'Prepared orders waiting for delivery.')
+          .replace(/^Service aangevraagd$/, 'Service requested')
+          .replace(/^Service (?:—|-) tafel (\d+)$/, 'Service — table $1')
+          .replace(/^Tafel (\d+)$/, 'Table $1')
+          .replace(/^tafel (\d+)$/, 'table $1')
+          .replace(/^Bar (\d+)$/, 'Bar $1')
+          .replace(/^Keuken (\d+)$/, 'Kitchen $1')
+          .replace(/^Totaal: (.+)$/, 'Total: $1')
+          .replace(/^Totaaloverzicht$/, 'Summary')
+          .replace(/^Totale omzet$/, 'Total revenue')
+          .replace(/^Totale omzet: (.+)$/, 'Total revenue: $1')
+          .replace(/^([0-9]+) afgerekende bestelling$/, '$1 paid order')
+          .replace(/^([0-9]+) afgerekende bestellingen$/, '$1 paid orders')
+          .replace(/^([0-9]+) bestelling$/, '$1 order')
+          .replace(/^([0-9]+) bestellingen$/, '$1 orders')
           .replace(/^Nog (\d+) bestellingen? voor jou in deze fase\.$/, '$1 orders ahead of you in this stage.')
-          .replace(/^Je hebt een time out gekregen tot (.+)$/, 'You have received a timeout until $1');
+          .replace(/^Je hebt een time out gekregen tot (.+)$/, 'You have received a timeout until $1')
+          .replace(/^Je kunt over (\d+) minuut(?:ten)? opnieuw feedback geven\.$/, 'You can give feedback again in $1 minute(s).');
         if(dynamic!==raw){ el.nodeValue=dynamic; return; }
         const prefixMap = [
           ['Je hebt een time out gekregen tot ', 'You have received a timeout until '],
@@ -743,13 +864,26 @@
     ['placeholder','title','aria-label'].forEach(a=>{const v=el.getAttribute(a); if(v && dict[v]) el.setAttribute(a,dict[v]);});
     el.childNodes.forEach(n=>translateElement(n));
   }
+  function translateAllText(){
+    if(localStorage.getItem('appLanguage')!=='en') return;
+    const walker=document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    const nodes=[];
+    while(walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(n=>translateElement(n));
+    document.querySelectorAll('input,textarea,button,[title],[aria-label]').forEach(el=>{
+      ['placeholder','title','aria-label'].forEach(a=>{
+        const v=el.getAttribute(a); if(v && dict[v]) el.setAttribute(a,dict[v]);
+      });
+    });
+  }
+
   function apply(){
     const lang=localStorage.getItem('appLanguage')||'nl';
     document.documentElement.lang=lang;
     document.title=lang==='en'?'Ordering System':'Bestelsysteem';
     const sel=document.getElementById('language-select'); if(sel) sel.value=lang;
     const lab=document.getElementById('language-label'); if(lab) lab.textContent=lang==='en'?'Language':'Taal';
-    if(lang==='en') document.querySelectorAll('body *').forEach(translateElement);
+    if(lang==='en') translateAllText();
   }
   function setup(){
     let box=document.getElementById('language-switcher');
@@ -757,7 +891,7 @@
     const sel=document.getElementById('language-select');
     if(sel && !sel.dataset.bound){ sel.dataset.bound='1'; sel.value=localStorage.getItem('appLanguage')||'nl'; sel.addEventListener('change',()=>{localStorage.setItem('appLanguage',sel.value);location.reload();}); }
     apply();
-    if(!window.__i18nObserver){ const obs=new MutationObserver(ms=>{if(localStorage.getItem('appLanguage')!=='en')return;ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===3)translateElement(n);else if(n.nodeType===1)translateElement(n);}));}); obs.observe(document.body,{childList:true,subtree:true,characterData:true}); window.__i18nObserver=obs; }
+    if(!window.__i18nObserver){ let timer=0; const obs=new MutationObserver(ms=>{if(localStorage.getItem('appLanguage')!=='en')return;ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===3)translateElement(n);else if(n.nodeType===1)translateElement(n);})); clearTimeout(timer); timer=setTimeout(translateAllText,0);}); obs.observe(document.body,{childList:true,subtree:true,characterData:true}); window.__i18nObserver=obs; }
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',setup); else setup();
   function t(key){ return (localStorage.getItem('appLanguage')==='en' && dict[key]) ? dict[key] : key; }
