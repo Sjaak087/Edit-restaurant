@@ -41,7 +41,6 @@
     const params = new URLSearchParams({
       q: source,
       langpair: from + '|' + to,
-      de: 'bestelsysteem-web'
     });
 
     const response = await fetch(API_URL + '?' + params.toString(), {
