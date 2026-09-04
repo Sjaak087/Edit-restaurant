@@ -5,6 +5,74 @@
   const attrs=['placeholder','title','aria-label'];
 
   const extra = {
+    '🏠 Door mij aangemaakt':'🏠 Created by me',
+    '🤝 Gejoined':'🤝 Joined',
+    '👤 Gejoined':'👤 Joined',
+    'Notities worden gedeeld met het hele restaurant. Typ iets en druk op Enter om het als vinkje toe te voegen. Afgevinkte notities verdwijnen na 5 seconden.':'Notes are shared with the entire restaurant. Type something and press Enter to add it as a checklist item. Checked-off notes disappear after 5 seconds.',
+    'Sleep tafels en gebieden om ze te verplaatsen. Sleep een hoek van een gebied (linksboven of rechtsonder) om het aan die kant te vergroten of verkleinen.':'Drag tables and areas to move them. Drag a corner of an area (top-left or bottom-right) to resize it from that side.',
+    'Verdeel je producten in categorieën, zoals Dranken of Voorgerechten. De plaats bepaalt de volgorde bij het bestellen en bij zelfservice: 1 staat bovenaan, 255 onderaan.':'Divide your products into categories, such as Drinks or Starters. The position determines the order when ordering and in self-service: 1 is at the top, 255 at the bottom.',
+    'Services die klanten via zelfservice kunnen aanvragen bij hun tafel, bijv. "Rekening graag" of "Nieuw bestek". Alleen een titel nodig.':'Services that customers can request at their table through self-service, e.g. "Bill please" or "New cutlery". Only a title is needed.',
+    'Bepaal per lid welke tabbladen zichtbaar zijn. Wijzigingen gaan direct in. Verwijder je iemand, dan wordt de join-code automatisch vernieuwd zodat diegene niet zomaar opnieuw kan joinen.':'Choose which tabs are visible for each member. Changes take effect immediately. If you remove someone, the join code is automatically refreshed so they cannot simply join again.',
+    'Je hebt nog geen restaurant. Maak er één, of join met een code.':'You do not have a restaurant yet. Create one or join with a code.',
+    'Restaurant aangemaakt! 🎉':'Restaurant created! 🎉',
+    'Er is nog geen sitebeheerder ingesteld. Stel hieronder een e-mailadres en wachtwoord in — dit wordt onthouden, en vanaf nu moet iedereen hiermee inloggen.':'No site administrator has been set up yet. Enter an email address and password below — these will be remembered, and from now on everyone must log in with them.',
+    'Dit restaurant bestaat niet meer.':'This restaurant no longer exists.',
+    'Dit restaurant is automatisch verwijderd (verwijdertimer is verlopen).':'This restaurant was automatically deleted because its deletion timer expired.',
+    'Dit restaurant is niet bekend op dit apparaat. Join het eerst met een code.':'This restaurant is not known on this device. Join it first with a code.',
+    'Je bent verwijderd uit dit restaurant.':'You have been removed from this restaurant.',
+    'Je verliest hierna de toegang tot dit restaurant op dit apparaat.':'You will lose access to this restaurant on this device.',
+    'Let op: als eigenaar wordt bij het verlaten het hele restaurant definitief verwijderd, inclusief alle leden, tafels, producten en geschiedenis.':'Attention: as the owner, leaving will permanently delete the entire restaurant, including all members, tables, products and history.',
+    'Weet je zeker dat je dit lid wilt verwijderen? De join-code wordt daarna automatisch vernieuwd.':'Are you sure you want to remove this member? The join code will be automatically refreshed afterwards.',
+    'Weet je zeker dat je dit lid uit het restaurant wilt verwijderen? De join-code wordt daarna automatisch vernieuwd.':'Are you sure you want to remove this member from the restaurant? The join code will be automatically refreshed afterwards.',
+    'Weet je zeker dat je dit restaurant wilt verlaten?':'Are you sure you want to leave this restaurant?',
+    'Als beheerder verwijder je hiermee dit hele restaurant definitief, inclusief alle leden, tafels, producten en geschiedenis.':'As an administrator, this permanently deletes the entire restaurant, including all members, tables, products and history.',
+    'Er ging iets mis bij het opslaan van de kleur.':'Something went wrong while saving the color.',
+    'Er ging iets mis bij het verwijderen van dit lid.':'Something went wrong while removing this member.',
+    'Kon geen unieke code genereren':'Could not generate a unique code',
+    'Vul een code in.':'Enter a code.',
+    'Vul je feedback in.':'Enter your feedback.',
+    'Het aanvragen is niet gelukt, probeer opnieuw.':'The request failed, please try again.',
+    'Het restaurant kon niet worden geladen.':'The restaurant could not be loaded.',
+    'Kies eerst je tafel.':'Choose your table first.',
+    'Er zijn nog geen tafels ingesteld.':'No tables have been set up yet.',
+    'Dit restaurant heeft nog geen services ingesteld.':'This restaurant has no services set up yet.',
+    'Dit restaurant heeft nog geen producten ingesteld.':'This restaurant has no products set up yet.',
+    'Nog geen opmerkingen ingesteld bij producten.':'No product options have been set yet.',
+    'Nieuwe bestellingen worden hier automatisch getoond.':'New orders will appear here automatically.',
+    'Nog geen nieuwe bestellingen':'No new orders yet',
+    'Nog geen leden gevonden.':'No members found yet.',
+    'Nog geen categorieën. Voeg er één toe.':'No categories yet. Add one.',
+    'Nog geen producten. Voeg er één toe.':'No products yet. Add one.',
+    'Nog geen services. Voeg er één toe.':'No services yet. Add one.',
+    'Nog geen notities':'No notes yet',
+    'Nog geen historie':'No history yet',
+    'Nog geen updates.':'No updates yet.',
+    'Geen openstaande serviceaanvragen.':'No open service requests.',
+    'Geen klaargemaakte bestellingen':'No prepared orders',
+    'Alle afgerekende bestellingen.':'All paid orders.',
+    'Alle afgerekende bestellingen verschijnen hier.':'All paid orders appear here.',
+    'Klaargemaakte bestellingen wachtend op bezorging.':'Prepared orders waiting for delivery.',
+    'Nog niets in bereiding':'Nothing being prepared yet',
+    '⏱ Wordt nu verwijderd...':'⏱ Being deleted now...',
+    '🗑 Restaurant verwijderen':'🗑 Delete restaurant',
+    'Missing restaurant id':'Missing restaurant ID',
+    'Nog 1 bestelling voor jou in deze fase.':'1 order ahead of you in this stage.',
+    'Medewerker is onderweg':'Staff member is on the way',
+    'Aan de beurt':'Your order is next',
+    'Je bestelling is aan de beurt.':'Your order is next.',
+    'Restaurant beheer':'Restaurant management',
+    'Vul de info in.':'Enter the information.',
+    'Vul minimaal 1 minuut of 1 uur in.':'Enter at least 1 minute or 1 hour.',
+    'Er ging iets mis bij het verwijderen, probeer het opnieuw.':'Something went wrong while deleting, please try again.',
+    'Dit bericht komt groot in beeld zodra de eigenaar het restaurant opent, tot hij op Oké drukt.':'This message appears prominently when the owner opens the restaurant, until they press OK.',
+    'Dit announcement is voor iedereen zichtbaar via het belletje naast de update log, totdat ze zelf op Gelezen drukken.':'This announcement is visible to everyone through the bell next to the update log until they mark it as read.',
+    'Na deze tijd wordt het restaurant automatisch en definitief verwijderd. Het restaurant toont zelf bovenin een aftellende timer.':'After this time, the restaurant will be automatically and permanently deleted. The restaurant itself shows a countdown timer at the top.',
+    'Je kunt maximaal 1 eigen geluid uploaden, van maximaal 400 KB. Een nieuw bestand vervangt het vorige.':'You can upload a maximum of 1 custom sound, up to 400 KB. A new file replaces the previous one.',
+    'Tip: download de PDF en print hem op de tafels.':'Tip: download the PDF and print it on the tables.',
+    'Klanten kunnen deze QR-code scannen om vanaf hun eigen telefoon te bestellen. De QR-code is uniek voor dit restaurant.':'Customers can scan this QR code to order from their own phone. The QR code is unique to this restaurant.',
+    'Geef deze code aan personeel of medewerkers zodat zij dit restaurant kunnen joinen op het startscherm.':'Give this code to staff or employees so they can join this restaurant from the start screen.',
+    'Je username wordt automatisch gebruikt voor dit restaurant.':'Your username is automatically used for this restaurant.',
+
     'Nederlands':'Dutch','Taal':'Language','Naar:':'To:','Voor:':'For:','Onbekend':'Unknown','Online':'Online','Offline':'Offline','Actief':'Active','Unbannen':'Unban','Verbannen':'Banned','Time out':'Timeout','Gebruikers-ID:':'User ID:','Geen restaurants gevonden.':'No restaurants found.','Geen eerdere waarschuwingen.':'No previous warnings.','Gelezen':'Read','Markeer als gelezen':'Mark as read','Zonder titel':'Untitled','Bericht verwijderen is niet gelukt.':'Failed to delete message.','Bericht als gelezen markeren mislukt':'Failed to mark message as read','Vul een bericht in.':'Enter a message.','Kies eerst een username uit de zoekresultaten.':'First choose a username from the search results.','Vul een titel in.':'Enter a title.','Vul een username in.':'Enter a username.','Vul je eigen naam in.':'Enter your own name.','Je username mag maximaal 15 tekens lang zijn.':'Your username may be at most 15 characters long.','Klik om je username te wijzigen':'Click to change your username','Bezig...':'Loading...','Vul een naam in.':'Enter a name.','Er ging iets mis, probeer het opnieuw.':'Something went wrong, please try again.','Geen restaurant gevonden met deze code.':'No restaurant found with this code.','Je zit al in dit restaurant.':'You are already in this restaurant.','Versturen...':'Sending...','Bedankt voor je feedback!':'Thanks for your feedback!','Feedback versturen mislukt:':'Failed to send feedback:','Er ging iets mis bij het versturen. Probeer het opnieuw.':'Something went wrong while sending. Please try again.','Start bereiden':'Start preparing','Klaar':'Ready','Bezorgd':'Delivered','Totaaloverzicht':'Total overview','Totale omzet':'Total revenue','Besteld om':'Ordered at','Uitverkocht':'Out of stock','Beschikbaar':'Available','Vrij':'Free','Bezet':'Occupied','Nog geen nieuwe bestellingen':'No new orders yet','Je hebt nog geen restaurant. Maak er één, of join met een code.':'You do not have a restaurant yet. Create one or join with a code.','👑 Eigenaar':'👑 Owner','👤 Gejoined':'👤 Joined','Door mij aangemaakt':'Created by me','Gejoined':'Joined','Restaurant verlaten':'Leave restaurant','Restaurant verwijderen':'Delete restaurant','Restaurant beheer':'Restaurant management','Lid toevoegen':'Add member','Leden beheren':'Manage members','Rol instellen':'Set role','Toegang':'Access','Toegang geven':'Grant access','Toegang intrekken':'Revoke access','Alles':'Everything','Geen toegang':'No access','Kies de tabs waartoe dit lid toegang heeft.':'Choose the tabs this member can access.','Dit lid kan het restaurant aanpassen.':'This member can modify the restaurant.','Weet je het zeker?':'Are you sure?','Ja':'Yes','Nee':'No','Deze actie kan niet ongedaan worden.':'This action cannot be undone.','Kies een achtergrondkleur':'Choose a background color','Kies een achtergrondpatroon':'Choose a background pattern','Geen patroon':'No pattern','Voorbeeld':'Preview','Meldingsgeluid':'Notification sound','Geluid uploaden':'Upload sound','Eigen geluid':'Custom sound','Geluid verwijderd':'Sound removed','Geluid opgeslagen':'Sound saved','Vorige':'Previous','Volgende':'Next','Openen':'Open','Kopiëren':'Copy','Gekopieerd':'Copied','Downloaden':'Download','QR downloaden':'Download QR','Aangevraagd':'Requested','Gedaan':'Done','Aanvragen':'Request','Service aanvragen':'Request service','Service voltooid':'Service completed','Bestelling':'Order','Bestellingen':'Orders','Nieuwe bestelling':'New order','Nieuwe bestellingen':'New orders','Alle bestellingen':'All orders','Openstaande bestellingen':'Open orders','Klaargemaakt':'Prepared','Totaal':'Total','Aantal':'Quantity','Prijs':'Price','Totaalbedrag':'Total amount','Zoeken':'Search','Geen resultaten':'No results','Opslaan mislukt.':'Saving failed.','Kies een tijdstip in de toekomst.':'Choose a time in the future.','Typ eerst een bericht.':'Type a message first.','Kon geen verbinding maken, probeer het opnieuw.':'Could not connect, please try again.','Er is net al een sitebeheerder ingesteld, log in met die gegevens.':'A site administrator has just been set up. Log in with those credentials.','Instellen':'Set up','Administrator':'Administrator','Moderator':'Moderator','Eigenaar':'Owner','Medewerker':'Employee','Lid':'Member','Naamkleur':'Name color','Naam wijzigen':'Change name','Naam opslaan':'Save name','Veranderingen opgeslagen.':'Changes saved.','Product toevoegen':'Add product','Product bewerken':'Edit product','Product verwijderen':'Delete product','Productnaam':'Product name','Beschrijving':'Description','Opties':'Options','Optie toevoegen':'Add option','Optie verwijderen':'Remove option','Bevestigen':'Confirm','Wacht even...':'Please wait...','Geen producten':'No products','Geen categorieën':'No categories','Geen services':'No services','Geen bestellingen':'No orders','Geen historie':'No history','Geen voorraad':'No stock','Betaal':'Pay','Betaald':'Paid','Betaling':'Payment','Rekening':'Bill','Je bent verbannen van deze website':'You have been banned from this website','Je hebt een time out gekregen':'You have received a timeout','Je hebt momenteel geen toegang tot deze website.':'You currently do not have access to this website.','Stuur bericht naar owner':'Send message to owner','Bericht naar owner':'Message to owner','Waarschuwing':'Warning','Sitewaarschuwing':'Site warning','Let op':'Attention','⚠️ Let op':'⚠️ Attention','Oké':'OK','Eerdere waarschuwingen':'Previous warnings','Nog geen waarschuwingen verstuurd.':'No warnings sent yet.','Geen eerdere waarschuwingen.':'No previous warnings.','Nog geen updates.':'No updates yet.','Nog geen berichten.':'No messages.','Je hebt nog geen berichten.':'You have no messages yet.','Sitebeheer':'Site management','Username beheer':'Username management','Username zoeken':'Search username','Username wijzigen':'Change username','Jouw username':'Your username','Alleen de eigenaar kan het meldingsgeluid aanpassen.':'Only the owner can change the notification sound.','Alleen de eigenaar kan de plattegrond aanpassen.':'Only the owner can change the floor plan.','Alleen de eigenaar kan producten toevoegen, bewerken of verwijderen.':'Only the owner can add, edit or delete products.','Alleen de eigenaar kan categorieën toevoegen, bewerken of verwijderen.':'Only the owner can add, edit or delete categories.','Alleen de eigenaar kan services toevoegen, bewerken of verwijderen.':'Only the owner can add, edit or delete services.','Je hebt al 2 zelfaangemaakte restaurants. Verwijder er eerst één om een nieuwe te maken.':'You already have 2 restaurants you created yourself. Delete one first to create a new one.','Geef deze code aan anderen zodat zij jouw restaurant kunnen joinen:':'Give this code to others so they can join your restaurant:','Geef deze code aan personeel of medewerkers zodat zij dit restaurant kunnen joinen op het startscherm.':'Give this code to staff or employees so they can join this restaurant from the start screen.','Je username wordt automatisch gebruikt voor dit restaurant.':'Your username is automatically used for this restaurant.','Standaard staat dit op nee.':'This is set to no by default.','Producten en alles kunnen aanmaken':'Can create products and everything','Bekijk alle geregistreerde usernames, hun online-status, restaurants, waarschuwingen en toegangsstatus.':'View all registered usernames, their online status, restaurants, warnings and access status.','Dit announcement is voor iedereen zichtbaar via het belletje naast de update log, totdat ze zelf op Gelezen drukken.':'This announcement is visible to everyone through the bell next to the update log until they mark it as read.','Dit bericht komt groot in beeld zodra de eigenaar het restaurant opent, tot hij op Oké drukt.':'This message appears prominently when the owner opens the restaurant, until they press OK.','Tip: download de PDF en print hem op de tafels.':'Tip: download the PDF and print it on the tables.','Klanten kunnen deze QR-code scannen om vanaf hun eigen telefoon te bestellen. De QR-code is uniek voor dit restaurant.':'Customers can scan this QR code to order from their own phone. The QR code is unique to this restaurant.'
   };
   Object.assign(dict, extra);
@@ -12,7 +80,17 @@
     if(!el) return;
     if(el.nodeType===Node.TEXT_NODE){
       const raw=el.nodeValue, key=raw.trim();
-      if(dict[key]) el.nodeValue=raw.replace(key,dict[key]);
+      if(dict[key]) { el.nodeValue=raw.replace(key,dict[key]); return; }
+      if(localStorage.getItem('appLanguage')==='en') {
+        const prefixMap = [
+          ['Je hebt een time out gekregen tot ', 'You have received a timeout until '],
+          ['Nog ', ''],
+          [' bestelling voor jou in deze fase.', ' order ahead of you in this stage.']
+        ];
+        if(key.startsWith('Je hebt een time out gekregen tot ')) { el.nodeValue=raw.replace('Je hebt een time out gekregen tot ','You have received a timeout until '); return; }
+        if(/^Nog \d+ bestellingen? voor jou in deze fase\.$/.test(key)) { el.nodeValue=raw.replace(/^Nog (\d+) bestellingen? voor jou in deze fase\.$/,'$1 orders ahead of you in this stage.'); return; }
+        if(key==='⏱ Wordt nu verwijderd...') { el.nodeValue=raw.replace(key,'⏱ Being deleted now...'); return; }
+      }
       return;
     }
     if(el.nodeType!==Node.ELEMENT_NODE || localStorage.getItem('appLanguage')!=='en') return;
