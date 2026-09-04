@@ -114,19 +114,20 @@ const UPDATES = [
 
 // ==================== Weergave (niet nodig om aan te passen) ====================
 function getUpdatesForLanguage() {
-  return (localStorage.getItem('appLanguage') === 'en' && Array.isArray(window.UPDATES_EN)) ? window.UPDATES_EN : UPDATES;
+  const lang = localStorage.getItem('appLanguage') || 'nl';
+  if (lang === 'en' && Array.isArray(window.UPDATES_EN)) return window.UPDATES_EN;
+  if (lang === 'de' && Array.isArray(window.UPDATES_DE) && window.UPDATES_DE_READY) return window.UPDATES_DE;
+  return UPDATES;
 }
 
 function renderUpdatesList() {
   const list = document.getElementById('updates-list');
   if (!list) return;
-
   const updates = getUpdatesForLanguage();
   if (updates.length === 0) {
-    list.innerHTML = '<div class="empty-msg">Nog geen updates.</div>';
+    list.innerHTML = localStorage.getItem('appLanguage') === 'de' ? '<div class="empty-msg">Noch keine Updates.</div>' : (localStorage.getItem('appLanguage') === 'en' ? '<div class="empty-msg">No updates yet.</div>' : '<div class="empty-msg">Nog geen updates.</div>');
     return;
   }
-
   list.innerHTML = '';
   updates.forEach(u => {
     const item = document.createElement('div');
@@ -141,9 +142,7 @@ function renderUpdatesList() {
       </button>
       <div class="update-item-info">${escapeHtmlUpdates(u.info)}</div>
     `;
-    item.querySelector('.update-item-head').addEventListener('click', () => {
-      item.classList.toggle('open');
-    });
+    item.querySelector('.update-item-head').addEventListener('click', () => item.classList.toggle('open'));
     list.appendChild(item);
   });
 }
@@ -154,14 +153,19 @@ function escapeHtmlUpdates(str) {
   return div.innerHTML;
 }
 
-if (localStorage.getItem('appLanguage') === 'en') {
-  const script = document.createElement('script');
-  script.src = 'updates-en.js?v=' + Date.now();
-  script.onload = renderUpdatesList;
-  document.head.appendChild(script);
-} else {
-  renderUpdatesList();
+function loadUpdateLanguage(){
+  const lang=localStorage.getItem('appLanguage')||'nl';
+  if(lang==='en'){
+    const script=document.createElement('script'); script.src='updates-en.js?v='+Date.now(); script.onload=renderUpdatesList; document.head.appendChild(script);
+  } else if(lang==='de'){
+    const en=document.createElement('script'); en.src='updates-en.js?v='+Date.now();
+    en.onload=()=>{ const de=document.createElement('script'); de.src='updates-de.js?v='+Date.now(); de.onload=()=>{ if(window.UPDATES_DE_READY) renderUpdatesList(); }; document.head.appendChild(de); window.addEventListener('updates-de-ready',renderUpdatesList,{once:true}); };
+    document.head.appendChild(en);
+  } else renderUpdatesList();
 }
+
+loadUpdateLanguage();
+window.addEventListener('updates-de-ready',()=>{if(localStorage.getItem('appLanguage')==='de')renderUpdatesList();});
 
 // Gebruikt de openModal-functie die al door landing.js / restaurant.js is gedefinieerd.
 const btnUpdates = document.getElementById('btn-updates');

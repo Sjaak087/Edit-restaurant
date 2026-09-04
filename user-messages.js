@@ -118,7 +118,7 @@
       const sourceLang = window.AutoTranslator ? window.AutoTranslator.currentLanguage() : (localStorage.getItem('appLanguage') || 'nl');
       const translated = window.AutoTranslator
         ? await window.AutoTranslator.translateFieldSet({ title, text }, sourceLang)
-        : { title:{nl:title,en:title}, text:{nl:text,en:text} };
+        : { title:{nl:title,en:title,de:title}, text:{nl:text,en:text,de:text} };
       const msg={id:msgId,fromUserId:userId,fromUsername:getUsername(),toUserId:selectedRecipient.id,toUsername:selectedRecipient.username,title,text,titleTranslations:translated.title,textTranslations:translated.text,sourceLang,createdAt:Date.now(),read:false};
       // De inbox van de ontvanger is de primaire opslag.
       await db.ref('users/'+selectedRecipient.id+'/messages/'+msgId).set(msg);

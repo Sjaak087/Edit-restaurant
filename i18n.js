@@ -800,72 +800,96 @@
     'Bar bestelling':'Bar order',
     'Keuken bestelling':'Kitchen order'
   });
+  const deDict = {"Bestelsysteem":"Bestellsystem","Ordering System":"Bestellsystem","Kies je restaurant":"Wähle dein Restaurant","Choose your restaurant":"Wähle dein Restaurant","Mijn restaurants":"Meine Restaurants","Restaurant maken":"Restaurant erstellen","Create restaurant":"Restaurant erstellen","Restaurant joinen":"Restaurant beitreten","Join restaurant":"Restaurant beitreten","Nieuw restaurant":"Neues Restaurant","New restaurant":"Neues Restaurant","Aanmaken":"Erstellen","Create":"Erstellen","Annuleren":"Abbrechen","Cancel":"Abbrechen","Joinen":"Beitreten","Join":"Beitreten","Opslaan":"Speichern","Save":"Speichern","Sluiten":"Schließen","Close":"Schließen","Terug":"Zurück","Back":"Zurück","Wijzigen":"Ändern","Change":"Ändern","Bewerken":"Bearbeiten","Edit":"Bearbeiten","Verwijderen":"Löschen","Delete":"Löschen","Versturen":"Senden","Send":"Senden","Doorgaan":"Weiter","Continue":"Weiter","Begrepen":"Verstanden","Got it":"Verstanden","Inloggen":"Anmelden","Log in":"Anmelden","Uitloggen":"Abmelden","Log out":"Abmelden","Naam":"Name","Name":"Name","E-mailadres":"E-Mail-Adresse","Email address":"E-Mail-Adresse","Wachtwoord":"Passwort","Password":"Passwort","Bevestig wachtwoord":"Passwort bestätigen","Confirm password":"Passwort bestätigen","Feedback":"Feedback","Feedback geven":"Feedback geben","Give feedback":"Feedback geben","Gegeven feedback":"Abgegebenes Feedback","Submitted feedback":"Abgegebenes Feedback","Announcements":"Ankündigungen","Announcement":"Ankündigung","Announcement versturen":"Ankündigung senden","Send announcement":"Ankündigung senden","New announcement":"Neue Ankündigung","Update log":"Update-Protokoll","🆕 Update log":"🆕 Update-Protokoll","📋 Update log":"📋 Update-Protokoll","Sitebeheer":"Seitenverwaltung","Site management":"Seitenverwaltung","🔧 Sitebeheer":"🔧 Seitenverwaltung","Username beheer":"Benutzernameverwaltung","Username management":"Benutzernameverwaltung","Username zoeken":"Benutzername suchen","Search username":"Benutzername suchen","Username wijzigen":"Benutzername ändern","Change username":"Benutzername ändern","Jouw username":"Dein Benutzername","Your username":"Dein Benutzername","Rol":"Rolle","Role":"Rolle","Lid beheren":"Mitglied verwalten","Manage member":"Mitglied verwalten","Verwijderen uit restaurant":"Aus Restaurant entfernen","Remove from restaurant":"Aus Restaurant entfernen","Time out geven":"Timeout geben","Give timeout":"Timeout geben","Time out tot":"Timeout bis","Timeout until":"Timeout bis","Timer verwijderen":"Timer entfernen","Remove timer":"Timer entfernen","Waarschuwing geven":"Warnung geben","Give warning":"Warnung geben","Waarschuwing van moderator":"Warnung vom Moderator","Moderator warning":"Warnung vom Moderator","Eerdere waarschuwingen":"Frühere Warnungen","Previous warnings":"Frühere Warnungen","Berichten":"Nachrichten","Messages":"Nachrichten","Binnengekomen":"Eingegangen","Received":"Eingegangen","Geen berichten.":"Keine Nachrichten.","No messages.":"Keine Nachrichten.","Bericht":"Nachricht","Message":"Nachricht","Titel":"Titel","Title":"Titel","Info":"Info","Emoji":"Emoji","Producten":"Produkte","Products":"Produkte","Categorieën":"Kategorien","Categories":"Kategorien","Services":"Services","Service":"Service","Bestellen":"Bestellen","Order":"Bestellen","🍽 Bestellen":"🍽 Bestellen","Bestelling":"Bestellung","Bestellingen":"Bestellungen","Orders":"Bestellungen","Betaald":"Bezahlt","Paid":"Bezahlt","Gereed":"Fertig","Ready":"Fertig","In bereiding":"In Zubereitung","Preparing":"In Zubereitung","Klaar":"Fertig","Klaargemaakt":"Zubereitet","Prepared":"Zubereitet","Bezorgd":"Geliefert","Delivered":"Geliefert","Klaar voor bezorging":"Bereit zur Lieferung","Ready for delivery":"Bereit zur Lieferung","Klaar om te bezorgen":"Bereit zur Lieferung","Ready for delivery.":"Bereit zur Lieferung.","Bar":"Bar","Keuken":"Küche","Kitchen":"Küche","Voorraad":"Bestand","Stock":"Bestand","Historie":"Verlauf","History":"Verlauf","Notities":"Notizen","Notes":"Notizen","Instellingen":"Einstellungen","Settings":"Einstellungen","Algemeen":"Allgemein","General":"Allgemein","Plattegrond":"Grundriss","Floor plan":"Grundriss","Leden":"Mitglieder","Members":"Mitglieder","Zelfservice QR":"Selbstbedienungs-QR","Zelfservice":"Selbstbedienung","Self-service":"Selbstbedienung","Achtergrondkleur":"Hintergrundfarbe","Background color":"Hintergrundfarbe","Achtergrondpatroon":"Hintergrundmuster","Background pattern":"Hintergrundmuster","Lettertype":"Schriftart","Font":"Schriftart","Naamkleur":"Namensfarbe","Name color":"Namensfarbe","Meldingsgeluid bij nieuwe bestelling":"Benachrichtigungston bei neuer Bestellung","Notification sound for new order":"Benachrichtigungston bei neuer Bestellung","Geen geluid":"Kein Ton","🔕 Geen geluid":"🔕 Kein Ton","Melding geluid 1":"Benachrichtigungston 1","🔔 Melding geluid 1":"🔔 Benachrichtigungston 1","Melding geluid 2":"Benachrichtigungston 2","🔔 Melding geluid 2":"🔔 Benachrichtigungston 2","Mijn geüpload geluid":"Mein hochgeladener Ton","🎵 Mijn geüpload geluid":"🎵 Mein hochgeladener Ton","Mijn geüploade geluid":"Mein hochgeladener Ton","🎵 Mijn geüploade geluid (nog niets geüpload)":"🎵 Mein hochgeladener Ton (noch nichts hochgeladen)","Beluisteren":"Vorschau","Preview":"Vorschau","Geluid uploaden":"Ton hochladen","Upload sound":"Ton hochladen","Tafel":"Tisch","Table":"Tisch","Tafelnummer":"Tischnummer","Table number":"Tischnummer","Gebied":"Bereich","Area":"Bereich","Prijs":"Preis","Price":"Preis","Totaal":"Gesamt","Total":"Gesamt","Aantal":"Menge","Quantity":"Menge","Totale omzet":"Gesamtumsatz","Total revenue":"Gesamtumsatz","Totaaloverzicht":"Gesamtübersicht","Summary":"Gesamtübersicht","Historie resetten":"Verlauf zurücksetzen","Reset history":"Verlauf zurücksetzen","Geen resultaten":"Keine Ergebnisse","No results":"Keine Ergebnisse","Geen openstaande bestellingen.":"Keine offenen Bestellungen.","No open orders.":"Keine offenen Bestellungen.","Nog geen nieuwe bestellingen":"Noch keine neuen Bestellungen","No new orders yet":"Noch keine neuen Bestellungen","Nog niets in bereiding":"Noch nichts in Zubereitung","Nothing being prepared yet":"Noch nichts in Zubereitung","Geen klaargemaakte bestellingen":"Keine zubereiteten Bestellungen","No prepared orders":"Keine zubereiteten Bestellungen","Nog geen historie":"Noch kein Verlauf","No history yet":"Noch kein Verlauf","Uitverkocht":"Ausverkauft","Out of stock":"Ausverkauft","Beschikbaar":"Verfügbar","Available":"Verfügbar","Vrij":"Frei","Free":"Frei","Bezet":"Besetzt","Occupied":"Besetzt","Nieuwe bestelling":"Neue Bestellung","New order":"Neue Bestellung","Nieuwe bestellingen":"Neue Bestellungen","New orders":"Neue Bestellungen","Afgerekende bestellingen":"Bezahlte Bestellungen","Paid orders":"Bezahlte Bestellungen","Binnengekomen bestellingen":"Eingegangene Bestellungen","Received orders":"Eingegangene Bestellungen","Bestellingen in bereiding":"Bestellungen in Zubereitung","Orders being prepared":"Bestellungen in Zubereitung","Klaargemaakte bestellingen":"Zubereitete Bestellungen","Prepared orders":"Zubereitete Bestellungen","Bezorging":"Lieferung","Delivery":"Lieferung","Serveren":"Servieren","Serve":"Servieren","Geserveerd":"Serviert","Served":"Serviert","Aanvragen":"Anfordern","Request":"Anfordern","Aanvraag":"Anfrage","Service aanvragen":"Service anfordern","Request service":"Service anfordern","Gevraagde services":"Angeforderte Services","Requested services":"Angeforderte Services","Openstaand":"Offen","Open":"Öffnen","Afgerond":"Abgeschlossen","Completed":"Abgeschlossen","Gedaan":"Erledigt","Done":"Erledigt","Aangevraagd":"Angefordert","Requested":"Angefordert","Bezig...":"Wird geladen...","Loading...":"Wird geladen...","Opslaan mislukt.":"Speichern fehlgeschlagen.","Saving failed.":"Speichern fehlgeschlagen.","Weet je het zeker?":"Bist du sicher?","Are you sure?":"Bist du sicher?","Ja":"Ja","Yes":"Ja","Nee":"Nein","No":"Nein","Deze actie kan niet ongedaan worden.":"Diese Aktion kann nicht rückgängig gemacht werden.","This action cannot be undone.":"Diese Aktion kann nicht rückgängig gemacht werden.","Let op":"Achtung","Attention":"Achtung","Oké":"OK","OK":"OK","Taal":"Sprache","Language":"Sprache","Nederlands":"Niederländisch","Dutch":"Niederländisch","Engels":"Englisch","English":"Englisch","Duits":"Deutsch","German":"Deutsch","Door mij aangemaakt":"Von mir erstellt","Created by me":"Von mir erstellt","Gejoined":"Beigetreten","Joined":"Beigetreten","Restaurant verlaten":"Restaurant verlassen","Leave restaurant":"Restaurant verlassen","Restaurant verwijderen":"Restaurant löschen","Delete restaurant":"Restaurant löschen","Restaurant beheer":"Restaurantverwaltung","Restaurant management":"Restaurantverwaltung","Lid toevoegen":"Mitglied hinzufügen","Add member":"Mitglied hinzufügen","Leden beheren":"Mitglieder verwalten","Manage members":"Mitglieder verwalten","Toegang":"Zugriff","Access":"Zugriff","Toegang geven":"Zugriff gewähren","Grant access":"Zugriff gewähren","Toegang intrekken":"Zugriff entziehen","Revoke access":"Zugriff entziehen","Alles":"Alles","Everything":"Alles","Geen toegang":"Kein Zugriff","No access":"Kein Zugriff","Kies de tabs waartoe dit lid toegang heeft.":"Wähle die Tabs aus, auf die dieses Mitglied zugreifen darf.","Choose the tabs this member can access.":"Wähle die Tabs aus, auf die dieses Mitglied zugreifen darf.","Producten en alles kunnen aanmaken":"Produkte und alles erstellen dürfen","Can create products and everything":"Produkte und alles erstellen dürfen","Standaard staat dit op nee.":"Standardmäßig ist dies auf Nein gesetzt.","This is set to no by default.":"Standardmäßig ist dies auf Nein gesetzt.","Alleen de eigenaar kan het meldingsgeluid aanpassen.":"Nur der Eigentümer kann den Benachrichtigungston ändern.","Only the owner can change the notification sound.":"Nur der Eigentümer kann den Benachrichtigungston ändern.","Alleen de eigenaar kan de plattegrond aanpassen.":"Nur der Eigentümer kann den Grundriss ändern.","Only the owner can change the floor plan.":"Nur der Eigentümer kann den Grundriss ändern.","Alleen de eigenaar kan producten toevoegen, bewerken of verwijderen.":"Nur der Eigentümer kann Produkte hinzufügen, bearbeiten oder löschen.","Only the owner can add, edit or delete products.":"Nur der Eigentümer kann Produkte hinzufügen, bearbeiten oder löschen.","Alleen de eigenaar kan categorieën toevoegen, bewerken of verwijderen.":"Nur der Eigentümer kann Kategorien hinzufügen, bearbeiten oder löschen.","Alleen de eigenaar kan services toevoegen, bewerken of verwijderen.":"Nur der Eigentümer kann Services hinzufügen, bearbeiten oder löschen.","Nog geen restaurants aangemaakt.":"Noch keine Restaurants erstellt.","No restaurants created yet.":"Noch keine Restaurants erstellt.","Nog geen feedback ontvangen.":"Noch kein Feedback erhalten.","No feedback received yet.":"Noch kein Feedback erhalten.","Nog geen announcements verstuurd.":"Noch keine Ankündigungen gesendet.","No announcements sent yet.":"Noch keine Ankündigungen gesendet.","Nog geen usernames gevonden.":"Noch keine Benutzernamen gefunden.","No usernames found yet.":"Noch keine Benutzernamen gefunden.","Nog geen leden gevonden.":"Noch keine Mitglieder gefunden.","No members found yet.":"Noch keine Mitglieder gefunden.","Nog geen updates.":"Noch keine Updates.","No updates yet.":"Noch keine Updates.","Nog geen notities":"Noch keine Notizen","No notes yet":"Noch keine Notizen","Geen categorie":"Keine Kategorie","No category":"Keine Kategorie","Geen":"Keine","None":"Keine","Standaard":"Standard","Default":"Standard","Eigenaar":"Eigentümer","Owner":"Eigentümer","Medewerker":"Mitarbeiter","Employee":"Mitarbeiter","Lid":"Mitglied","Member":"Mitglied","Moderator":"Moderator","Administrator":"Administrator","Melding":"Benachrichtigung","Notification":"Benachrichtigung","Waarschuwing":"Warnung","Warning":"Warnung","Bericht naar owner":"Nachricht an den Eigentümer","Message to owner":"Nachricht an den Eigentümer","Stuur bericht naar owner":"Nachricht an den Eigentümer senden","Send message to owner":"Nachricht an den Eigentümer senden","Zoeken":"Suchen","Search":"Suchen","Kopiëren":"Kopieren","Copy":"Kopieren","Gekopieerd":"Kopiert","Copied":"Kopiert","Downloaden":"Herunterladen","Download":"Herunterladen","QR downloaden":"QR herunterladen","Download QR":"QR herunterladen","Openen":"Öffnen","Vorige":"Zurück","Previous":"Zurück","Volgende":"Weiter","Next":"Weiter","Bevestigen":"Bestätigen","Confirm":"Bestätigen","Wacht even...":"Bitte warten...","Please wait...":"Bitte warten...","Vul een bericht in.":"Gib eine Nachricht ein.","Enter a message.":"Gib eine Nachricht ein.","Vul een titel in.":"Gib einen Titel ein.","Enter a title.":"Gib einen Titel ein.","Vul een username in.":"Gib einen Benutzernamen ein.","Enter a username.":"Gib einen Benutzernamen ein.","Er ging iets mis, probeer het opnieuw.":"Etwas ist schiefgelaufen, bitte versuche es erneut.","Something went wrong, please try again.":"Etwas ist schiefgelaufen, bitte versuche es erneut.","Bedankt voor je feedback!":"Danke für dein Feedback!","Thanks for your feedback!":"Danke für dein Feedback!"};
+  deDict['🌐 Announcement-tekst wordt automatisch vertaald naar Nederlands en Engels.']='🌐 Der Ankündigungstext wird automatisch ins Niederländische, Englische und Deutsche übersetzt.';
+  deDict['🌐 Feedback wordt automatisch vertaald naar Nederlands en Engels.']='🌐 Feedback wird automatisch ins Niederländische, Englische und Deutsche übersetzt.';
+  deDict['🌐 Algemene tekst wordt automatisch vertaald naar Nederlands en Engels. Producten en opmerkingen worden niet vertaald.']='🌐 Allgemeine Texte werden automatisch ins Niederländische, Englische und Deutsche übersetzt. Produkte und Anmerkungen werden nicht übersetzt.';
+  deDict['Kies je taal']='Wähle deine Sprache';
+  deDict['Kies je taal:']='Wähle deine Sprache:';
+  deDict['Engels']='Englisch';
+  deDict['Duits']='Deutsch';
+  deDict['English']='Englisch';
+  deDict['Nederlands']='Niederländisch';
+  deDict['Deutsch']='Deutsch';
+
+
+  async function translateTextToGerman(text){
+    const raw = String(text == null ? '' : text).trim();
+    if(!raw) return raw;
+    if(deDict[raw]) return deDict[raw];
+    if(window.AutoTranslator && typeof window.AutoTranslator.translateText==='function'){
+      try { return await window.AutoTranslator.translateText(raw,'en','de'); } catch(_) {}
+    }
+    return raw;
+  }
+  function translateDynamicGerman(raw){
+    const key=String(raw||'').trim();
+    if(/^Tafel \d+$/.test(key)) return key.replace(/^Tafel /,'Tisch ');
+    if(/^Table \d+$/.test(key)) return key.replace(/^Table /,'Tisch ');
+    if(/^tafel \d+$/.test(key)) return key.replace(/^tafel /,'Tisch ');
+    if(/^Binnengekomen om (.+)$/.test(key)) return key.replace(/^Binnengekomen om (.+)$/,'Eingegangen um $1');
+    if(/^Binnengekomen op (.+)$/.test(key)) return key.replace(/^Binnengekomen op (.+)$/,'Eingegangen am $1');
+    if(/^Besteld om (.+)$/.test(key)) return key.replace(/^Besteld om (.+)$/,'Bestellt um $1');
+    if(/^Besteld op (.+)$/.test(key)) return key.replace(/^Besteld op (.+)$/,'Bestellt am $1');
+    if(/^Betaald om (.+)$/.test(key)) return key.replace(/^Betaald om (.+)$/,'Bezahlt um $1');
+    if(/^betaald om (.+)$/.test(key)) return key.replace(/^betaald om (.+)$/,'bezahlt um $1');
+    if(/^Klaar om te bezorgen\.?$/.test(key)) return key.endsWith('.')?'Bereit zur Lieferung.':'Bereit zur Lieferung';
+    if(/^Klaar voor bezorging\.?$/.test(key)) return key.endsWith('.')?'Bereit zur Lieferung.':'Bereit zur Lieferung';
+    if(/^([0-9]+) nieuw · ([0-9]+) in bereiding$/.test(key)) return key.replace(/^([0-9]+) nieuw · ([0-9]+) in bereiding$/,'$1 neu · $2 in Zubereitung');
+    if(/^([0-9]+) nieuw$/.test(key)) return key.replace(/^([0-9]+) nieuw$/,'$1 neu');
+    if(/^([0-9]+) nieuwe bestellingen?$/.test(key)) return key.replace(/^([0-9]+) nieuwe bestellingen?$/,'$1 neue Bestellungen');
+    if(/^([0-9]+) klaar voor bezorging$/.test(key)) return key.replace(/^([0-9]+) klaar voor bezorging$/,'$1 bereit zur Lieferung');
+    if(/^([0-9]+) klaar$/.test(key)) return key.replace(/^([0-9]+) klaar$/,'$1 fertig');
+    if(/^Totale omzet: (.+)$/.test(key)) return key.replace(/^Totale omzet: (.+)$/,'Gesamtumsatz: $1');
+    if(/^Totaal: (.+)$/.test(key)) return key.replace(/^Totaal: (.+)$/,'Gesamt: $1');
+    if(/^([0-9]+) bestelling$/.test(key)) return key.replace(/^([0-9]+) bestelling$/,'$1 Bestellung');
+    if(/^([0-9]+) bestellingen$/.test(key)) return key.replace(/^([0-9]+) bestellingen$/,'$1 Bestellungen');
+    if(/^Nog (\d+) bestellingen? voor jou in deze fase\.$/.test(key)) return key.replace(/^Nog (\d+) bestellingen? voor jou in deze fase\.$/,'Noch $1 Bestellungen vor dir in dieser Phase.');
+    return deDict[key] || null;
+  }
   function translateElement(el){
     if(!el) return;
+    const lang=localStorage.getItem('appLanguage')||'nl';
     if(el.nodeType===Node.TEXT_NODE){
-      const raw=el.nodeValue, key=raw.trim();
-      if(dict[key]) { el.nodeValue=raw.replace(key,dict[key]); return; }
-      if(localStorage.getItem('appLanguage')==='en') {
-        let replaced = raw;
-        Object.keys(dict).sort((a,b)=>b.length-a.length).forEach(k=>{
-          if(k && replaced.includes(k)) replaced = replaced.split(k).join(dict[k]);
-        });
-        if(replaced !== raw){ el.nodeValue = replaced; return; }
-        const dynamic = raw
-          .replace(/^(\d+) nieuw · (\d+) in bereiding$/, '$1 new · $2 preparing')
-          .replace(/^(\d+) nieuw$/, '$1 new')
-          .replace(/^(\d+) nieuwe bestellingen?$/, '$1 new orders')
-          .replace(/^(\d+) klaar voor bezorging$/, '$1 ready for delivery')
-          .replace(/^(\d+) klaar$/, '$1 ready')
-          .replace(/^Binnengekomen om (.+)$/, 'Received at $1')
-          .replace(/^Binnengekomen op (.+)$/, 'Received on $1')
-          .replace(/^Besteld om (.+)$/, 'Ordered at $1')
-          .replace(/^Besteld op (.+)$/, 'Ordered on $1')
-          .replace(/^betaald om (.+)$/, 'paid at $1')
-          .replace(/^Betaald om (.+)$/, 'Paid at $1')
-          .replace(/^Klaar om te bezorgen$/, 'Ready for delivery')
-          .replace(/^Klaar om te bezorgen\.$/, 'Ready for delivery.')
-          .replace(/^Klaar om te bezorgen$/, 'Ready for delivery')
-          .replace(/^klaar om te bezorgen$/, 'ready for delivery')
-          .replace(/^klaar om te bezorgen\.$/, 'ready for delivery.')
-          .replace(/^Klaargemaakt(?:e)?$/, 'Prepared')
-          .replace(/^Klaargemaakte bestellingen$/, 'Prepared orders')
-          .replace(/^Klaargemaakte bestellingen wachtend op bezorging\.$/, 'Prepared orders waiting for delivery.')
-          .replace(/^Service aangevraagd$/, 'Service requested')
-          .replace(/^Service (?:—|-) tafel (\d+)$/, 'Service — table $1')
-          .replace(/^Tafel (\d+)$/, 'Table $1')
-          .replace(/^tafel (\d+)$/, 'table $1')
-          .replace(/^Bar (\d+)$/, 'Bar $1')
-          .replace(/^Keuken (\d+)$/, 'Kitchen $1')
-          .replace(/^Totaal: (.+)$/, 'Total: $1')
-          .replace(/^Totaaloverzicht$/, 'Summary')
-          .replace(/^Totale omzet$/, 'Total revenue')
-          .replace(/^Totale omzet: (.+)$/, 'Total revenue: $1')
-          .replace(/^([0-9]+) afgerekende bestelling$/, '$1 paid order')
-          .replace(/^([0-9]+) afgerekende bestellingen$/, '$1 paid orders')
-          .replace(/^([0-9]+) bestelling$/, '$1 order')
-          .replace(/^([0-9]+) bestellingen$/, '$1 orders')
-          .replace(/^Nog (\d+) bestellingen? voor jou in deze fase\.$/, '$1 orders ahead of you in this stage.')
-          .replace(/^Je hebt een time out gekregen tot (.+)$/, 'You have received a timeout until $1')
-          .replace(/^Je kunt over (\d+) minuut(?:ten)? opnieuw feedback geven\.$/, 'You can give feedback again in $1 minute(s).');
-        if(dynamic!==raw){ el.nodeValue=dynamic; return; }
-        const prefixMap = [
-          ['Je hebt een time out gekregen tot ', 'You have received a timeout until '],
-          ['Nog ', ''],
-          [' bestelling voor jou in deze fase.', ' order ahead of you in this stage.']
-        ];
-        if(key.startsWith('Je hebt een time out gekregen tot ')) { el.nodeValue=raw.replace('Je hebt een time out gekregen tot ','You have received a timeout until '); return; }
-        if(/^Nog \d+ bestellingen? voor jou in deze fase\.$/.test(key)) { el.nodeValue=raw.replace(/^Nog (\d+) bestellingen? voor jou in deze fase\.$/,'$1 orders ahead of you in this stage.'); return; }
-        if(key==='⏱ Wordt nu verwijderd...') { el.nodeValue=raw.replace(key,'⏱ Being deleted now...'); return; }
+      if(lang==='de'){
+        const raw=el.nodeValue, key=raw.trim();
+        if(!key) return;
+        const dynamic=translateDynamicGerman(key);
+        if(dynamic && dynamic!==key){ el.nodeValue=raw.replace(key,dynamic); return; }
+        const english = dict[key];
+        const fromDict = deDict[key] || (english && deDict[english]);
+        if(fromDict){ el.nodeValue=raw.replace(key,fromDict); return; }
+        if(english){
+          translateTextToGerman(english).then(trans=>{ if(trans && el.isConnected && localStorage.getItem('appLanguage')==='de' && el.nodeValue.trim()===key) el.nodeValue=el.nodeValue.replace(key,trans); });
+        }
+        return;
+      }
+      if(lang==='en'){
+        const raw=el.nodeValue, key=raw.trim(); if(!key) return;
+        if(dict[key]) { el.nodeValue=raw.replace(key,dict[key]); return; }
+        let replaced=raw; Object.keys(dict).sort((a,b)=>b.length-a.length).forEach(k=>{if(k && replaced.includes(k)) replaced=replaced.split(k).join(dict[k]);});
+        if(replaced!==raw){el.nodeValue=replaced;return;}
       }
       return;
     }
-    if(el.nodeType!==Node.ELEMENT_NODE || localStorage.getItem('appLanguage')!=='en') return;
-    ['placeholder','title','aria-label'].forEach(a=>{const v=el.getAttribute(a); if(v && dict[v]) el.setAttribute(a,dict[v]);});
-    el.childNodes.forEach(n=>translateElement(n));
+    if(el.nodeType!==Node.ELEMENT_NODE || lang==='nl') return;
+    if(lang==='en'){
+      ['placeholder','title','aria-label'].forEach(a=>{const v=el.getAttribute(a); if(v && dict[v]) el.setAttribute(a,dict[v]);});
+      el.childNodes.forEach(n=>translateElement(n));
+      return;
+    }
+    if(lang==='de'){
+      ['placeholder','title','aria-label'].forEach(a=>{
+        const v=el.getAttribute(a); if(!v) return;
+        const direct=translateDynamicGerman(v) || deDict[v] || (dict[v] && deDict[dict[v]]);
+        if(direct) el.setAttribute(a,direct);
+        else if(dict[v]) translateTextToGerman(dict[v]).then(t=>{ if(el.isConnected && localStorage.getItem('appLanguage')==='de') el.setAttribute(a,t); });
+      });
+      el.childNodes.forEach(n=>translateElement(n));
+    }
   }
   function translateAllText(){
-    if(localStorage.getItem('appLanguage')!=='en') return;
+    if(!['en','de'].includes(localStorage.getItem('appLanguage'))) return;
     const walker=document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     const nodes=[];
     while(walker.nextNode()) nodes.push(walker.currentNode);
@@ -880,20 +904,20 @@
   function apply(){
     const lang=localStorage.getItem('appLanguage')||'nl';
     document.documentElement.lang=lang;
-    document.title=lang==='en'?'Ordering System':'Bestelsysteem';
+    document.title=lang==='en'?'Ordering System':(lang==='de'?'Bestellsystem':'Bestelsystem');
     const sel=document.getElementById('language-select'); if(sel) sel.value=lang;
     const lab=document.getElementById('language-label'); if(lab) lab.textContent=lang==='en'?'Language':'Taal';
     if(lang==='en') translateAllText();
   }
   function setup(){
     let box=document.getElementById('language-switcher');
-    if(!box){ box=document.createElement('div'); box.id='language-switcher'; box.innerHTML='<span id="language-label">Taal</span><select id="language-select" aria-label="Language"><option value="nl">Nederlands</option><option value="en">English</option></select>'; document.body.appendChild(box); }
+    if(!box){ box=document.createElement('div'); box.id='language-switcher'; box.innerHTML='<span id="language-label">Taal</span><select id="language-select" aria-label="Language"><option value="nl">Nederlands</option><option value="en">English</option><option value="de">Deutsch</option></select>'; document.body.appendChild(box); }
     const sel=document.getElementById('language-select');
     if(sel && !sel.dataset.bound){ sel.dataset.bound='1'; sel.value=localStorage.getItem('appLanguage')||'nl'; sel.addEventListener('change',()=>{localStorage.setItem('appLanguage',sel.value);location.reload();}); }
     apply();
-    if(!window.__i18nObserver){ let timer=0; const obs=new MutationObserver(ms=>{if(localStorage.getItem('appLanguage')!=='en')return;ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===3)translateElement(n);else if(n.nodeType===1)translateElement(n);})); clearTimeout(timer); timer=setTimeout(translateAllText,0);}); obs.observe(document.body,{childList:true,subtree:true,characterData:true}); window.__i18nObserver=obs; }
+    if(!window.__i18nObserver){ let timer=0; const obs=new MutationObserver(ms=>{if(!['en','de'].includes(localStorage.getItem('appLanguage')))return;ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===3)translateElement(n);else if(n.nodeType===1)translateElement(n);})); clearTimeout(timer); timer=setTimeout(translateAllText,0);}); obs.observe(document.body,{childList:true,subtree:true,characterData:true}); window.__i18nObserver=obs; }
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',setup); else setup();
-  function t(key){ return (localStorage.getItem('appLanguage')==='en' && dict[key]) ? dict[key] : key; }
-  window.I18N={dict,apply,translateElement,t};
+  function t(key){ const lang=localStorage.getItem('appLanguage')||'nl'; if(lang==='en' && dict[key]) return dict[key]; if(lang==='de') return deDict[key] || key; return key; }
+  window.I18N={dict,deDict,apply,translateElement,t};
 })();

@@ -180,6 +180,24 @@ db.ref('announcements').on('value', snap => {
   renderAdminAnnouncements(snap.val() || {});
 });
 
+async function ensureAdminAnnouncementTranslations(id, a) {
+  if (!window.AutoTranslator || !a) return;
+  const patch = {};
+  try {
+    if (!a.titelTranslations && a.titel) {
+      patch.titelTranslations = await window.AutoTranslator.buildBilingual(a.titel, a.sourceLang);
+    }
+    if (!a.infoTranslations && a.info) {
+      patch.infoTranslations = await window.AutoTranslator.buildBilingual(a.info, a.sourceLang);
+    }
+    if (Object.keys(patch).length && typeof db !== 'undefined') {
+      await db.ref('announcements/' + id).update(patch);
+    }
+  } catch (e) {
+    console.warn('Admin announcement translation failed:', e);
+  }
+}
+
 function renderAdminAnnouncements(data) {
   const list = document.getElementById('admin-announcement-list');
   const emptyMsg = document.getElementById('admin-announcement-empty-msg');
@@ -196,6 +214,7 @@ function renderAdminAnnouncements(data) {
   list.innerHTML = '';
 
   entries.forEach(([id, a]) => {
+    ensureAdminAnnouncementTranslations(id, a);
     const card = document.createElement('div');
     card.className = 'restaurant-card admin-restaurant-card';
     card.innerHTML = `
