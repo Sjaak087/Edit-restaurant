@@ -113,17 +113,22 @@ const UPDATES = [
 ];
 
 // ==================== Weergave (niet nodig om aan te passen) ====================
+function getUpdatesForLanguage() {
+  return (localStorage.getItem('appLanguage') === 'en' && Array.isArray(window.UPDATES_EN)) ? window.UPDATES_EN : UPDATES;
+}
+
 function renderUpdatesList() {
   const list = document.getElementById('updates-list');
   if (!list) return;
 
-  if (UPDATES.length === 0) {
+  const updates = getUpdatesForLanguage();
+  if (updates.length === 0) {
     list.innerHTML = '<div class="empty-msg">Nog geen updates.</div>';
     return;
   }
 
   list.innerHTML = '';
-  UPDATES.forEach(u => {
+  updates.forEach(u => {
     const item = document.createElement('div');
     item.className = 'update-item';
     item.innerHTML = `
@@ -149,7 +154,14 @@ function escapeHtmlUpdates(str) {
   return div.innerHTML;
 }
 
-renderUpdatesList();
+if (localStorage.getItem('appLanguage') === 'en') {
+  const script = document.createElement('script');
+  script.src = 'updates-en.js?v=' + Date.now();
+  script.onload = renderUpdatesList;
+  document.head.appendChild(script);
+} else {
+  renderUpdatesList();
+}
 
 // Gebruikt de openModal-functie die al door landing.js / restaurant.js is gedefinieerd.
 const btnUpdates = document.getElementById('btn-updates');
