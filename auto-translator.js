@@ -43,18 +43,41 @@
       langpair: from + '|' + to,
     });
 
-    const response = await fetch(API_URL + '?' + params.toString(), {
-      method: 'GET',
-      headers: { 'Accept': 'application/json' }
-    });
-    if (!response.ok) throw new Error('Translation request failed: ' + response.status);
-    const data = await response.json();
-    const translated = data && data.responseData && data.responseData.translatedText
-      ? String(data.responseData.translatedText).trim()
-      : '';
-    if (!translated) throw new Error('No translation returned');
-    setCached(source, from, to, { text: translated, at: Date.now() });
-    return translated;
+    try {
+      const response = await fetch(API_URL + '?' + params.toString(), {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        const translated = data && data.responseData && data.responseData.translatedText
+          ? String(data.responseData.translatedText).trim()
+          : '';
+        if (translated) {
+          setCached(source, from, to, { text: translated, at: Date.now() });
+          return translated;
+        }
+      }
+    } catch (_) {}
+
+    // Second provider as a fallback. No email or other account parameter is sent.
+    try {
+      const fallbackUrl = 'https://translate.googleapis.com/translate_a/single?' + new URLSearchParams({
+        client: 'gtx', sl: from, tl: to, dt: 't', q: source
+      }).toString();
+      const fallback = await fetch(fallbackUrl, { method:'GET', headers:{'Accept':'application/json'} });
+      if (fallback.ok) {
+        const data = await fallback.json();
+        const translated = Array.isArray(data) && Array.isArray(data[0])
+          ? data[0].map(part => Array.isArray(part) ? part[0] : '').join('').trim()
+          : '';
+        if (translated) {
+          setCached(source, from, to, { text: translated, at: Date.now() });
+          return translated;
+        }
+      }
+    } catch (_) {}
+    throw new Error('No translation returned');
   }
 
   // Herken of een algemene tekst waarschijnlijk Nederlands of Engels is.
