@@ -14,6 +14,12 @@
 // },
 
 const UPDATES = [
+ { 
+    title: 'Achtergrond patronen', 
+    date: '03-09-2026', 
+    time: '21:15', 
+    info: 'ik heb een paar dingen toegevoegd ten eerste kun je nu een custom naam voor je leden bij het restaurant instellen want nu werdt dat je username die je zelf had ingesteld ook kan de eigenaar bepalen of je het restaurant kan aanpassen of niet ook heb ik achtergrond patronen toegevoegd het zijn 10 patronen van eten en een paar andere dingen ik heb ook nog 10 achtergrond kleuren toegevoegd en 5 lettertypen ook heb ik nog een 2e standaard melding geluid toegevoegd je kunt nu kiezen tussen die 2 of je eigen geuploadde geluid er zijn ook nog een paar bugs gefixt tot morgen!'
+  },   
   {
     title: 'Geblokkeerde woorden', 
     date: '01-09-2026', 
