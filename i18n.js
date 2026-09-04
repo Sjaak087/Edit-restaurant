@@ -82,6 +82,14 @@
       const raw=el.nodeValue, key=raw.trim();
       if(dict[key]) { el.nodeValue=raw.replace(key,dict[key]); return; }
       if(localStorage.getItem('appLanguage')==='en') {
+        const dynamic = raw
+          .replace(/^(\d+) nieuw · (\d+) in bereiding$/, '$1 new · $2 preparing')
+          .replace(/^(\d+) klaar voor bezorging$/, '$1 ready for delivery')
+          .replace(/^Binnengekomen om (.+)$/, 'Received at $1')
+          .replace(/^Service "([^"]+)" verwijderen\?$/, 'Delete service "$1"?')
+          .replace(/^Nog (\d+) bestellingen? voor jou in deze fase\.$/, '$1 orders ahead of you in this stage.')
+          .replace(/^Je hebt een time out gekregen tot (.+)$/, 'You have received a timeout until $1');
+        if(dynamic!==raw){ el.nodeValue=dynamic; return; }
         const prefixMap = [
           ['Je hebt een time out gekregen tot ', 'You have received a timeout until '],
           ['Nog ', ''],
