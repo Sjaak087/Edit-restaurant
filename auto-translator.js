@@ -58,19 +58,53 @@
     return translated;
   }
 
+  // Herken of een algemene tekst waarschijnlijk Nederlands of Engels is.
+  // We gebruiken dit alleen voor algemene communicatie (announcements, berichten,
+  // feedback en waarschuwingen) en nooit voor productnamen/beschrijvingen/opmerkingen.
+  function detectCommunicationLanguage(text, preferredLang) {
+    const source = String(text == null ? '' : text).trim();
+    const preferred = cleanLang(preferredLang || currentLanguage());
+    if (!source) return preferred;
+
+    const words = source.toLowerCase()
+      .replace(/[^a-zà-ÿ\s]/g, ' ')
+      .split(/\s+/)
+      .filter(Boolean);
+    if (!words.length) return preferred;
+
+    const nlWords = new Set(['de','het','een','en','van','voor','met','op','in','dit','dat','je','jij','jouw','is','zijn','ik','we','wij','naar','niet','ook','maar','als','er','nog','kan','kun','heb','hebt','heeft','wordt','worden','nieuwe','bericht','update','vandaag','morgen','bedankt','hier','daar','door','om','te','aan','bij','alle','iedereen','graag','kunnen','moet','moeten']);
+    const enWords = new Set(['the','a','an','and','of','for','with','on','in','this','that','your','you','is','are','i','we','to','not','also','but','if','there','can','have','has','will','be','new','message','update','today','tomorrow','thanks','here','there','by','at','all','everyone','please','could','should','must']);
+    let nlScore = 0, enScore = 0;
+    for (const w of words) {
+      if (nlWords.has(w)) nlScore++;
+      if (enWords.has(w)) enScore++;
+    }
+
+    // Sterke herkenning wint altijd van de gekozen UI-taal.
+    if (nlScore >= 2 && nlScore > enScore + 1) return 'nl';
+    if (enScore >= 2 && enScore > nlScore + 1) return 'en';
+    return preferred;
+  }
+
   async function buildBilingual(text, sourceLang) {
     const source = String(text == null ? '' : text).trim();
-    const sourceCode = cleanLang(sourceLang || currentLanguage());
-    if (!source) return { nl: '', en: '', sourceLang: sourceCode };
+    if (!source) return { nl: '', en: '', sourceLang: cleanLang(sourceLang || currentLanguage()) };
+
+    // Belangrijk: de gekozen interface-taal is niet automatisch de taal waarin
+    // de gebruiker zijn vrije communicatie intypt. Detecteer daarom eerst de tekst.
+    const sourceCode = detectCommunicationLanguage(source, sourceLang || currentLanguage());
 
     if (sourceCode === 'nl') {
-      let en = source;
+      let en = '';
       try { en = await translateText(source, 'nl', 'en'); } catch (e) { console.warn('EN translation failed:', e); }
+      // Nooit een lege vertaling opslaan; in dat geval blijft de bron zichtbaar.
+      if (!en) en = source;
       return { nl: source, en, sourceLang: 'nl' };
     }
 
-    let nl = source;
+    let nl = '';
     try { nl = await translateText(source, 'en', 'nl'); } catch (e) { console.warn('NL translation failed:', e); }
+    if (!nl) nl = source;
     return { nl, en: source, sourceLang: 'en' };
   }
 
