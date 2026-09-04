@@ -812,6 +812,9 @@
   deDict['Nederlands']='Niederländisch';
   deDict['Deutsch']='Deutsch';
 
+  // Ensure German contains every source key that exists in the English dictionary.
+  deDict['+ New product']='+ Neues Produkt';  deDict['+ New category']='+ Neue Kategorie';  deDict['+ New service']='+ Neuer Service';  deDict['+ Add note']='+ Notiz hinzufügen';  deDict['+ Add']='+ Hinzufügen';  deDict['Background patterns']='Hintergrundmuster';  deDict['All paid orders appear here.']='Alle bezahlten Bestellungen werden hier angezeigt.';  deDict['All paid orders.']='Alle bezahlten Bestellungen.';  deDict['Only orders from this device are shown here.']='Nur Bestellungen von diesem Gerät werden hier angezeigt.';  deDict['As an administrator, this permanently deletes the entire restaurant, including all members, tables, products and history.']='Als Administrator löscht du damit das gesamte Restaurant dauerhaft, einschließlich aller Mitglieder, Tische, Produkte und des Verlaufs.';  deDict['Bench']='Bank';  deDict['View all registered usernames, their online status, restaurants, warnings and access status.']='Zeige alle registrierten Benutzernamen, ihren Online-Status, Restaurants, Warnungen und Zugriffsstatus an.';  deDict['Choose which tabs are visible for each member. Changes apply immediately. If you remove someone, the join code is automatically renewed so they cannot simply join again.']='Lege fest, welche Tabs für jedes Mitglied sichtbar sind. Änderungen werden sofort übernommen. Wenn du jemanden entfernst, wird der Beitrittscode automatisch erneuert, damit die Person nicht einfach erneut beitreten kann.';  deDict['Ordered items']='Bestellte Artikel';  deDict['Send order to kitchen']='Bestellung an die Küche senden';  deDict['Take order']='Bestellung aufnehmen';  deDict['Paid, send to kitchen']='Bezahlt, an die Küche senden';  deDict['Pay']='Bezahlen';  deDict['Delivered / served']='Geliefert / serviert';  deDict['E.g. “No ice”, “Extra spicy”. The customer can select these for each ordered item, and multiple can be selected at once.']='Z. B. „Ohne Eis“, „Extra scharf“. Der Kunde kann diese Optionen für jedes bestellte Stück auswählen, und mehrere können gleichzeitig gewählt werden.';  deDict['Category (optional)']='Kategorie (optional)';  deDict['Edit category']='Kategorie bearbeiten';  deDict['Owner code']='Eigentümercode';  deDict['This announcement is visible to everyone through the bell next to the update log until they mark it as read.']='Diese Ankündigung ist für alle über die Glocke neben dem Update-Protokoll sichtbar, bis sie als gelesen markiert wird.';  deDict['This message appears prominently when the owner opens the restaurant, until they press OK.']='Diese Nachricht wird groß angezeigt, sobald der Eigentümer das Restaurant öffnet, bis er auf OK drückt.';  deDict['This restaurant has no products set up yet.']='In diesem Restaurant sind noch keine Produkte eingerichtet.';  deDict['Extra note']='Zusätzliche Notiz';  deDict['Give this code to others so they can join your restaurant:']='Gib diesen Code anderen, damit sie deinem Restaurant beitreten können:';  deDict['Give this code to staff or employees so they can join this restaurant from the start screen.']='Gib diesen Code dem Personal oder Mitarbeitern, damit sie diesem Restaurant über den Startbildschirm beitreten können.';  deDict['No open service requests.']='Keine offenen Serviceanfragen.';  deDict['Floor plan size (squares)']='Größe des Grundrisses (Quadrate)';  deDict['You have no messages yet.']='Du hast noch keine Nachrichten.';  deDict['You have no active orders on this device yet.']='Du hast auf diesem Gerät noch keine aktiven Bestellungen.';  deDict['Your username is automatically used for this restaurant.']='Dein Benutzername wird automatisch für dieses Restaurant verwendet.';  deDict['You have reached the maximum of 2 restaurants. Leave one first to create or join another.']='Du hast das Maximum von 2 Restaurants erreicht. Verlasse zuerst eines, um ein neues zu erstellen oder einem neuen beizutreten.';  deDict['Your open service requests.']='Deine offenen Serviceanfragen.';  deDict['Optionally choose an emoji and type the note.']='Wähle optional ein Emoji und gib die Notiz ein.';  deDict['Choose your products']='Wähle deine Produkte';  deDict['Choose your table']='Wähle deinen Tisch';  deDict['Choose what you need; staff will be notified immediately.']='Wähle aus, was du brauchst; das Personal wird sofort benachrichtigt.';  deDict['Prepared orders waiting for delivery.']='Zubereitete Bestellungen, die auf die Lieferung warten.';  deDict['Customers can scan this QR code to order from their own phone. The QR code is unique to this restaurant.']='Kunden können diesen QR-Code mit ihrem eigenen Telefon scannen, um zu bestellen. Der QR-Code ist für dieses Restaurant eindeutig.';  deDict['Tell us what you think of the system or what could be improved.']='Sag uns, was du vom System hältst oder was verbessert werden könnte.';  deDict['My orders']='Meine Bestellungen';  deDict['After this time, the restaurant will be automatically and permanently deleted. The restaurant itself shows a countdown timer at the top.']='Nach dieser Zeit wird das Restaurant automatisch und dauerhaft gelöscht. Oben im Restaurant wird ein Countdown-Timer angezeigt.';  deDict['Area name']='Bereichsname';  deDict['Restaurant name']='Restaurantname';  deDict['New orders will appear here automatically.']='Neue Bestellungen werden hier automatisch angezeigt.';  deDict['No categories yet. Add one.']='Noch keine Kategorien. Füge eine hinzu.';  deDict['No product options have been set yet.']='Noch keine Produktoptionen festgelegt.';  deDict['No floor plan yet. Go to Settings → Floor plan to add tables.']='Noch kein Grundriss vorhanden. Gehe zu Einstellungen → Grundriss, um Tische hinzuzufügen.';  deDict['No products set up yet. Add products via Settings.']='Noch keine Produkte eingerichtet. Füge Produkte über Einstellungen hinzu.';  deDict['No products yet. Add one.']='Noch keine Produkte. Füge eines hinzu.';  deDict['No products yet. Add them via Settings → Products.']='Noch keine Produkte. Füge sie über Einstellungen → Produkte hinzu.';  deDict['No services requested yet.']='Noch keine Services angefordert.';  deDict['No services yet. Add one.']='Noch keine Services. Füge einen hinzu.';  deDict['No warnings sent yet.']='Noch keine Warnungen gesendet.';  deDict['ONLINE ORDERING']='ONLINE-BESTELLUNG';  deDict['Options']='Optionen';  deDict['Options (such as extra sauce) that can be selected with products.']='Optionen (z. B. extra Sauce), die bei Produkten ausgewählt werden können.';  deDict['Options to tick when ordering (optional)']='Beim Bestellen auszuwählende Optionen (optional)';  deDict['Optional for the kitchen.']='Optional für die Küche.';  deDict['Position (1 = top, 255 = bottom)']='Position (1 = oben, 255 = unten)';  deDict['Price (€)']='Preis (€)';  deDict['Bill']='Rechnung';  deDict['Restaurant']='Restaurant';  deDict['Change restaurant name']='Restaurantnamen ändern';  deDict['Restaurants']='Restaurants';  deDict['Bench orientation']='Ausrichtung der Bank';  deDict['Clear role']='Rolle löschen';  deDict['Build your order.']='Stelle deine Bestellung zusammen.';  deDict['TABLE SERVICE']='TISCHSERVICE';  deDict['Tip: download the PDF and print it on the tables.']='Tipp: Lade die PDF herunter und drucke sie für die Tische aus.';  deDict['Add']='Hinzufügen';  deDict['Username']='Benutzername';  deDict['Table shape']='Tischform';  deDict['Request a service']='Service anfordern';  deDict['Where should this product be ordered?']='Wo soll dieses Produkt bestellt werden?';  deDict['Where are you sitting in the restaurant?']='Wo sitzt du im Restaurant?';  deDict['Welcome to']='Willkommen bei';  deDict['Self-service QR code']='Selbstbedienungs-QR-Code';  deDict['Self-service ordering']='Selbstbedienungsbestellung';  deDict['Self-service link']='Selbstbedienungs-Link';  deDict['← Restaurants']='← Restaurants';  deDict['← Back']='← Zurück';  deDict['↔️ Horizontal']='↔️ Horizontal';  deDict['↕️ Vertical']='↕️ Vertikal';  deDict['⏱ Give timeout']='⏱ Timeout geben';  deDict['▭ Rectangular']='▭ Rechteckig';  deDict['▶ Preview']='▶ Vorschau';  deDict['◻️ Square']='◻️ Quadrat';  deDict['⚙️ Settings']='⚙️ Einstellungen';  deDict['⚠️']='⚠️';  deDict['⚠️ Attention']='⚠️ Achtung';  deDict['⚠️ Give warning']='⚠️ Warnung geben';  deDict['⚠️ Send warning']='⚠️ Warnung senden';  deDict['⚪ Round']='⚪ Rund';  deDict['✅ Paid']='✅ Bezahlt';  deDict['✅ Paid, send to kitchen']='✅ Bezahlt, an die Küche senden';  deDict['✅ Ready']='✅ Fertig';  deDict['✉️ Messages']='✉️ Nachrichten';  deDict['✉️ New message']='✉️ Neue Nachricht';  deDict['⬆️ Upload sound']='⬆️ Ton hochladen';  deDict['🍸 Bar']='🍸 Bar';  deDict['🍽 Take order']='🍽 Bestellung aufnehmen';  deDict['🎵 My uploaded sound']='🎵 Mein hochgeladener Ton';  deDict['👤 Choose your username']='👤 Wähle deinen Benutzernamen';  deDict['👤 Change username']='👤 Benutzernamen ändern';  deDict['📄 Download QR as PDF']='📄 QR als PDF herunterladen';  deDict['📍 Area']='📍 Bereich';  deDict['📝 Notes']='📝 Notizen';  deDict['📦 Stock']='📦 Bestand';  deDict['📱 Open / scan']='📱 Öffnen / scannen';  deDict['🔔 Kitchen']='🔔 Küche';  deDict['🔥 Preparing']='🔥 In Zubereitung';  deDict['🔧 Restaurant management']='🔧 Restaurantverwaltung';  deDict['🗑 Delete']='🗑 Löschen';  deDict['🚪 Leave restaurant']='🚪 Restaurant verlassen';  deDict['🛎️ Service']='🛎️ Service';  deDict['🛒']='🛒';  deDict['🧑\u200d🍳 Kitchen']='🧑\u200d🍳 Küche';  Object.keys(dict).forEach(function(k){ if(!Object.prototype.hasOwnProperty.call(deDict,k)){ const ev=dict[k]; if(Object.prototype.hasOwnProperty.call(deDict,ev) && deDict[ev] && deDict[ev]!==ev) deDict[k]=deDict[ev]; } });
+
 
   async function translateTextToGerman(text){
     const raw = String(text == null ? '' : text).trim();
@@ -824,6 +827,10 @@
   }
   function translateDynamicGerman(raw){
     const key=String(raw||'').trim();
+    if(key==='Start bereiden') return 'Zubereitung starten';
+    if(key==='Klaar') return 'Fertig';
+    if(key==='Bezorgd') return 'Geliefert';
+    if(key==='Binnengekomen') return 'Eingegangen';
     if(/^Tafel \d+$/.test(key)) return key.replace(/^Tafel /,'Tisch ');
     if(/^Table \d+$/.test(key)) return key.replace(/^Table /,'Tisch ');
     if(/^tafel \d+$/.test(key)) return key.replace(/^tafel /,'Tisch ');
@@ -856,8 +863,8 @@
         if(!key) return;
         const dynamic=translateDynamicGerman(key);
         if(dynamic && dynamic!==key){ el.nodeValue=raw.replace(key,dynamic); return; }
-        const english = dict[key];
-        const fromDict = deDict[key] || (english && deDict[english]);
+        const english = dict[key] || (Object.values(dict).includes(key) ? key : null);
+        const fromDict = (deDict[key] && deDict[key] !== key && deDict[key] !== english) ? deDict[key] : ((english && deDict[english] && deDict[english] !== english) ? deDict[english] : null);
         if(fromDict){ el.nodeValue=raw.replace(key,fromDict); return; }
         if(english){
           translateTextToGerman(english).then(trans=>{ if(trans && el.isConnected && localStorage.getItem('appLanguage')==='de' && el.nodeValue.trim()===key) el.nodeValue=el.nodeValue.replace(key,trans); });
@@ -881,9 +888,10 @@
     if(lang==='de'){
       ['placeholder','title','aria-label'].forEach(a=>{
         const v=el.getAttribute(a); if(!v) return;
-        const direct=translateDynamicGerman(v) || deDict[v] || (dict[v] && deDict[dict[v]]);
+        const english=deDict[v]===v ? (dict[v] || (Object.values(dict).includes(v) ? v : null)) : (dict[v] || (Object.values(dict).includes(v) ? v : null));
+        const direct=translateDynamicGerman(v) || ((deDict[v] && deDict[v] !== v && deDict[v] !== english) ? deDict[v] : null) || (english && deDict[english] && deDict[english] !== english ? deDict[english] : null);
         if(direct) el.setAttribute(a,direct);
-        else if(dict[v]) translateTextToGerman(dict[v]).then(t=>{ if(el.isConnected && localStorage.getItem('appLanguage')==='de') el.setAttribute(a,t); });
+        else if(english) translateTextToGerman(english).then(t=>{ if(el.isConnected && localStorage.getItem('appLanguage')==='de') el.setAttribute(a,t); });
       });
       el.childNodes.forEach(n=>translateElement(n));
     }
@@ -894,11 +902,7 @@
     const nodes=[];
     while(walker.nextNode()) nodes.push(walker.currentNode);
     nodes.forEach(n=>translateElement(n));
-    document.querySelectorAll('input,textarea,button,[title],[aria-label]').forEach(el=>{
-      ['placeholder','title','aria-label'].forEach(a=>{
-        const v=el.getAttribute(a); if(v && dict[v]) el.setAttribute(a,dict[v]);
-      });
-    });
+    document.querySelectorAll('input,textarea,button,[title],[aria-label]').forEach(el=>translateElement(el));
   }
 
   function apply(){
@@ -906,8 +910,8 @@
     document.documentElement.lang=lang;
     document.title=lang==='en'?'Ordering System':(lang==='de'?'Bestellsystem':'Bestelsystem');
     const sel=document.getElementById('language-select'); if(sel) sel.value=lang;
-    const lab=document.getElementById('language-label'); if(lab) lab.textContent=lang==='en'?'Language':'Taal';
-    if(lang==='en') translateAllText();
+    const lab=document.getElementById('language-label'); if(lab) lab.textContent=lang==='en'?'Language':(lang==='de'?'Sprache':'Taal');
+    if(lang==='en' || lang==='de') translateAllText();
   }
   function setup(){
     let box=document.getElementById('language-switcher');
@@ -918,6 +922,6 @@
     if(!window.__i18nObserver){ let timer=0; const obs=new MutationObserver(ms=>{if(!['en','de'].includes(localStorage.getItem('appLanguage')))return;ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===3)translateElement(n);else if(n.nodeType===1)translateElement(n);})); clearTimeout(timer); timer=setTimeout(translateAllText,0);}); obs.observe(document.body,{childList:true,subtree:true,characterData:true}); window.__i18nObserver=obs; }
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',setup); else setup();
-  function t(key){ const lang=localStorage.getItem('appLanguage')||'nl'; if(lang==='en' && dict[key]) return dict[key]; if(lang==='de') return deDict[key] || key; return key; }
+  function t(key){ const lang=localStorage.getItem('appLanguage')||'nl'; if(lang==='en' && dict[key]) return dict[key]; if(lang==='de') return translateDynamicGerman(key) || deDict[key] || (dict[key] || key); return key; }
   window.I18N={dict,deDict,apply,translateElement,t};
 })();
