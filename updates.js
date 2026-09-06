@@ -14,6 +14,12 @@
 // },
 
 const UPDATES = [
+  {
+    title: 'Verschillende talen!', 
+    date: '06-09-2026', 
+    time: '20:30', 
+    info: 'Nog een allerlaatste mega update we hebben 2 grote nieuwe featurs toegevoegd ten eerste verschillende talen je kunt kiezen ui engels en duits alle tekst zal automatisch vertaald worden naar die taal die jij kiest behalve de dingen die jij zelf insteld in je restaurants ook de updates in de update log worden die taal gemaakt en zelfs de announcements of waarschuwingen die ik typ als er fouten in de taal zitten geef het dqan meteen door via de feedback dan zal ik het proberen te fixen doe hetzelfde als iets niet vertaald is ook heb ik nog toegevoegd dat ik nu een reden kan geven voor je verbanning of timeout zodat iedereen weet waarom hij verbannen is of een timeout heeft gekregen ik heb ook nog een paar geblokkeerde woorden toegevoegd en wat bugs gefixt ik zal vanaf nu wat minder updates gaan doen ik zal niet aankondigen als er een dag geen update komt tot de volgende update!'
+  },    
   { 
     title: 'Achtergrond patronen', 
     date: '03-09-2026', 
