@@ -62,6 +62,8 @@
   function renderLock(type, until) {
     if (document.getElementById('global-access-lock')) return;
     const banned = type === 'ban';
+    const stateReason = banned ? (window.__ACCESS_USER__ && (window.__ACCESS_USER__.banReasonTranslations || window.__ACCESS_USER__.banReason)) : (window.__ACCESS_USER__ && (window.__ACCESS_USER__.timeoutReasonTranslations || window.__ACCESS_USER__.timeoutReason));
+    const reasonText = window.AutoTranslator ? window.AutoTranslator.pickBilingual(stateReason) : (typeof stateReason === 'string' ? stateReason : '');
     const overlay = document.createElement('div');
     overlay.id = 'global-access-lock';
     overlay.className = 'global-access-lock';
@@ -69,6 +71,7 @@
       <div class="global-access-lock-icon">${banned ? '⛔' : '⏱️'}</div>
       <h1>${banned ? 'Je bent verbannen van deze website' : 'Je hebt een time out gekregen'}</h1>
       <p>${banned ? 'Je hebt momenteel geen toegang tot deze website.' : `Je hebt een time out gekregen tot <strong>${esc(fmt(until))}</strong>.`}</p>
+      ${reasonText ? `<p><strong>Reden:</strong> ${esc(reasonText)}</p>` : ''}
       ${banned ? '<div class="global-access-lock-actions"><button type="button" class="btn-secondary" id="global-access-admin">🔧 Sitebeheer</button><button type="button" class="btn-primary" id="global-access-message">✉️ Stuur bericht naar owner</button></div>' : ''}
     </div>`;
     document.body.appendChild(overlay);
@@ -162,6 +165,7 @@
 
   function enforceUserState(user) {
     if (!user) return;
+    window.__ACCESS_USER__ = user || {};
     if (user.banned) { removeLock(); renderLock('ban'); return; }
     const until=Number(user.timeoutUntil||0);
     if (until && until>Date.now()) { removeLock(); renderLock('timeout',until); return; }
