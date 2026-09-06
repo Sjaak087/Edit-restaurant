@@ -189,6 +189,7 @@
   window.AutoTranslator = {
     currentLanguage,
     translateText,
+    detectCommunicationLanguage,
     buildBilingual,
     translateFieldSet,
     pickBilingual,
